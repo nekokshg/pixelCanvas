@@ -6,8 +6,8 @@ export class CanvasManager{
         this.ctx = this.canvas.getContext('2d');
         this.scale = scale;
         this.canvas.width = width * scale;
-        this.canvas.height = height.scale;
-        this.ctx.scale = scale(scale, scale);
+        this.canvas.height = height * scale;
+        this.ctx.scale(scale, scale); 
     }
 
     getContext(){
