@@ -1,0 +1,1 @@
+/* Initializes the app, sets up modules, and orchestrates interactions between them */

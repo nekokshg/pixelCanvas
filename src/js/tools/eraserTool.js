@@ -1,0 +1,1 @@
+/* Contains logic for eraser tool */
