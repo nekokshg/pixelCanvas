@@ -8,12 +8,18 @@
 </head>
 <body>
     <h1>Pixel Canvas</h1>
-    <!-- <div class="toolBar_Container">
+    <div class="toolBar_Container">
         <div class="colorPickerImg_Container">
-            <img id="colorPickerImg" alt="" style="display: none;">
-            <canvas class="colorPickerCanvas"></canvas>
+            <img id="colorPickerImg" alt="" style="display: none">
+            <canvas id="colorPickerCanvas"></canvas>
         </div>
-    </div> -->
+        <div class="colorInfoContainer">
+            <p class="colorPrompt">Color Selected:</p>
+            <div class="hexCode"></div>
+            <div class="rgbValue"></div>
+            <div class="colorBox"></div>
+        </div>
+    </div>
     <div id="pixelCanvas_Container">
         <canvas id="pixelCanvas" width="32" height="32"></canvas>
     </div>

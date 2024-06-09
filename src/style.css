@@ -2,3 +2,10 @@
 #pixelCanvas{
     border: 4px dotted black;
 }
+
+.colorBox{
+    width: 10px;
+    height: 10px;
+    border: 4px dotted black;
+    
+}
