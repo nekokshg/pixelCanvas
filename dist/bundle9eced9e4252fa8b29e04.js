@@ -2,6 +2,92 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/js/backgroundCanvas/bgCanvasManager.js":
+/*!****************************************************!*\
+  !*** ./src/js/backgroundCanvas/bgCanvasManager.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BGCanvasManager: () => (/* binding */ BGCanvasManager)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var BGCanvasManager = /*#__PURE__*/function () {
+  function BGCanvasManager(canvasId, width, height, scale) {
+    _classCallCheck(this, BGCanvasManager);
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext('2d');
+    this.scale = scale;
+    this.canvas.width = width * scale;
+    this.canvas.height = height * scale;
+    this.ctx.scale(scale, scale);
+  }
+  return _createClass(BGCanvasManager, [{
+    key: "getContext",
+    value: function getContext() {
+      return this.ctx;
+    }
+  }, {
+    key: "clearCanvas",
+    value: function clearCanvas() {
+      this.ctx.clearRect(0, 0, this.canvas.width / this.scale, this.canvas.height / this.scale);
+    }
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/backgroundCanvas/bgCanvasRenderer.js":
+/*!*****************************************************!*\
+  !*** ./src/js/backgroundCanvas/bgCanvasRenderer.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BGCanvasRenderer: () => (/* binding */ BGCanvasRenderer)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var BGCanvasRenderer = /*#__PURE__*/function () {
+  function BGCanvasRenderer(canvasManager) {
+    _classCallCheck(this, BGCanvasRenderer);
+    this.ctx = canvasManager.getContext();
+  }
+  return _createClass(BGCanvasRenderer, [{
+    key: "renderBackground",
+    value: function renderBackground() {
+      var cellSize = 10; // Adjust the size of each cell as needed
+      var rows = this.ctx.canvas.height / cellSize;
+      var cols = this.ctx.canvas.width / cellSize;
+
+      // Iterate over rows and columns
+      for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < cols; j++) {
+          // Alternate between grey and white cells
+          var color = (i + j) % 2 === 0 ? '#FFFFFF' : '#CCCCCC'; // Adjust colors as needed
+
+          // Draw the cell
+          this.ctx.fillStyle = color;
+          this.ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+  }]);
+}();
+
+/***/ }),
+
 /***/ "./src/js/canvas/canvasManager.js":
 /*!****************************************!*\
   !*** ./src/js/canvas/canvasManager.js ***!
@@ -141,9 +227,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for pixelCanvas canvas element */
 
 
-
 var CanvasEventHandler = /*#__PURE__*/function () {
-  function CanvasEventHandler(canvasElement, canvasScale, toolbarEventHandler, canvasRenderer) {
+  function CanvasEventHandler(canvasElement, canvasScale, toolbarEventHandler, canvasRenderer, colorPicker) {
     _classCallCheck(this, CanvasEventHandler);
     this.canvas = canvasElement;
     this.scale = canvasScale;
@@ -151,6 +236,7 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     this.toolbar = toolbarEventHandler;
     this.selectedTool = null;
     this.canvasRenderer = canvasRenderer;
+    this.colorPicker = colorPicker;
   }
   return _createClass(CanvasEventHandler, [{
     key: "init",
@@ -166,13 +252,15 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       this.canvas.addEventListener('mouseup', function () {
         return _this.onMouseUp();
       });
+      this.canvas.addEventListener('mouseleave', function () {
+        return _this.onMouseLeave();
+      });
     }
   }, {
     key: "onMouseDown",
     value: function onMouseDown(event) {
       // Get the selected tool from the toolbar
       this.selectedTool = this.toolbar.currentTool; // This will return the selected tool function
-      alert(this.selectedTool);
       this.isDoing = true;
       var _this$getMousePositio = this.getMousePosition(event),
         x = _this$getMousePositio.x,
@@ -180,7 +268,6 @@ var CanvasEventHandler = /*#__PURE__*/function () {
 
       // Perform drawing operations using the selected tool
       if (this.selectedTool === 'pencil') {
-        console.log('here');
         this.drawWithPencil(x, y);
       } else if (this.selectedTool === 'eraser') {
         this.eraseWithEraser(x, y);
@@ -208,9 +295,15 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       this.isDoing = false;
     }
   }, {
+    key: "onMouseLeave",
+    value: function onMouseLeave() {
+      //fix logic if mouse is down and leave still want to be able to paint if mouse is down and enters
+      this.isDoing = false;
+    }
+  }, {
     key: "drawWithPencil",
     value: function drawWithPencil(x, y) {
-      var pencilTool = new _tools_pencilTool__WEBPACK_IMPORTED_MODULE_0__.PencilTool(this.canvasRenderer, this.toolbar.colorPicker);
+      var pencilTool = new _tools_pencilTool__WEBPACK_IMPORTED_MODULE_0__.PencilTool(this.canvasRenderer, this.colorPicker);
       pencilTool.draw(x, y);
     }
   }, {
@@ -407,6 +500,7 @@ var ToolbarEventHandler = /*#__PURE__*/function () {
     key: "selectTool",
     value: function selectTool(newTool) {
       this.currentTool = newTool;
+      alert(this.currentTool);
       return this.currentTool; // For simplicity, returning toolName as a string
     }
   }]);
@@ -440,7 +534,7 @@ var EraserTool = /*#__PURE__*/function () {
   return _createClass(EraserTool, [{
     key: "erase",
     value: function erase(x, y) {
-      this.canvasRenderer.erasePixel(x, y, color);
+      this.canvasRenderer.erasePixel(x, y);
     }
   }]);
 }();
@@ -473,7 +567,6 @@ var PencilTool = /*#__PURE__*/function () {
   return _createClass(PencilTool, [{
     key: "draw",
     value: function draw(x, y) {
-      console.log('work');
       var color = this.colorPicker.getColor();
       this.canvasRenderer.drawPixel(x, y, color);
     }
@@ -506,12 +599,26 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
     border: 4px dotted black;
 }
 
+#backgroundCanvas, #pixelCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#backgroundCanvas {
+    z-index: 1; /* Lower z-index for background canvas */
+}
+
+#pixelCanvas {
+    z-index: 2; /* Higher z-index for pixel canvas */
+}
+
 .colorBox{
     width: 10px;
     height: 10px;
     border: 4px dotted black;
     
-}`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":";AACA;IACI,wBAAwB;AAC5B;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;;AAE5B","sourcesContent":["\n#pixelCanvas{\n    border: 4px dotted black;\n}\n\n.colorBox{\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n    \n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":";AACA;IACI,wBAAwB;AAC5B;;AAEA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;AACX;;AAEA;IACI,UAAU,EAAE,wCAAwC;AACxD;;AAEA;IACI,UAAU,EAAE,oCAAoC;AACpD;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;;AAE5B","sourcesContent":["\n#pixelCanvas{\n    border: 4px dotted black;\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    top: 0;\n    left: 0;\n}\n\n#backgroundCanvas {\n    z-index: 1; /* Lower z-index for background canvas */\n}\n\n#pixelCanvas {\n    z-index: 2; /* Higher z-index for pixel canvas */\n}\n\n.colorBox{\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n    \n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1102,12 +1209,14 @@ var __webpack_exports__ = {};
   \**********************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.css */ "./src/style.css");
-/* harmony import */ var _js_canvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/canvas/canvasManager.js */ "./src/js/canvas/canvasManager.js");
-/* harmony import */ var _js_canvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/canvas/canvasRenderer.js */ "./src/js/canvas/canvasRenderer.js");
-/* harmony import */ var _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/color/colorPicker.js */ "./src/js/color/colorPicker.js");
-/* harmony import */ var _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/events/canvasEventHandler.js */ "./src/js/events/canvasEventHandler.js");
-/* harmony import */ var _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/events/colorPickerEventHandler.js */ "./src/js/events/colorPickerEventHandler.js");
-/* harmony import */ var _js_events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/events/toolBarEventHandler.js */ "./src/js/events/toolBarEventHandler.js");
+/* harmony import */ var _js_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/backgroundCanvas/bgCanvasManager.js */ "./src/js/backgroundCanvas/bgCanvasManager.js");
+/* harmony import */ var _js_backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/backgroundCanvas/bgCanvasRenderer.js */ "./src/js/backgroundCanvas/bgCanvasRenderer.js");
+/* harmony import */ var _js_canvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/canvas/canvasManager.js */ "./src/js/canvas/canvasManager.js");
+/* harmony import */ var _js_canvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/canvas/canvasRenderer.js */ "./src/js/canvas/canvasRenderer.js");
+/* harmony import */ var _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/color/colorPicker.js */ "./src/js/color/colorPicker.js");
+/* harmony import */ var _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/events/canvasEventHandler.js */ "./src/js/events/canvasEventHandler.js");
+/* harmony import */ var _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./js/events/colorPickerEventHandler.js */ "./src/js/events/colorPickerEventHandler.js");
+/* harmony import */ var _js_events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./js/events/toolBarEventHandler.js */ "./src/js/events/toolBarEventHandler.js");
 /* Initializes the app, sets up modules, and orchestrates interactions between them */
 
 
@@ -1117,16 +1226,23 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 document.addEventListener('DOMContentLoaded', function () {
-  var canvasManager = new _js_canvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_1__.CanvasManager('pixelCanvas', 32, 32, 30);
-  var canvasRenderer = new _js_canvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_2__.CanvasRenderer(canvasManager);
-  var colorPicker = new _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_3__.ColorPicker();
-  var colorPickerEventHandler = new _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_5__.ColorPickerEventHandler(colorPicker);
-  var toolbar = new _js_events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_6__.ToolbarEventHandler();
-  var canvasEventHandler = new _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_4__.CanvasEventHandler(canvasManager.canvas, canvasManager.scale, toolbar, canvasRenderer);
+  var bgManager = new _js_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_1__.BGCanvasManager('backgroundCanvas', 32, 32, 30);
+  var bgRenderer = new _js_backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_2__.BGCanvasRenderer(bgManager);
+  var canvasManager = new _js_canvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_3__.CanvasManager('pixelCanvas', 32, 32, 30);
+  var canvasRenderer = new _js_canvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_4__.CanvasRenderer(canvasManager);
+  var colorPicker = new _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_5__.ColorPicker();
+  var colorPickerEventHandler = new _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_7__.ColorPickerEventHandler(colorPicker);
+  var toolbar = new _js_events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_8__.ToolbarEventHandler();
+  var canvasEventHandler = new _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_6__.CanvasEventHandler(canvasManager.canvas, canvasManager.scale, toolbar, canvasRenderer, colorPicker);
+
+  // Call the init() method to initialize canvas event listeners
+  canvasEventHandler.init();
 });
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle7cdc489e3d8413c85c4b.js.map
+//# sourceMappingURL=bundle9eced9e4252fa8b29e04.js.map

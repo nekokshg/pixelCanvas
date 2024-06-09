@@ -1,11 +1,34 @@
-
-#pixelCanvas{
-    border: 4px dotted black;
+.container {
+    display: flex;
 }
 
-.colorBox{
+.toolBar_Container {
+    width: 400px; /* Set a width for the toolbar */
+    /* Additional toolbar styles */
+}
+
+#pixelCanvas_Container {
+    position: relative; /* Ensure canvases are stacked */
+    flex-grow: 1; /* Allow it to take up remaining space */
+    /* Additional pixel canvas container styles */
+}
+
+#backgroundCanvas, #pixelCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#backgroundCanvas {
+    z-index: 1;
+}
+
+#pixelCanvas {
+    z-index: 2;
+}
+
+.colorBox {
     width: 10px;
     height: 10px;
     border: 4px dotted black;
-    
 }

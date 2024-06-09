@@ -8,35 +8,38 @@
 </head>
 <body>
     <h1>Pixel Canvas</h1>
-    <div class="toolBar_Container">
-        <div class="colorPickerImg_Container">
-            <img id="colorPickerImg" alt="" style="display: none">
-            <canvas id="colorPickerCanvas"></canvas>
+    <div class="container">
+        <div class="toolBar_Container">
+            <div class="colorPickerImg_Container">
+                <img id="colorPickerImg" alt="" style="display: none">
+                <canvas id="colorPickerCanvas"></canvas>
+            </div>
+            <div class="colorInfoContainer">
+                <p class="colorPrompt">Color Selected:</p>
+                <div class="hexCode"></div>
+                <div class="rgbValue"></div>
+                <div class="colorBox"></div>
+            </div>
+            <ul class="toolBar_List">
+                <li class="toolItem">
+                    <div class="pencilButton">
+                        <img class="pencil" alt="" >
+                    </div>
+                </li>
+                <li class="toolItem">
+                    <div class="eraserButton">
+                        <img class="eraser" alt="" >
+                    </div>
+                </li>
+                <li class="toolItem">
+                    <div class="fillButton"></div>
+                </li>
+            </ul>
         </div>
-        <div class="colorInfoContainer">
-            <p class="colorPrompt">Color Selected:</p>
-            <div class="hexCode"></div>
-            <div class="rgbValue"></div>
-            <div class="colorBox"></div>
+        <div id="pixelCanvas_Container">
+            <canvas id="backgroundCanvas"></canvas>
+            <canvas id="pixelCanvas"></canvas>
         </div>
-        <ul class="toolBar_List">
-            <li class="toolItem">
-                <div class="pencilButton">
-                    <img class="pencil" alt="" >
-                </div>
-            </li>
-            <li class="toolItem">
-                <div class="eraserButton">
-                    <img class="eraser" alt="" >
-                </div>
-            </li>
-            <li class="toolItem">
-                <div class="fillButton"></div>
-            </li>
-        </ul>
-    </div>
-    <div id="pixelCanvas_Container">
-        <canvas id="pixelCanvas" width="32" height="32"></canvas>
     </div>
 </body>
 </html>

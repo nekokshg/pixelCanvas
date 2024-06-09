@@ -53,7 +53,7 @@ export class CanvasEventHandler {
         this.isDoing = false;
     }
 
-    onMouseLeave(){
+    onMouseLeave(){ //fix logic if mouse is down and leave still want to be able to paint if mouse is down and enters
         this.isDoing = false;
     }
 
