@@ -1,4 +1,4 @@
-/* Manages the color selection logic and UI for choosing colors */
+/* Manages the color */
 export class ColorPicker {
     constructor (){
         this.currentColor = '#000000'; // Default color

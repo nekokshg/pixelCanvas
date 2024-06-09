@@ -1,36 +1,76 @@
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for pixelCanvas canvas element */
+import { PencilTool } from "../tools/pencilTool";
+import { EraserTool } from "../tools/eraserTool";
+
 export class CanvasEventHandler {
-    constructor(canvasElement, canvasScale){
+    constructor(canvasElement, canvasScale, toolbarEventHandler, canvasRenderer, colorPicker) {
         this.canvas = canvasElement;
         this.scale = canvasScale;
-        this.isDrawing = false;
+        this.isDoing = false;
+        this.toolbar = toolbarEventHandler;
+        this.selectedTool = null;
+        this.canvasRenderer = canvasRenderer;
+        this.colorPicker = colorPicker;
     }
 
-    init(pencilTool) {
-        this.canvas.addEventListener('mousedown', (event) => this.onMouseDown(event, pencilTool));
-        this.canvas.addEventListener('mousemove', (event) => this.onMouseMove(event, pencilTool));
+    init() {
+        // Initialize canvas event listeners
+        this.canvas.addEventListener('mousedown', (event) => this.onMouseDown(event));
+        this.canvas.addEventListener('mousemove', (event) => this.onMouseMove(event));
         this.canvas.addEventListener('mouseup', () => this.onMouseUp());
+        this.canvas.addEventListener('mouseleave', () => this.onMouseLeave());
     }
 
-    onMouseDown(event, pencilTool){
-        this.isDrawing = true;
-        this.draw(event, pencilTool);
-    }
+    onMouseDown(event) {
+        // Get the selected tool from the toolbar
+        this.selectedTool = this.toolbar.currentTool; // This will return the selected tool function
+        this.isDoing = true;
 
-    onMouseMove(event, pencilTool){
-        if (this.isDrawing){
-            this.draw(event, pencilTool);
+        const { x, y } = this.getMousePosition(event);
+
+        // Perform drawing operations using the selected tool
+        if (this.selectedTool === 'pencil') {
+            this.drawWithPencil(x, y);
+        } else if (this.selectedTool === 'eraser') {
+            this.eraseWithEraser(x, y);
         }
     }
 
-    onMouseUp(){
-        this.isDrawing = false;
+    onMouseMove(event) {
+        if (this.isDoing) {
+            const { x, y } = this.getMousePosition(event);
+
+            // Perform drawing operations using the selected tool
+            if (this.selectedTool === 'pencil') {
+                this.drawWithPencil(x, y);
+            } else if (this.selectedTool === 'eraser') {
+                this.eraseWithEraser(x, y);
+            }
+        }
     }
 
-    draw(event, pencilTool){
+    onMouseUp() {
+        this.isDoing = false;
+    }
+
+    onMouseLeave(){
+        this.isDoing = false;
+    }
+
+    drawWithPencil(x, y) {
+        const pencilTool = new PencilTool(this.canvasRenderer, this.colorPicker);
+        pencilTool.draw(x, y);
+    }
+
+    eraseWithEraser(x, y) {
+        const eraserTool = new EraserTool(this.canvasRenderer);
+        eraserTool.erase(x, y);
+    }
+
+    getMousePosition(event) {
         const rect = this.canvas.getBoundingClientRect();
         const x = Math.floor((event.clientX - rect.left) / this.scale);
         const y = Math.floor((event.clientY - rect.top) / this.scale);
-        pencilTool.draw(x, y);
+        return { x, y };
     }
 }

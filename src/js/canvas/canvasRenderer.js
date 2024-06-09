@@ -8,4 +8,8 @@ export class CanvasRenderer {
         this.ctx.fillStyle = color;
         this.ctx.fillRect(x, y, 1, 1); //Draw a filled rectangle (pixel) at position (x, y) whith width and height of 1
     }
+
+    erasePixel(x, y){
+        this.ctx.clearRect(x, y, 1, 1);
+    }
 }

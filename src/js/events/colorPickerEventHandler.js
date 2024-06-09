@@ -81,8 +81,6 @@ export class ColorPickerEventHandler {
         const colorBox = document.getElementsByClassName('colorBox')[0];
         hexcode.textContent = `hexcode: ${hex}`;
         rgbVal.textContent = rgb;
-        console.log(hex);
         colorBox.style.backgroundColor = hex;
-        
     }
 }

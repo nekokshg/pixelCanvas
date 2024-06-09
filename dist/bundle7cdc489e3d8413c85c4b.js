@@ -73,6 +73,11 @@ var CanvasRenderer = /*#__PURE__*/function () {
       this.ctx.fillStyle = color;
       this.ctx.fillRect(x, y, 1, 1); //Draw a filled rectangle (pixel) at position (x, y) whith width and height of 1
     }
+  }, {
+    key: "erasePixel",
+    value: function erasePixel(x, y) {
+      this.ctx.clearRect(x, y, 1, 1);
+    }
   }]);
 }();
 
@@ -94,7 +99,7 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-/* Manages the color selection logic and UI for choosing colors */
+/* Manages the color */
 var ColorPicker = /*#__PURE__*/function () {
   function ColorPicker() {
     _classCallCheck(this, ColorPicker);
@@ -125,6 +130,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CanvasEventHandler: () => (/* binding */ CanvasEventHandler)
 /* harmony export */ });
+/* harmony import */ var _tools_pencilTool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tools/pencilTool */ "./src/js/tools/pencilTool.js");
+/* harmony import */ var _tools_eraserTool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../tools/eraserTool */ "./src/js/tools/eraserTool.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -132,22 +139,29 @@ function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), 
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for pixelCanvas canvas element */
+
+
+
 var CanvasEventHandler = /*#__PURE__*/function () {
-  function CanvasEventHandler(canvasElement, canvasScale) {
+  function CanvasEventHandler(canvasElement, canvasScale, toolbarEventHandler, canvasRenderer) {
     _classCallCheck(this, CanvasEventHandler);
     this.canvas = canvasElement;
     this.scale = canvasScale;
-    this.isDrawing = false;
+    this.isDoing = false;
+    this.toolbar = toolbarEventHandler;
+    this.selectedTool = null;
+    this.canvasRenderer = canvasRenderer;
   }
   return _createClass(CanvasEventHandler, [{
     key: "init",
-    value: function init(pencilTool) {
+    value: function init() {
       var _this = this;
+      // Initialize canvas event listeners
       this.canvas.addEventListener('mousedown', function (event) {
-        return _this.onMouseDown(event, pencilTool);
+        return _this.onMouseDown(event);
       });
       this.canvas.addEventListener('mousemove', function (event) {
-        return _this.onMouseMove(event, pencilTool);
+        return _this.onMouseMove(event);
       });
       this.canvas.addEventListener('mouseup', function () {
         return _this.onMouseUp();
@@ -155,29 +169,66 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     }
   }, {
     key: "onMouseDown",
-    value: function onMouseDown(event, pencilTool) {
-      this.isDrawing = true;
-      this.draw(event, pencilTool);
+    value: function onMouseDown(event) {
+      // Get the selected tool from the toolbar
+      this.selectedTool = this.toolbar.currentTool; // This will return the selected tool function
+      alert(this.selectedTool);
+      this.isDoing = true;
+      var _this$getMousePositio = this.getMousePosition(event),
+        x = _this$getMousePositio.x,
+        y = _this$getMousePositio.y;
+
+      // Perform drawing operations using the selected tool
+      if (this.selectedTool === 'pencil') {
+        console.log('here');
+        this.drawWithPencil(x, y);
+      } else if (this.selectedTool === 'eraser') {
+        this.eraseWithEraser(x, y);
+      }
     }
   }, {
     key: "onMouseMove",
-    value: function onMouseMove(event, pencilTool) {
-      if (this.isDrawing) {
-        this.draw(event, pencilTool);
+    value: function onMouseMove(event) {
+      if (this.isDoing) {
+        var _this$getMousePositio2 = this.getMousePosition(event),
+          x = _this$getMousePositio2.x,
+          y = _this$getMousePositio2.y;
+
+        // Perform drawing operations using the selected tool
+        if (this.selectedTool === 'pencil') {
+          this.drawWithPencil(x, y);
+        } else if (this.selectedTool === 'eraser') {
+          this.eraseWithEraser(x, y);
+        }
       }
     }
   }, {
     key: "onMouseUp",
     value: function onMouseUp() {
-      this.isDrawing = false;
+      this.isDoing = false;
     }
   }, {
-    key: "draw",
-    value: function draw(event, pencilTool) {
+    key: "drawWithPencil",
+    value: function drawWithPencil(x, y) {
+      var pencilTool = new _tools_pencilTool__WEBPACK_IMPORTED_MODULE_0__.PencilTool(this.canvasRenderer, this.toolbar.colorPicker);
+      pencilTool.draw(x, y);
+    }
+  }, {
+    key: "eraseWithEraser",
+    value: function eraseWithEraser(x, y) {
+      var eraserTool = new _tools_eraserTool__WEBPACK_IMPORTED_MODULE_1__.EraserTool(this.canvasRenderer);
+      eraserTool.erase(x, y);
+    }
+  }, {
+    key: "getMousePosition",
+    value: function getMousePosition(event) {
       var rect = this.canvas.getBoundingClientRect();
       var x = Math.floor((event.clientX - rect.left) / this.scale);
       var y = Math.floor((event.clientY - rect.top) / this.scale);
-      pencilTool.draw(x, y);
+      return {
+        x: x,
+        y: y
+      };
     }
   }]);
 }();
@@ -277,11 +328,11 @@ var ColorPickerEventHandler = /*#__PURE__*/function () {
       var x = event.clientX - rect.left;
       var y = event.clientY - rect.top;
       var imageData = this.ctx.getImageData(x, y, 1, 1).data;
-      var rgb = "rgb(".concat(imageData[0], ", ").concat(imageData[1], ", ").concat(imageData[2], ")");
       var r = imageData[0];
       var g = imageData[1];
       var b = imageData[2];
-      var hex = "hexcode: ".concat(this.rgbToHex(r, g, b));
+      var rgb = "rgb(".concat(r, ", ").concat(g, ", ").concat(b, ")");
+      var hex = this.rgbToHex(r, g, b);
       this.colorPicker.setColor(rgb);
       this.displayColor(hex, rgb);
     }
@@ -296,10 +347,100 @@ var ColorPickerEventHandler = /*#__PURE__*/function () {
       var hexcode = document.getElementsByClassName('hexCode')[0];
       var rgbVal = document.getElementsByClassName('rgbValue')[0];
       var colorBox = document.getElementsByClassName('colorBox')[0];
-      hexcode.textContent = hex;
+      hexcode.textContent = "hexcode: ".concat(hex);
       rgbVal.textContent = rgb;
-      colorBox.style.backgroundColor = "red";
-      console.log(colorBox.style.backgroundColor);
+      colorBox.style.backgroundColor = hex;
+    }
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/events/toolBarEventHandler.js":
+/*!**********************************************!*\
+  !*** ./src/js/events/toolBarEventHandler.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ToolbarEventHandler: () => (/* binding */ ToolbarEventHandler)
+/* harmony export */ });
+/* harmony import */ var _assets_pencil_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../assets/pencil.png */ "./src/assets/pencil.png");
+/* harmony import */ var _assets_eraser_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../assets/eraser.png */ "./src/assets/eraser.png");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/* Centralizes event listeners for user interactions, such as mouse clicks and movements for toolBar_List element */
+
+
+var ToolbarEventHandler = /*#__PURE__*/function () {
+  function ToolbarEventHandler() {
+    _classCallCheck(this, ToolbarEventHandler);
+    //Set the source of the image
+    this.pencilButton = document.getElementsByClassName('pencil')[0];
+    this.eraserButton = document.getElementsByClassName('eraser')[0];
+    this.pencilButton.src = _assets_pencil_png__WEBPACK_IMPORTED_MODULE_0__;
+    this.eraserButton.src = _assets_eraser_png__WEBPACK_IMPORTED_MODULE_1__;
+
+    //Set default tool
+    this.currentTool = 'pencil';
+
+    // Initialize toolbar event listeners
+    this.init();
+  }
+  return _createClass(ToolbarEventHandler, [{
+    key: "init",
+    value: function init() {
+      var _this = this;
+      this.pencilButton.addEventListener('click', function () {
+        return _this.selectTool('pencil');
+      });
+      this.eraserButton.addEventListener('click', function () {
+        return _this.selectTool('eraser');
+      });
+    }
+  }, {
+    key: "selectTool",
+    value: function selectTool(newTool) {
+      this.currentTool = newTool;
+      return this.currentTool; // For simplicity, returning toolName as a string
+    }
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/tools/eraserTool.js":
+/*!************************************!*\
+  !*** ./src/js/tools/eraserTool.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   EraserTool: () => (/* binding */ EraserTool)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/* Contains logic for eraser tool */
+
+var EraserTool = /*#__PURE__*/function () {
+  function EraserTool(canvasRenderer) {
+    _classCallCheck(this, EraserTool);
+    this.canvasRenderer = canvasRenderer;
+  }
+  return _createClass(EraserTool, [{
+    key: "erase",
+    value: function erase(x, y) {
+      this.canvasRenderer.erasePixel(x, y, color);
     }
   }]);
 }();
@@ -332,6 +473,7 @@ var PencilTool = /*#__PURE__*/function () {
   return _createClass(PencilTool, [{
     key: "draw",
     value: function draw(x, y) {
+      console.log('work');
       var color = this.colorPicker.getColor();
       this.canvasRenderer.drawPixel(x, y, color);
     }
@@ -368,7 +510,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
     width: 10px;
     height: 10px;
     border: 4px dotted black;
-}`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":";AACA;IACI,wBAAwB;AAC5B;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;AAC5B","sourcesContent":["\n#pixelCanvas{\n    border: 4px dotted black;\n}\n\n.colorBox{\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n}"],"sourceRoot":""}]);
+    
+}`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":";AACA;IACI,wBAAwB;AAC5B;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;;AAE5B","sourcesContent":["\n#pixelCanvas{\n    border: 4px dotted black;\n}\n\n.colorBox{\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n    \n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -821,6 +964,26 @@ module.exports = styleTagTransform;
 
 module.exports = __webpack_require__.p + "assets/colorPicker.jpeg";
 
+/***/ }),
+
+/***/ "./src/assets/eraser.png":
+/*!*******************************!*\
+  !*** ./src/assets/eraser.png ***!
+  \*******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/eraser.png";
+
+/***/ }),
+
+/***/ "./src/assets/pencil.png":
+/*!*******************************!*\
+  !*** ./src/assets/pencil.png ***!
+  \*******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/pencil.png";
+
 /***/ })
 
 /******/ 	});
@@ -941,10 +1104,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.css */ "./src/style.css");
 /* harmony import */ var _js_canvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/canvas/canvasManager.js */ "./src/js/canvas/canvasManager.js");
 /* harmony import */ var _js_canvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/canvas/canvasRenderer.js */ "./src/js/canvas/canvasRenderer.js");
-/* harmony import */ var _js_tools_pencilTool_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/tools/pencilTool.js */ "./src/js/tools/pencilTool.js");
-/* harmony import */ var _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/color/colorPicker.js */ "./src/js/color/colorPicker.js");
-/* harmony import */ var _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/events/canvasEventHandler.js */ "./src/js/events/canvasEventHandler.js");
-/* harmony import */ var _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/events/colorPickerEventHandler.js */ "./src/js/events/colorPickerEventHandler.js");
+/* harmony import */ var _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/color/colorPicker.js */ "./src/js/color/colorPicker.js");
+/* harmony import */ var _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/events/canvasEventHandler.js */ "./src/js/events/canvasEventHandler.js");
+/* harmony import */ var _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/events/colorPickerEventHandler.js */ "./src/js/events/colorPickerEventHandler.js");
+/* harmony import */ var _js_events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/events/toolBarEventHandler.js */ "./src/js/events/toolBarEventHandler.js");
 /* Initializes the app, sets up modules, and orchestrates interactions between them */
 
 
@@ -957,14 +1120,13 @@ __webpack_require__.r(__webpack_exports__);
 document.addEventListener('DOMContentLoaded', function () {
   var canvasManager = new _js_canvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_1__.CanvasManager('pixelCanvas', 32, 32, 30);
   var canvasRenderer = new _js_canvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_2__.CanvasRenderer(canvasManager);
-  var colorPicker = new _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_4__.ColorPicker();
-  var colorPickerEventHandler = new _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_6__.ColorPickerEventHandler(colorPicker);
-  var pencilTool = new _js_tools_pencilTool_js__WEBPACK_IMPORTED_MODULE_3__.PencilTool(canvasRenderer, colorPicker);
-  var canvasEventHandler = new _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_5__.CanvasEventHandler(canvasManager.canvas, canvasManager.scale);
-  canvasEventHandler.init(pencilTool);
+  var colorPicker = new _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_3__.ColorPicker();
+  var colorPickerEventHandler = new _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_5__.ColorPickerEventHandler(colorPicker);
+  var toolbar = new _js_events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_6__.ToolbarEventHandler();
+  var canvasEventHandler = new _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_4__.CanvasEventHandler(canvasManager.canvas, canvasManager.scale, toolbar, canvasRenderer);
 });
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle4da80c9d9d25ed23e818.js.map
+//# sourceMappingURL=bundle7cdc489e3d8413c85c4b.js.map
