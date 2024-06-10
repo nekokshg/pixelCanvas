@@ -3,7 +3,7 @@ import { PencilTool } from "../tools/pencilTool";
 import { EraserTool } from "../tools/eraserTool";
 
 export class CanvasEventHandler {
-    constructor(canvasElement, canvasScale, toolbarEventHandler, canvasRenderer, colorPicker) {
+    constructor(canvasElement, canvasScale, toolbarEventHandler, canvasRenderer, colorPicker, canvasUtils) {
         this.canvas = canvasElement;
         this.scale = canvasScale;
         this.isDoing = false;
@@ -11,6 +11,7 @@ export class CanvasEventHandler {
         this.selectedTool = null;
         this.canvasRenderer = canvasRenderer;
         this.colorPicker = colorPicker;
+        this.canvasUtils = canvasUtils;
     }
 
     init() {
@@ -68,6 +69,7 @@ export class CanvasEventHandler {
     }
 
     getMousePosition(event) {
+        this.scale = this.canvasUtils.canvasManagers[0].scale
         const rect = this.canvas.getBoundingClientRect();
         const x = Math.floor((event.clientX - rect.left) / this.scale);
         const y = Math.floor((event.clientY - rect.top) / this.scale);

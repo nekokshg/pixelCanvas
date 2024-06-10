@@ -1,3 +1,4 @@
+
 .container {
     display: flex;
 }
@@ -8,15 +9,34 @@
 }
 
 #pixelCanvas_Container {
-    position: relative; /* Ensure canvases are stacked */
-    flex-grow: 1; /* Allow it to take up remaining space */
-    /* Additional pixel canvas container styles */
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    border: 4px dotted black;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+.canvasUtils {
+    display: flex;
+    z-index: 3;
+    border: 4px dotted black;
+    background-color: white;
+    padding: 10px;
+    flex-shrink: 0; /* Prevent it from shrinking */
+}
+
+.canvasWrapper {
+    position: relative;
+    flex-grow: 1; /* Allow it to take up the remaining space */
+    overflow: hidden; /* Ensure canvases do not overflow */
 }
 
 #backgroundCanvas, #pixelCanvas {
     position: absolute;
     top: 0;
     left: 0;
+    display: block;
 }
 
 #backgroundCanvas {
@@ -25,6 +45,12 @@
 
 #pixelCanvas {
     z-index: 2;
+
+}
+
+.colorInfoContainer{
+    display: flex;
+
 }
 
 .colorBox {
