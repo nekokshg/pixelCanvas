@@ -1,17 +1,32 @@
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for pixelCanvas canvas element */
 import { PencilTool } from "../tools/pencilTool";
 import { EraserTool } from "../tools/eraserTool";
+import { ZoomTool } from "../tools/zoomTool";
 
 export class CanvasEventHandler {
-    constructor(canvasElement, canvasScale, toolbarEventHandler, canvasRenderer, colorPicker, canvasUtils) {
-        this.canvas = canvasElement;
-        this.scale = canvasScale;
-        this.isDoing = false;
-        this.toolbar = toolbarEventHandler;
+    constructor(canvasManagers, canvasRenderers, toolbar, colorPicker){
+        this.canvasManagers = canvasManagers;
+        this.canvasRenderers = canvasRenderers;
+
+        //Canvas
+        this.canvasManager = this.canvasManagers[0];
+        this.canvasRenderer = this.canvasRenderers[0];
+        this.canvas = this.canvasManager.canvas;
+
+        //BG Canvas
+        this.bgManager = this.canvasManagers[1];
+        this.bgRenderer = this.canvasRenderers[1];
+
+        //Tool Bar
+        this.toolbar = toolbar;
         this.selectedTool = null;
-        this.canvasRenderer = canvasRenderer;
+        this.zoomFactor = 1.2;
+
+        //Color Picker
         this.colorPicker = colorPicker;
-        this.canvasUtils = canvasUtils;
+
+        this.scale = this.canvasManager.scale;
+        this.isDoing = false;
     }
 
     init() {
@@ -34,6 +49,10 @@ export class CanvasEventHandler {
             this.drawWithPencil(x, y);
         } else if (this.selectedTool === 'eraser') {
             this.eraseWithEraser(x, y);
+        } else if (this.selectedTool === 'zoomIn'){
+            this.zoomIn(x, y);
+        } else if (this.selectedTool === 'zoomOut'){
+            this.zoomOut(x, y);
         }
     }
 
@@ -46,6 +65,10 @@ export class CanvasEventHandler {
                 this.drawWithPencil(x, y);
             } else if (this.selectedTool === 'eraser') {
                 this.eraseWithEraser(x, y);
+            } else if (this.selectedTool === 'zoomIn'){
+                this.zoomIn(x, y);
+            } else if (this.selectedTool === 'zoomOut'){
+                this.zoomOut(x, y);
             }
         }
     }
@@ -58,8 +81,12 @@ export class CanvasEventHandler {
         this.isDoing = false;
     }
 
-    handleScaleChange(scale) {
-        this.scale = scale;
+    getMousePosition(event) {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = Math.floor((event.clientX - rect.left) / this.scale);
+        const y = Math.floor((event.clientY - rect.top) / this.scale);
+        console.log(`Mouse: ${x},${y}`)
+        return { x, y };
     }
 
     drawWithPencil(x, y) {
@@ -72,12 +99,13 @@ export class CanvasEventHandler {
         eraserTool.erase(x, y);
     }
 
-    getMousePosition(event) {
-        
-        const rect = this.canvas.getBoundingClientRect();
-        const x = Math.floor((event.clientX - rect.left) / this.scale);
-        const y = Math.floor((event.clientY - rect.top) / this.scale);
-        console.log(`Mouse: ${x},${y}`)
-        return { x, y };
+    zoomIn(x, y){
+        const zoomTool = new ZoomTool(this.zoomFactor, this.scale, this.canvasManagers, this.canvasRenderers);
+        this.scale = zoomTool.zoom(x, y);
+    }
+
+    zoomOut(x, y){
+        const zoomTool = new ZoomTool(1 / this.zoomFactor, this.scale, this.canvasManagers, this.canvasRenderers);
+        this.scale = zoomTool.zoom(x ,y);
     }
 }

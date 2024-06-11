@@ -33,10 +33,6 @@ export class CanvasRenderer {
     }
 
     render() {
-        this.ctx.imageSmoothingEnabled = false;
-        // Clear the entire canvas
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-
         // Re-draw all stored pixels
         this.pixels.forEach(pixel => {
             this.ctx.fillStyle = pixel.color;

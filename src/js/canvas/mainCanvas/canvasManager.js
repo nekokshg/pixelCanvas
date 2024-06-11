@@ -20,18 +20,10 @@ export class CanvasManager {
 
     setScale(scale) {
         this.scale = scale;
-        console.log(this)
-        console.log(this.scale)
         this.updateCanvasSize();
     }
     
     updateCanvasSize() {
-        this.ctx.imageSmoothingEnabled = false;
-        const { width, height } = this.canvas;
-
-        // Store the current canvas content
-        //const imageData = this.ctx.getImageData(0, 0, width, height);
-
         // Adjust the canvas size based on the scale
         this.canvas.width = this.width * this.scale;
         this.canvas.height = this.height * this.scale;
@@ -41,10 +33,5 @@ export class CanvasManager {
 
         // Apply the scaling transformation directly to the main canvas context
         this.ctx.scale(this.scale, this.scale);
-        // Apply the scaling transformation directly to the main canvas context
-        //this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
-
-        // Draw the scaled image data back to the main canvas
-        //this.ctx.putImageData(imageData, 0, 0);
     }
 }

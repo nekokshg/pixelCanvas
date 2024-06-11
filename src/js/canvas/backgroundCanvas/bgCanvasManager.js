@@ -24,6 +24,7 @@ export class BGCanvasManager {
     }
 
     updateCanvasSize() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.width = this.width * this.cellSize * this.scale;
         this.canvas.height = this.height * this.cellSize * this.scale;
         this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);

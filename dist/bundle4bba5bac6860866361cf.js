@@ -48,6 +48,7 @@ var BGCanvasManager = /*#__PURE__*/function () {
   }, {
     key: "updateCanvasSize",
     value: function updateCanvasSize() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.canvas.width = this.width * this.cellSize * this.scale;
       this.canvas.height = this.height * this.cellSize * this.scale;
       this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
@@ -82,8 +83,8 @@ var BGCanvasRenderer = /*#__PURE__*/function () {
     this.ctx.imageSmoothingEnabled = false;
   }
   return _createClass(BGCanvasRenderer, [{
-    key: "renderBackground",
-    value: function renderBackground() {
+    key: "render",
+    value: function render() {
       var rows = this.ctx.canvas.height / this.cellSize;
       var cols = this.ctx.canvas.width / this.cellSize;
       for (var i = 0; i < rows; i++) {
@@ -93,79 +94,6 @@ var BGCanvasRenderer = /*#__PURE__*/function () {
           this.ctx.fillRect(j * this.cellSize, i * this.cellSize, this.cellSize, this.cellSize);
         }
       }
-    }
-  }]);
-}();
-
-/***/ }),
-
-/***/ "./src/js/canvas/canvasUtils.js":
-/*!**************************************!*\
-  !*** ./src/js/canvas/canvasUtils.js ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   CanvasUtils: () => (/* binding */ CanvasUtils)
-/* harmony export */ });
-/* harmony import */ var _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../assets/zoom-in.png */ "./src/assets/zoom-in.png");
-/* harmony import */ var _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../assets/zoom-out.png */ "./src/assets/zoom-out.png");
-/* harmony import */ var _backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./backgroundCanvas/bgCanvasManager.js */ "./src/js/canvas/backgroundCanvas/bgCanvasManager.js");
-/* harmony import */ var _backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./backgroundCanvas/bgCanvasRenderer.js */ "./src/js/canvas/backgroundCanvas/bgCanvasRenderer.js");
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-
-
-
-
-var CanvasUtils = /*#__PURE__*/function () {
-  function CanvasUtils(canvasManagers, canvasEventHandler) {
-    var _this = this;
-    _classCallCheck(this, CanvasUtils);
-    // Set the source of the image
-    this.ziImg = document.getElementsByClassName('zoomIn')[0];
-    this.ziImg.src = _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_0__;
-    this.zoImg = document.getElementsByClassName('zoomOut')[0];
-    this.zoImg.src = _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_1__;
-    this.canvasManagers = canvasManagers;
-    this.canvasEventHandler = canvasEventHandler;
-
-    // Event listeners
-    this.ziImg.addEventListener('click', function () {
-      return _this.zoomIn();
-    });
-    this.zoImg.addEventListener('click', function () {
-      return _this.zoomOut();
-    });
-  }
-  return _createClass(CanvasUtils, [{
-    key: "zoomIn",
-    value: function zoomIn() {
-      var newScale = Math.ceil(this.canvasManagers[0].scale * 1.2);
-      this.setScale(newScale);
-    }
-  }, {
-    key: "zoomOut",
-    value: function zoomOut() {
-      var newScale = Math.floor(this.canvasManagers[0].scale / 1.2);
-      this.setScale(newScale);
-    }
-  }, {
-    key: "setScale",
-    value: function setScale(scale) {
-      this.canvasManagers.forEach(function (manager) {
-        manager.setScale(scale);
-        if (manager instanceof _backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_2__.BGCanvasManager) {
-          var bgRenderer = new _backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__.BGCanvasRenderer(manager);
-          bgRenderer.renderBackground();
-        }
-      });
-      this.canvasEventHandler.handleScaleChange(this.canvasManagers[0].scale);
     }
   }]);
 }();
@@ -266,22 +194,52 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 var CanvasRenderer = /*#__PURE__*/function () {
   function CanvasRenderer(canvasManager) {
     _classCallCheck(this, CanvasRenderer);
+    this.canvasManager = canvasManager;
     this.ctx = canvasManager.getContext();
     this.cellSize = canvasManager.cellSize;
     // Disable anti-aliasing
     this.ctx.imageSmoothingEnabled = false;
+
+    // Store the drawn pixels or shapes
+    this.pixels = [];
   }
   return _createClass(CanvasRenderer, [{
     key: "drawPixel",
     value: function drawPixel(x, y, color) {
-      this.erasePixel(x, y);
+      var roundedX = Math.round(x); // Round the coordinates to ensure they align with pixel boundaries
+      var roundedY = Math.round(y);
+      this.erasePixel(roundedX, roundedY);
       this.ctx.fillStyle = color;
-      this.ctx.fillRect(x, y, 1, 1); // Draw a filled rectangle (pixel) at position (x, y) with width and height of 1
+      this.ctx.fillRect(roundedX, roundedY, 1, 1); // Draw a filled rectangle (pixel) at rounded coordinates
+
+      this.pixels.push({
+        x: roundedX,
+        y: roundedY,
+        color: color
+      });
     }
   }, {
     key: "erasePixel",
     value: function erasePixel(x, y) {
-      this.ctx.clearRect(x, y, 1, 1);
+      var roundedX = Math.round(x);
+      var roundedY = Math.round(y);
+      this.ctx.clearRect(roundedX, roundedY, 1, 1);
+      this.pixels = this.pixels.filter(function (pixel) {
+        return pixel.x !== roundedX || pixel.y !== roundedY;
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this = this;
+      // Clear the entire canvas
+      //this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+      // Re-draw all stored pixels
+      this.pixels.forEach(function (pixel) {
+        _this.ctx.fillStyle = pixel.color;
+        _this.ctx.fillRect(pixel.x, pixel.y, 1, 1);
+      });
     }
   }]);
 }();
@@ -337,6 +295,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _tools_pencilTool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tools/pencilTool */ "./src/js/tools/pencilTool.js");
 /* harmony import */ var _tools_eraserTool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../tools/eraserTool */ "./src/js/tools/eraserTool.js");
+/* harmony import */ var _tools_zoomTool__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../tools/zoomTool */ "./src/js/tools/zoomTool.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -346,17 +305,31 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for pixelCanvas canvas element */
 
 
+
 var CanvasEventHandler = /*#__PURE__*/function () {
-  function CanvasEventHandler(canvasElement, canvasScale, toolbarEventHandler, canvasRenderer, colorPicker, canvasUtils) {
+  function CanvasEventHandler(canvas, canvasManagers, canvasRenderers, toolbar, colorPicker) {
     _classCallCheck(this, CanvasEventHandler);
-    this.canvas = canvasElement;
-    this.scale = canvasScale;
-    this.isDoing = false;
-    this.toolbar = toolbarEventHandler;
+    this.canvasManagers = canvasManagers;
+    this.canvasRenderers = canvasRenderers;
+
+    //Canvas
+    this.canvasManager = this.canvasManagers[0];
+    this.canvasRenderer = this.canvasRenderers[0];
+    this.canvas = canvas;
+
+    //BG Canvas
+    this.bgManager = this.canvasManagers[1];
+    this.bgRenderer = this.canvasRenderers[1];
+
+    //Tool Bar
+    this.toolbar = toolbar;
     this.selectedTool = null;
-    this.canvasRenderer = canvasRenderer;
+    this.zoomFactor = 1.2;
+
+    //Color Picker
     this.colorPicker = colorPicker;
-    this.canvasUtils = canvasUtils;
+    this.scale = this.canvasManager.scale;
+    this.isDoing = false;
   }
   return _createClass(CanvasEventHandler, [{
     key: "init",
@@ -391,11 +364,16 @@ var CanvasEventHandler = /*#__PURE__*/function () {
         this.drawWithPencil(x, y);
       } else if (this.selectedTool === 'eraser') {
         this.eraseWithEraser(x, y);
+      } else if (this.selectedTool === 'zoomIn') {
+        this.zoomIn(x, y);
+      } else if (this.selectedTool === 'zoomOut') {
+        this.zoomOut(x, y);
       }
     }
   }, {
     key: "onMouseMove",
     value: function onMouseMove(event) {
+      alert('here');
       if (this.isDoing) {
         var _this$getMousePositio2 = this.getMousePosition(event),
           x = _this$getMousePositio2.x,
@@ -406,6 +384,10 @@ var CanvasEventHandler = /*#__PURE__*/function () {
           this.drawWithPencil(x, y);
         } else if (this.selectedTool === 'eraser') {
           this.eraseWithEraser(x, y);
+        } else if (this.selectedTool === 'zoomIn') {
+          this.zoomIn(x, y);
+        } else if (this.selectedTool === 'zoomOut') {
+          this.zoomOut(x, y);
         }
       }
     }
@@ -421,9 +403,16 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       this.isDoing = false;
     }
   }, {
-    key: "handleScaleChange",
-    value: function handleScaleChange(scale) {
-      this.scale = scale;
+    key: "getMousePosition",
+    value: function getMousePosition(event) {
+      var rect = this.canvas.getBoundingClientRect();
+      var x = Math.floor((event.clientX - rect.left) / this.scale);
+      var y = Math.floor((event.clientY - rect.top) / this.scale);
+      console.log("Mouse: ".concat(x, ",").concat(y));
+      return {
+        x: x,
+        y: y
+      };
     }
   }, {
     key: "drawWithPencil",
@@ -438,15 +427,16 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       eraserTool.erase(x, y);
     }
   }, {
-    key: "getMousePosition",
-    value: function getMousePosition(event) {
-      var rect = this.canvas.getBoundingClientRect();
-      var x = Math.floor((event.clientX - rect.left) / this.scale);
-      var y = Math.floor((event.clientY - rect.top) / this.scale);
-      return {
-        x: x,
-        y: y
-      };
+    key: "zoomIn",
+    value: function zoomIn(x, y) {
+      var zoomTool = new _tools_zoomTool__WEBPACK_IMPORTED_MODULE_2__.ZoomTool(this.zoomFactor, this.scale, this.canvasManagers, this.canvasRenderers);
+      this.scale = zoomTool.zoom(x, y);
+    }
+  }, {
+    key: "zoomOut",
+    value: function zoomOut(x, y) {
+      var zoomTool = new _tools_zoomTool__WEBPACK_IMPORTED_MODULE_2__.ZoomTool(1 / this.zoomFactor, this.scale, this.canvasManagers, this.canvasRenderers);
+      this.scale = zoomTool.zoom(x, y);
     }
   }]);
 }();
@@ -586,6 +576,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _assets_pencil_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../assets/pencil.png */ "./src/assets/pencil.png");
 /* harmony import */ var _assets_eraser_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../assets/eraser.png */ "./src/assets/eraser.png");
+/* harmony import */ var _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../assets/zoom-in.png */ "./src/assets/zoom-in.png");
+/* harmony import */ var _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../assets/zoom-out.png */ "./src/assets/zoom-out.png");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -595,14 +587,20 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for toolBar_List element */
 
 
+
+
 var ToolbarEventHandler = /*#__PURE__*/function () {
   function ToolbarEventHandler() {
     _classCallCheck(this, ToolbarEventHandler);
     //Set the source of the image
     this.pencilButton = document.getElementsByClassName('pencil')[0];
     this.eraserButton = document.getElementsByClassName('eraser')[0];
+    this.zoomInButton = document.getElementsByClassName('zoomIn')[0];
+    this.zoomOutButton = document.getElementsByClassName('zoomOut')[0];
     this.pencilButton.src = _assets_pencil_png__WEBPACK_IMPORTED_MODULE_0__;
     this.eraserButton.src = _assets_eraser_png__WEBPACK_IMPORTED_MODULE_1__;
+    this.zoomInButton.src = _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_2__;
+    this.zoomOutButton.src = _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_3__;
 
     //Set default tool
     this.currentTool = 'pencil';
@@ -620,103 +618,21 @@ var ToolbarEventHandler = /*#__PURE__*/function () {
       this.eraserButton.addEventListener('click', function () {
         return _this.selectTool('eraser');
       });
+      this.zoomInButton.addEventListener('click', function () {
+        return _this.selectTool('zoomIn');
+      });
+      this.zoomOutButton.addEventListener('click', function () {
+        return _this.selectTool('zoomOut');
+      });
     }
   }, {
     key: "selectTool",
     value: function selectTool(newTool) {
       this.currentTool = newTool;
-      alert(this.currentTool);
       return this.currentTool; // For simplicity, returning toolName as a string
     }
   }]);
 }();
-
-/***/ }),
-
-/***/ "./src/js/mainCanvasController.js":
-/*!****************************************!*\
-  !*** ./src/js/mainCanvasController.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   MainCanvasController: () => (/* binding */ MainCanvasController)
-/* harmony export */ });
-/* harmony import */ var _canvas_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./canvas/backgroundCanvas/bgCanvasManager.js */ "./src/js/canvas/backgroundCanvas/bgCanvasManager.js");
-/* harmony import */ var _canvas_backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas/backgroundCanvas/bgCanvasRenderer.js */ "./src/js/canvas/backgroundCanvas/bgCanvasRenderer.js");
-/* harmony import */ var _canvas_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./canvas/mainCanvas/canvasManager.js */ "./src/js/canvas/mainCanvas/canvasManager.js");
-/* harmony import */ var _canvas_mainCanvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./canvas/mainCanvas/canvasRenderer.js */ "./src/js/canvas/mainCanvas/canvasRenderer.js");
-/* harmony import */ var _color_colorPicker_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./color/colorPicker.js */ "./src/js/color/colorPicker.js");
-/* harmony import */ var _events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./events/canvasEventHandler.js */ "./src/js/events/canvasEventHandler.js");
-/* harmony import */ var _events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./events/colorPickerEventHandler.js */ "./src/js/events/colorPickerEventHandler.js");
-/* harmony import */ var _events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./events/toolBarEventHandler.js */ "./src/js/events/toolBarEventHandler.js");
-/* harmony import */ var _canvas_canvasUtils_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./canvas/canvasUtils.js */ "./src/js/canvas/canvasUtils.js");
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-
-
-
-
-
-
-
-
-
-var MainCanvasController = /*#__PURE__*/function () {
-  function MainCanvasController() {
-    _classCallCheck(this, MainCanvasController);
-    this.blocksX = 2;
-    this.blocksY = 2;
-    this.blockSize = 16;
-    this.init();
-  }
-  return _createClass(MainCanvasController, [{
-    key: "init",
-    value: function init() {
-      this.setupBackgroundCanvas();
-      this.setupMainCanvas();
-      this.setupEventHandlers();
-      this.setupCanvasUtils();
-    }
-  }, {
-    key: "setupBackgroundCanvas",
-    value: function setupBackgroundCanvas() {
-      this.bgManager = new _canvas_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_0__.BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 1);
-      this.bgRenderer = new _canvas_backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_1__.BGCanvasRenderer(this.bgManager);
-      this.bgRenderer.renderBackground();
-    }
-  }, {
-    key: "setupMainCanvas",
-    value: function setupMainCanvas() {
-      var pixelWidth = this.blocksX * this.blockSize;
-      var pixelHeight = this.blocksY * this.blockSize;
-      this.canvasManager = new _canvas_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_2__.CanvasManager('pixelCanvas', pixelWidth, pixelHeight, 1);
-      this.canvasRenderer = new _canvas_mainCanvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__.CanvasRenderer(this.canvasManager);
-    }
-  }, {
-    key: "setupEventHandlers",
-    value: function setupEventHandlers() {
-      this.colorPicker = new _color_colorPicker_js__WEBPACK_IMPORTED_MODULE_4__.ColorPicker();
-      this.colorPickerEventHandler = new _events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_6__.ColorPickerEventHandler(this.colorPicker);
-      this.toolbar = new _events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_7__.ToolbarEventHandler();
-      this.canvasEventHandler = new _events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_5__.CanvasEventHandler(this.canvasManager.canvas, this.canvasManager.scale, this.toolbar, this.canvasRenderer, this.colorPicker, this.canvasUtils);
-      this.canvasEventHandler.init();
-    }
-  }, {
-    key: "setupCanvasUtils",
-    value: function setupCanvasUtils() {
-      this.canvasUtils = new _canvas_canvasUtils_js__WEBPACK_IMPORTED_MODULE_8__.CanvasUtils([this.bgManager, this.canvasManager], this.canvasEventHandler);
-    }
-  }]);
-}();
-document.addEventListener('DOMContentLoaded', function () {
-  var mainCanvasController = new MainCanvasController();
-});
 
 /***/ }),
 
@@ -787,525 +703,69 @@ var PencilTool = /*#__PURE__*/function () {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./src/style.css":
-/*!*************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./src/style.css ***!
-  \*************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `
-.container {
-    display: flex;
-}
-
-.toolBar_Container {
-    width: 400px; /* Set a width for the toolbar */
-    /* Additional toolbar styles */
-}
-
-#pixelCanvas_Container {
-    display: flex;
-    flex-direction: column; /* Stack children vertically */
-    height: 100vh;
-    width: 100vw;
-    position: relative;
-}
-
-.canvasUtils {
-    display: flex;
-    z-index: 3;
-    border: 4px dotted black;
-    background-color: white;
-    padding: 10px;
-    flex-shrink: 0; /* Prevent it from shrinking */
-}
-
-.canvasWrapper {
-    position: relative;
-    flex-grow: 1; /* Allow it to take up the remaining space */
-    overflow: hidden; /* Ensure canvases do not overflow */
-}
-
-#backgroundCanvas, #pixelCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-}
-
-#backgroundCanvas {
-    z-index: 1;
-}
-
-#pixelCanvas {
-    z-index: 2;
-
-}
-
-.colorInfoContainer{
-    display: flex;
-
-}
-
-.colorBox {
-    width: 10px;
-    height: 10px;
-    border: 4px dotted black;
-}`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":";AACA;IACI,aAAa;AACjB;;AAEA;IACI,YAAY,EAAE,gCAAgC;IAC9C,8BAA8B;AAClC;;AAEA;IACI,aAAa;IACb,sBAAsB,EAAE,8BAA8B;IACtD,aAAa;IACb,YAAY;IACZ,kBAAkB;AACtB;;AAEA;IACI,aAAa;IACb,UAAU;IACV,wBAAwB;IACxB,uBAAuB;IACvB,aAAa;IACb,cAAc,EAAE,8BAA8B;AAClD;;AAEA;IACI,kBAAkB;IAClB,YAAY,EAAE,4CAA4C;IAC1D,gBAAgB,EAAE,oCAAoC;AAC1D;;AAEA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,cAAc;AAClB;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,UAAU;;AAEd;;AAEA;IACI,aAAa;;AAEjB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;AAC5B","sourcesContent":["\n.container {\n    display: flex;\n}\n\n.toolBar_Container {\n    width: 400px; /* Set a width for the toolbar */\n    /* Additional toolbar styles */\n}\n\n#pixelCanvas_Container {\n    display: flex;\n    flex-direction: column; /* Stack children vertically */\n    height: 100vh;\n    width: 100vw;\n    position: relative;\n}\n\n.canvasUtils {\n    display: flex;\n    z-index: 3;\n    border: 4px dotted black;\n    background-color: white;\n    padding: 10px;\n    flex-shrink: 0; /* Prevent it from shrinking */\n}\n\n.canvasWrapper {\n    position: relative;\n    flex-grow: 1; /* Allow it to take up the remaining space */\n    overflow: hidden; /* Ensure canvases do not overflow */\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    top: 0;\n    left: 0;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n\n}\n\n.colorInfoContainer{\n    display: flex;\n\n}\n\n.colorBox {\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n}"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/runtime/api.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/css-loader/dist/runtime/api.js ***!
-  \*****************************************************/
-/***/ ((module) => {
-
-
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-*/
-module.exports = function (cssWithMappingToString) {
-  var list = [];
-
-  // return the list of modules as css string
-  list.toString = function toString() {
-    return this.map(function (item) {
-      var content = "";
-      var needLayer = typeof item[5] !== "undefined";
-      if (item[4]) {
-        content += "@supports (".concat(item[4], ") {");
-      }
-      if (item[2]) {
-        content += "@media ".concat(item[2], " {");
-      }
-      if (needLayer) {
-        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
-      }
-      content += cssWithMappingToString(item);
-      if (needLayer) {
-        content += "}";
-      }
-      if (item[2]) {
-        content += "}";
-      }
-      if (item[4]) {
-        content += "}";
-      }
-      return content;
-    }).join("");
-  };
-
-  // import a list of modules into the list
-  list.i = function i(modules, media, dedupe, supports, layer) {
-    if (typeof modules === "string") {
-      modules = [[null, modules, undefined]];
-    }
-    var alreadyImportedModules = {};
-    if (dedupe) {
-      for (var k = 0; k < this.length; k++) {
-        var id = this[k][0];
-        if (id != null) {
-          alreadyImportedModules[id] = true;
-        }
-      }
-    }
-    for (var _k = 0; _k < modules.length; _k++) {
-      var item = [].concat(modules[_k]);
-      if (dedupe && alreadyImportedModules[item[0]]) {
-        continue;
-      }
-      if (typeof layer !== "undefined") {
-        if (typeof item[5] === "undefined") {
-          item[5] = layer;
-        } else {
-          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
-          item[5] = layer;
-        }
-      }
-      if (media) {
-        if (!item[2]) {
-          item[2] = media;
-        } else {
-          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
-          item[2] = media;
-        }
-      }
-      if (supports) {
-        if (!item[4]) {
-          item[4] = "".concat(supports);
-        } else {
-          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
-          item[4] = supports;
-        }
-      }
-      list.push(item);
-    }
-  };
-  return list;
-};
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/runtime/sourceMaps.js":
-/*!************************************************************!*\
-  !*** ./node_modules/css-loader/dist/runtime/sourceMaps.js ***!
-  \************************************************************/
-/***/ ((module) => {
-
-
-
-module.exports = function (item) {
-  var content = item[1];
-  var cssMapping = item[3];
-  if (!cssMapping) {
-    return content;
-  }
-  if (typeof btoa === "function") {
-    var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(cssMapping))));
-    var data = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(base64);
-    var sourceMapping = "/*# ".concat(data, " */");
-    return [content].concat([sourceMapping]).join("\n");
-  }
-  return [content].join("\n");
-};
-
-/***/ }),
-
-/***/ "./src/style.css":
-/*!***********************!*\
-  !*** ./src/style.css ***!
-  \***********************/
+/***/ "./src/js/tools/zoomTool.js":
+/*!**********************************!*\
+  !*** ./src/js/tools/zoomTool.js ***!
+  \**********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   ZoomTool: () => (/* binding */ ZoomTool)
 /* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../node_modules/css-loader/dist/cjs.js!./style.css */ "./node_modules/css-loader/dist/cjs.js!./src/style.css");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
-/*!****************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
-  \****************************************************************************/
-/***/ ((module) => {
-
-
-
-var stylesInDOM = [];
-function getIndexByIdentifier(identifier) {
-  var result = -1;
-  for (var i = 0; i < stylesInDOM.length; i++) {
-    if (stylesInDOM[i].identifier === identifier) {
-      result = i;
-      break;
-    }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/* Contains logic for the zoom tool, contains the zoom logic for both zoomIn and zoomOut */
+var ZoomTool = /*#__PURE__*/function () {
+  function ZoomTool(zoomFactor, currScale, canvasManagers, canvasRenderers) {
+    _classCallCheck(this, ZoomTool);
+    this.zoomFactor = zoomFactor;
+    this.currScale = currScale;
+    this.canvasManagers = canvasManagers;
+    this.canvasRenderers = canvasRenderers;
+    this.originX = 0;
+    this.originY = 0;
   }
-  return result;
-}
-function modulesToDom(list, options) {
-  var idCountMap = {};
-  var identifiers = [];
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i];
-    var id = options.base ? item[0] + options.base : item[0];
-    var count = idCountMap[id] || 0;
-    var identifier = "".concat(id, " ").concat(count);
-    idCountMap[id] = count + 1;
-    var indexByIdentifier = getIndexByIdentifier(identifier);
-    var obj = {
-      css: item[1],
-      media: item[2],
-      sourceMap: item[3],
-      supports: item[4],
-      layer: item[5]
-    };
-    if (indexByIdentifier !== -1) {
-      stylesInDOM[indexByIdentifier].references++;
-      stylesInDOM[indexByIdentifier].updater(obj);
-    } else {
-      var updater = addElementStyle(obj, options);
-      options.byIndex = i;
-      stylesInDOM.splice(i, 0, {
-        identifier: identifier,
-        updater: updater,
-        references: 1
+  return _createClass(ZoomTool, [{
+    key: "zoom",
+    value: function zoom(x, y) {
+      var _this = this;
+      var mouseX = x;
+      var mouseY = y;
+
+      //Calculate new scale and visible origin
+      var newScale = Math.ceil(currScale * zoomFactor);
+      var newOriginX = mouseX / newScale - mouseX / currScale + this.originX;
+      var newOriginY = mouseY / newScale - mouseY / currScale + this.originY;
+
+      //Apply transformations
+      this.canvasRenderers.forEach(function (renderer) {
+        renderer.ctx.translate(newOriginX - _this.originX, newOriginY - _this.originY);
+        renderer.ctx.scale(zoomFactor, zoomFactor);
+        renderer.ctx.translate(-newOriginX, -newOriginY);
       });
+
+      //Update scale and resize canvas
+      this.canvasManagers.forEach(function (manager) {
+        manager.setScale(newScale);
+      });
+
+      //Re-render canvases
+      this.canvasRenderers.forEach(function (renderer) {
+        renderer.render();
+      });
+
+      //Update origin and return scale
+      this.originX = newOriginX;
+      this.originY = newOriginY;
+      return newScale;
     }
-    identifiers.push(identifier);
-  }
-  return identifiers;
-}
-function addElementStyle(obj, options) {
-  var api = options.domAPI(options);
-  api.update(obj);
-  var updater = function updater(newObj) {
-    if (newObj) {
-      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {
-        return;
-      }
-      api.update(obj = newObj);
-    } else {
-      api.remove();
-    }
-  };
-  return updater;
-}
-module.exports = function (list, options) {
-  options = options || {};
-  list = list || [];
-  var lastIdentifiers = modulesToDom(list, options);
-  return function update(newList) {
-    newList = newList || [];
-    for (var i = 0; i < lastIdentifiers.length; i++) {
-      var identifier = lastIdentifiers[i];
-      var index = getIndexByIdentifier(identifier);
-      stylesInDOM[index].references--;
-    }
-    var newLastIdentifiers = modulesToDom(newList, options);
-    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
-      var _identifier = lastIdentifiers[_i];
-      var _index = getIndexByIdentifier(_identifier);
-      if (stylesInDOM[_index].references === 0) {
-        stylesInDOM[_index].updater();
-        stylesInDOM.splice(_index, 1);
-      }
-    }
-    lastIdentifiers = newLastIdentifiers;
-  };
-};
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/insertBySelector.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/insertBySelector.js ***!
-  \********************************************************************/
-/***/ ((module) => {
-
-
-
-var memo = {};
-
-/* istanbul ignore next  */
-function getTarget(target) {
-  if (typeof memo[target] === "undefined") {
-    var styleTarget = document.querySelector(target);
-
-    // Special case to return head of iframe instead of iframe itself
-    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
-      try {
-        // This will throw an exception if access to iframe is blocked
-        // due to cross-origin restrictions
-        styleTarget = styleTarget.contentDocument.head;
-      } catch (e) {
-        // istanbul ignore next
-        styleTarget = null;
-      }
-    }
-    memo[target] = styleTarget;
-  }
-  return memo[target];
-}
-
-/* istanbul ignore next  */
-function insertBySelector(insert, style) {
-  var target = getTarget(insert);
-  if (!target) {
-    throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
-  }
-  target.appendChild(style);
-}
-module.exports = insertBySelector;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/insertStyleElement.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/insertStyleElement.js ***!
-  \**********************************************************************/
-/***/ ((module) => {
-
-
-
-/* istanbul ignore next  */
-function insertStyleElement(options) {
-  var element = document.createElement("style");
-  options.setAttributes(element, options.attributes);
-  options.insert(element, options.options);
-  return element;
-}
-module.exports = insertStyleElement;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js":
-/*!**********************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js ***!
-  \**********************************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-
-
-/* istanbul ignore next  */
-function setAttributesWithoutAttributes(styleElement) {
-  var nonce =  true ? __webpack_require__.nc : 0;
-  if (nonce) {
-    styleElement.setAttribute("nonce", nonce);
-  }
-}
-module.exports = setAttributesWithoutAttributes;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/styleDomAPI.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/styleDomAPI.js ***!
-  \***************************************************************/
-/***/ ((module) => {
-
-
-
-/* istanbul ignore next  */
-function apply(styleElement, options, obj) {
-  var css = "";
-  if (obj.supports) {
-    css += "@supports (".concat(obj.supports, ") {");
-  }
-  if (obj.media) {
-    css += "@media ".concat(obj.media, " {");
-  }
-  var needLayer = typeof obj.layer !== "undefined";
-  if (needLayer) {
-    css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {");
-  }
-  css += obj.css;
-  if (needLayer) {
-    css += "}";
-  }
-  if (obj.media) {
-    css += "}";
-  }
-  if (obj.supports) {
-    css += "}";
-  }
-  var sourceMap = obj.sourceMap;
-  if (sourceMap && typeof btoa !== "undefined") {
-    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
-  }
-
-  // For old IE
-  /* istanbul ignore if  */
-  options.styleTagTransform(css, styleElement, options.options);
-}
-function removeStyleElement(styleElement) {
-  // istanbul ignore if
-  if (styleElement.parentNode === null) {
-    return false;
-  }
-  styleElement.parentNode.removeChild(styleElement);
-}
-
-/* istanbul ignore next  */
-function domAPI(options) {
-  if (typeof document === "undefined") {
-    return {
-      update: function update() {},
-      remove: function remove() {}
-    };
-  }
-  var styleElement = options.insertStyleElement(options);
-  return {
-    update: function update(obj) {
-      apply(styleElement, options, obj);
-    },
-    remove: function remove() {
-      removeStyleElement(styleElement);
-    }
-  };
-}
-module.exports = domAPI;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/styleTagTransform.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/styleTagTransform.js ***!
-  \*********************************************************************/
-/***/ ((module) => {
-
-
-
-/* istanbul ignore next  */
-function styleTagTransform(css, styleElement) {
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css;
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild);
-    }
-    styleElement.appendChild(document.createTextNode(css));
-  }
-}
-module.exports = styleTagTransform;
+  }]);
+}();
 
 /***/ }),
 
@@ -1373,7 +833,7 @@ module.exports = __webpack_require__.p + "assets/zoom-out.png";
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
+/******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
@@ -1386,18 +846,6 @@ module.exports = __webpack_require__.p + "assets/zoom-out.png";
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -1461,11 +909,6 @@ module.exports = __webpack_require__.p + "assets/zoom-out.png";
 /******/ 		__webpack_require__.p = scriptUrl;
 /******/ 	})();
 /******/ 	
-/******/ 	/* webpack/runtime/nonce */
-/******/ 	(() => {
-/******/ 		__webpack_require__.nc = undefined;
-/******/ 	})();
-/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
@@ -1474,16 +917,77 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _js_mainCanvasController_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./js/mainCanvasController.js */ "./src/js/mainCanvasController.js");
-/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.css */ "./src/style.css");
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MainCanvasController: () => (/* binding */ MainCanvasController)
+/* harmony export */ });
+/* harmony import */ var _js_canvas_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./js/canvas/backgroundCanvas/bgCanvasManager.js */ "./src/js/canvas/backgroundCanvas/bgCanvasManager.js");
+/* harmony import */ var _js_canvas_backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/canvas/backgroundCanvas/bgCanvasRenderer.js */ "./src/js/canvas/backgroundCanvas/bgCanvasRenderer.js");
+/* harmony import */ var _js_canvas_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/canvas/mainCanvas/canvasManager.js */ "./src/js/canvas/mainCanvas/canvasManager.js");
+/* harmony import */ var _js_canvas_mainCanvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/canvas/mainCanvas/canvasRenderer.js */ "./src/js/canvas/mainCanvas/canvasRenderer.js");
+/* harmony import */ var _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/color/colorPicker.js */ "./src/js/color/colorPicker.js");
+/* harmony import */ var _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/events/canvasEventHandler.js */ "./src/js/events/canvasEventHandler.js");
+/* harmony import */ var _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/events/colorPickerEventHandler.js */ "./src/js/events/colorPickerEventHandler.js");
+/* harmony import */ var _js_events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./js/events/toolBarEventHandler.js */ "./src/js/events/toolBarEventHandler.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 
+
+
+
+
+
+
+var MainCanvasController = /*#__PURE__*/function () {
+  function MainCanvasController() {
+    _classCallCheck(this, MainCanvasController);
+    this.blocksX = 2;
+    this.blocksY = 2;
+    this.blockSize = 16;
+    this.init();
+  }
+  return _createClass(MainCanvasController, [{
+    key: "init",
+    value: function init() {
+      this.setupBackgroundCanvas();
+      this.setupMainCanvas();
+      this.setupEventHandlers();
+    }
+  }, {
+    key: "setupBackgroundCanvas",
+    value: function setupBackgroundCanvas() {
+      this.bgManager = new _js_canvas_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_0__.BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 1);
+      this.bgRenderer = new _js_canvas_backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_1__.BGCanvasRenderer(this.bgManager);
+      this.bgRenderer.render();
+    }
+  }, {
+    key: "setupMainCanvas",
+    value: function setupMainCanvas() {
+      var pixelWidth = this.blocksX * this.blockSize;
+      var pixelHeight = this.blocksY * this.blockSize;
+      this.canvasManager = new _js_canvas_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_2__.CanvasManager('pixelCanvas', pixelWidth, pixelHeight, 1);
+      this.canvasRenderer = new _js_canvas_mainCanvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__.CanvasRenderer(this.canvasManager);
+    }
+  }, {
+    key: "setupEventHandlers",
+    value: function setupEventHandlers() {
+      this.colorPicker = new _js_color_colorPicker_js__WEBPACK_IMPORTED_MODULE_4__.ColorPicker();
+      this.colorPickerEventHandler = new _js_events_colorPickerEventHandler_js__WEBPACK_IMPORTED_MODULE_6__.ColorPickerEventHandler(this.colorPicker);
+      this.toolbarEventHandler = new _js_events_toolBarEventHandler_js__WEBPACK_IMPORTED_MODULE_7__.ToolbarEventHandler();
+      this.canvasEventHandler = new _js_events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_5__.CanvasEventHandler(this.canvasManager.canvas, [this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.toolbarEventHandler, this.colorPicker);
+      this.canvasEventHandler.init();
+    }
+  }]);
+}();
 document.addEventListener('DOMContentLoaded', function () {
-  // Instantiate the MainCanvasController which handles all canvas related initializations
-  var mainCanvasController = new _js_mainCanvasController_js__WEBPACK_IMPORTED_MODULE_0__.MainCanvasController();
+  var mainCanvasController = new MainCanvasController();
 });
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle98f25101f8908475bb24.js.map
+//# sourceMappingURL=bundle4bba5bac6860866361cf.js.map
