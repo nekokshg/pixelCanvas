@@ -28,7 +28,7 @@ export class MainCanvasController {
     setupBackgroundCanvas() {
         this.bgManager = new BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 1);
         this.bgRenderer = new BGCanvasRenderer(this.bgManager);
-        this.bgRenderer.renderBackground();
+        this.bgRenderer.render();
     }
 
     setupMainCanvas() {
@@ -48,7 +48,7 @@ export class MainCanvasController {
     }
 
     setupCanvasUtils() {
-        this.canvasUtils = new CanvasUtils([this.bgManager, this.canvasManager], this.canvasEventHandler);
+        this.canvasUtils = new CanvasUtils([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.canvasEventHandler);
     }
 }
 

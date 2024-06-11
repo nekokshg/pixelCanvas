@@ -73,9 +73,11 @@ export class CanvasEventHandler {
     }
 
     getMousePosition(event) {
+        
         const rect = this.canvas.getBoundingClientRect();
         const x = Math.floor((event.clientX - rect.left) / this.scale);
         const y = Math.floor((event.clientY - rect.top) / this.scale);
+        console.log(`Mouse: ${x},${y}`)
         return { x, y };
     }
 }

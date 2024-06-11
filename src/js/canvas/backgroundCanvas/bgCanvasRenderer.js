@@ -6,7 +6,7 @@ export class BGCanvasRenderer {
         this.ctx.imageSmoothingEnabled = false;
     }
 
-    renderBackground() {
+    render() {
         const rows = this.ctx.canvas.height / this.cellSize;
         const cols = this.ctx.canvas.width / this.cellSize;
 

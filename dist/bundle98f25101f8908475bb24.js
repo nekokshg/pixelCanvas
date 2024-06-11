@@ -78,6 +78,8 @@ var BGCanvasRenderer = /*#__PURE__*/function () {
     _classCallCheck(this, BGCanvasRenderer);
     this.ctx = canvasManager.getContext();
     this.cellSize = canvasManager.cellSize;
+    // Disable anti-aliasing
+    this.ctx.imageSmoothingEnabled = false;
   }
   return _createClass(BGCanvasRenderer, [{
     key: "renderBackground",
@@ -122,7 +124,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 
 var CanvasUtils = /*#__PURE__*/function () {
-  function CanvasUtils(canvasManagers) {
+  function CanvasUtils(canvasManagers, canvasEventHandler) {
     var _this = this;
     _classCallCheck(this, CanvasUtils);
     // Set the source of the image
@@ -131,6 +133,7 @@ var CanvasUtils = /*#__PURE__*/function () {
     this.zoImg = document.getElementsByClassName('zoomOut')[0];
     this.zoImg.src = _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_1__;
     this.canvasManagers = canvasManagers;
+    this.canvasEventHandler = canvasEventHandler;
 
     // Event listeners
     this.ziImg.addEventListener('click', function () {
@@ -143,25 +146,26 @@ var CanvasUtils = /*#__PURE__*/function () {
   return _createClass(CanvasUtils, [{
     key: "zoomIn",
     value: function zoomIn() {
-      this.setScale(this.canvasManagers[0].scale * 1.2);
+      var newScale = Math.ceil(this.canvasManagers[0].scale * 1.2);
+      this.setScale(newScale);
     }
   }, {
     key: "zoomOut",
     value: function zoomOut() {
-      this.setScale(this.canvasManagers[0].scale / 1.2);
+      var newScale = Math.floor(this.canvasManagers[0].scale / 1.2);
+      this.setScale(newScale);
     }
   }, {
     key: "setScale",
     value: function setScale(scale) {
       this.canvasManagers.forEach(function (manager) {
         manager.setScale(scale);
-        manager.updateCanvasSize();
         if (manager instanceof _backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_2__.BGCanvasManager) {
-          // Re-render the background if it's a background manager
           var bgRenderer = new _backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__.BGCanvasRenderer(manager);
           bgRenderer.renderBackground();
         }
       });
+      this.canvasEventHandler.handleScaleChange(this.canvasManagers[0].scale);
     }
   }]);
 }();
@@ -193,6 +197,7 @@ var CanvasManager = /*#__PURE__*/function () {
     this.width = width;
     this.height = height;
     this.scale = scale;
+    this.imageData = null;
     this.updateCanvasSize();
   }
   return _createClass(CanvasManager, [{
@@ -203,20 +208,38 @@ var CanvasManager = /*#__PURE__*/function () {
   }, {
     key: "clearCanvas",
     value: function clearCanvas() {
-      this.ctx.clearRect(0, 0, this.canvas.width / this.scale, this.canvas.height / this.scale);
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
   }, {
     key: "setScale",
     value: function setScale(scale) {
       this.scale = scale;
+      console.log(this);
+      console.log(this.scale);
       this.updateCanvasSize();
     }
   }, {
     key: "updateCanvasSize",
     value: function updateCanvasSize() {
+      var _this$canvas = this.canvas,
+        width = _this$canvas.width,
+        height = _this$canvas.height;
+
+      // Store the current canvas content
+      var imageData = this.ctx.getImageData(0, 0, width, height);
+
+      // Adjust the canvas size based on the scale
       this.canvas.width = this.width * this.scale;
       this.canvas.height = this.height * this.scale;
-      this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+
+      // Clear the canvas
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      // Apply the scaling transformation directly to the main canvas context
+      this.ctx.scale(this.scale, this.scale);
+
+      // Draw the scaled image data back to the main canvas
+      this.ctx.putImageData(imageData, 0, 0);
     }
   }]);
 }();
@@ -245,10 +268,13 @@ var CanvasRenderer = /*#__PURE__*/function () {
     _classCallCheck(this, CanvasRenderer);
     this.ctx = canvasManager.getContext();
     this.cellSize = canvasManager.cellSize;
+    // Disable anti-aliasing
+    this.ctx.imageSmoothingEnabled = false;
   }
   return _createClass(CanvasRenderer, [{
     key: "drawPixel",
     value: function drawPixel(x, y, color) {
+      this.erasePixel(x, y);
       this.ctx.fillStyle = color;
       this.ctx.fillRect(x, y, 1, 1); // Draw a filled rectangle (pixel) at position (x, y) with width and height of 1
     }
@@ -395,6 +421,11 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       this.isDoing = false;
     }
   }, {
+    key: "handleScaleChange",
+    value: function handleScaleChange(scale) {
+      this.scale = scale;
+    }
+  }, {
     key: "drawWithPencil",
     value: function drawWithPencil(x, y) {
       var pencilTool = new _tools_pencilTool__WEBPACK_IMPORTED_MODULE_0__.PencilTool(this.canvasRenderer, this.colorPicker);
@@ -409,7 +440,6 @@ var CanvasEventHandler = /*#__PURE__*/function () {
   }, {
     key: "getMousePosition",
     value: function getMousePosition(event) {
-      this.scale = this.canvasUtils.canvasManagers[0].scale;
       var rect = this.canvas.getBoundingClientRect();
       var x = Math.floor((event.clientX - rect.left) / this.scale);
       var y = Math.floor((event.clientY - rect.top) / this.scale);
@@ -640,10 +670,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 var MainCanvasController = /*#__PURE__*/function () {
   function MainCanvasController() {
     _classCallCheck(this, MainCanvasController);
-    this.blocksX = 2; // Number of blocks along x-axis
-    this.blocksY = 2; // Number of blocks along y-axis
-    this.blockSize = 16; // Size of each block
-
+    this.blocksX = 2;
+    this.blocksY = 2;
+    this.blockSize = 16;
     this.init();
   }
   return _createClass(MainCanvasController, [{
@@ -651,13 +680,13 @@ var MainCanvasController = /*#__PURE__*/function () {
     value: function init() {
       this.setupBackgroundCanvas();
       this.setupMainCanvas();
-      this.setupCanvasUtils();
       this.setupEventHandlers();
+      this.setupCanvasUtils();
     }
   }, {
     key: "setupBackgroundCanvas",
     value: function setupBackgroundCanvas() {
-      this.bgManager = new _canvas_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_0__.BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 10);
+      this.bgManager = new _canvas_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_0__.BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 1);
       this.bgRenderer = new _canvas_backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_1__.BGCanvasRenderer(this.bgManager);
       this.bgRenderer.renderBackground();
     }
@@ -666,13 +695,8 @@ var MainCanvasController = /*#__PURE__*/function () {
     value: function setupMainCanvas() {
       var pixelWidth = this.blocksX * this.blockSize;
       var pixelHeight = this.blocksY * this.blockSize;
-      this.canvasManager = new _canvas_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_2__.CanvasManager('pixelCanvas', pixelWidth, pixelHeight, 10);
+      this.canvasManager = new _canvas_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_2__.CanvasManager('pixelCanvas', pixelWidth, pixelHeight, 1);
       this.canvasRenderer = new _canvas_mainCanvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__.CanvasRenderer(this.canvasManager);
-    }
-  }, {
-    key: "setupCanvasUtils",
-    value: function setupCanvasUtils() {
-      this.canvasUtils = new _canvas_canvasUtils_js__WEBPACK_IMPORTED_MODULE_8__.CanvasUtils([this.bgManager, this.canvasManager]);
     }
   }, {
     key: "setupEventHandlers",
@@ -683,10 +707,13 @@ var MainCanvasController = /*#__PURE__*/function () {
       this.canvasEventHandler = new _events_canvasEventHandler_js__WEBPACK_IMPORTED_MODULE_5__.CanvasEventHandler(this.canvasManager.canvas, this.canvasManager.scale, this.toolbar, this.canvasRenderer, this.colorPicker, this.canvasUtils);
       this.canvasEventHandler.init();
     }
+  }, {
+    key: "setupCanvasUtils",
+    value: function setupCanvasUtils() {
+      this.canvasUtils = new _canvas_canvasUtils_js__WEBPACK_IMPORTED_MODULE_8__.CanvasUtils([this.bgManager, this.canvasManager], this.canvasEventHandler);
+    }
   }]);
 }();
-
-// Initializing the MainCanvasController when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function () {
   var mainCanvasController = new MainCanvasController();
 });
@@ -792,7 +819,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
 #pixelCanvas_Container {
     display: flex;
     flex-direction: column; /* Stack children vertically */
-    border: 4px dotted black;
     height: 100vh;
     width: 100vw;
     position: relative;
@@ -838,7 +864,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `
     width: 10px;
     height: 10px;
     border: 4px dotted black;
-}`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":";AACA;IACI,aAAa;AACjB;;AAEA;IACI,YAAY,EAAE,gCAAgC;IAC9C,8BAA8B;AAClC;;AAEA;IACI,aAAa;IACb,sBAAsB,EAAE,8BAA8B;IACtD,wBAAwB;IACxB,aAAa;IACb,YAAY;IACZ,kBAAkB;AACtB;;AAEA;IACI,aAAa;IACb,UAAU;IACV,wBAAwB;IACxB,uBAAuB;IACvB,aAAa;IACb,cAAc,EAAE,8BAA8B;AAClD;;AAEA;IACI,kBAAkB;IAClB,YAAY,EAAE,4CAA4C;IAC1D,gBAAgB,EAAE,oCAAoC;AAC1D;;AAEA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,cAAc;AAClB;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,UAAU;;AAEd;;AAEA;IACI,aAAa;;AAEjB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;AAC5B","sourcesContent":["\n.container {\n    display: flex;\n}\n\n.toolBar_Container {\n    width: 400px; /* Set a width for the toolbar */\n    /* Additional toolbar styles */\n}\n\n#pixelCanvas_Container {\n    display: flex;\n    flex-direction: column; /* Stack children vertically */\n    border: 4px dotted black;\n    height: 100vh;\n    width: 100vw;\n    position: relative;\n}\n\n.canvasUtils {\n    display: flex;\n    z-index: 3;\n    border: 4px dotted black;\n    background-color: white;\n    padding: 10px;\n    flex-shrink: 0; /* Prevent it from shrinking */\n}\n\n.canvasWrapper {\n    position: relative;\n    flex-grow: 1; /* Allow it to take up the remaining space */\n    overflow: hidden; /* Ensure canvases do not overflow */\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    top: 0;\n    left: 0;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n\n}\n\n.colorInfoContainer{\n    display: flex;\n\n}\n\n.colorBox {\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":";AACA;IACI,aAAa;AACjB;;AAEA;IACI,YAAY,EAAE,gCAAgC;IAC9C,8BAA8B;AAClC;;AAEA;IACI,aAAa;IACb,sBAAsB,EAAE,8BAA8B;IACtD,aAAa;IACb,YAAY;IACZ,kBAAkB;AACtB;;AAEA;IACI,aAAa;IACb,UAAU;IACV,wBAAwB;IACxB,uBAAuB;IACvB,aAAa;IACb,cAAc,EAAE,8BAA8B;AAClD;;AAEA;IACI,kBAAkB;IAClB,YAAY,EAAE,4CAA4C;IAC1D,gBAAgB,EAAE,oCAAoC;AAC1D;;AAEA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,cAAc;AAClB;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,UAAU;;AAEd;;AAEA;IACI,aAAa;;AAEjB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;AAC5B","sourcesContent":["\n.container {\n    display: flex;\n}\n\n.toolBar_Container {\n    width: 400px; /* Set a width for the toolbar */\n    /* Additional toolbar styles */\n}\n\n#pixelCanvas_Container {\n    display: flex;\n    flex-direction: column; /* Stack children vertically */\n    height: 100vh;\n    width: 100vw;\n    position: relative;\n}\n\n.canvasUtils {\n    display: flex;\n    z-index: 3;\n    border: 4px dotted black;\n    background-color: white;\n    padding: 10px;\n    flex-shrink: 0; /* Prevent it from shrinking */\n}\n\n.canvasWrapper {\n    position: relative;\n    flex-grow: 1; /* Allow it to take up the remaining space */\n    overflow: hidden; /* Ensure canvases do not overflow */\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    top: 0;\n    left: 0;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n\n}\n\n.colorInfoContainer{\n    display: flex;\n\n}\n\n.colorBox {\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1460,4 +1486,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundleb82e409997b446bd14e6.js.map
+//# sourceMappingURL=bundle98f25101f8908475bb24.js.map

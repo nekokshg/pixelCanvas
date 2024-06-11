@@ -8,7 +8,7 @@
     /* Additional toolbar styles */
 }
 
-#pixelCanvas_Container {
+#pixelCanvas_Container { 
     display: flex;
     flex-direction: column; /* Stack children vertically */
     height: 100vh;
@@ -44,7 +44,6 @@
 
 #pixelCanvas {
     z-index: 2;
-
 }
 
 .colorInfoContainer{
