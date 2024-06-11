@@ -11,9 +11,9 @@ import { CanvasUtils } from './canvas/canvasUtils.js';
 
 export class MainCanvasController {
     constructor() {
-        this.blocksX = 2; // Number of blocks along x-axis
-        this.blocksY = 2; // Number of blocks along y-axis
-        this.blockSize = 16; // Size of each block
+        this.blocksX = 2;
+        this.blocksY = 2;
+        this.blockSize = 16;
 
         this.init();
     }
@@ -21,13 +21,12 @@ export class MainCanvasController {
     init() {
         this.setupBackgroundCanvas();
         this.setupMainCanvas();
-        this.setupCanvasUtils();
         this.setupEventHandlers();
-        
+        this.setupCanvasUtils();
     }
 
     setupBackgroundCanvas() {
-        this.bgManager = new BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 10);
+        this.bgManager = new BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 1);
         this.bgRenderer = new BGCanvasRenderer(this.bgManager);
         this.bgRenderer.renderBackground();
     }
@@ -36,12 +35,8 @@ export class MainCanvasController {
         const pixelWidth = this.blocksX * this.blockSize;
         const pixelHeight = this.blocksY * this.blockSize;
 
-        this.canvasManager = new CanvasManager('pixelCanvas', pixelWidth, pixelHeight, 10);
+        this.canvasManager = new CanvasManager('pixelCanvas', pixelWidth, pixelHeight, 1);
         this.canvasRenderer = new CanvasRenderer(this.canvasManager);
-    }
-
-    setupCanvasUtils() {
-        this.canvasUtils = new CanvasUtils([this.bgManager, this.canvasManager]);
     }
 
     setupEventHandlers() {
@@ -51,9 +46,12 @@ export class MainCanvasController {
         this.canvasEventHandler = new CanvasEventHandler(this.canvasManager.canvas, this.canvasManager.scale, this.toolbar, this.canvasRenderer, this.colorPicker, this.canvasUtils);
         this.canvasEventHandler.init();
     }
+
+    setupCanvasUtils() {
+        this.canvasUtils = new CanvasUtils([this.bgManager, this.canvasManager], this.canvasEventHandler);
+    }
 }
 
-// Initializing the MainCanvasController when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     const mainCanvasController = new MainCanvasController();
 });

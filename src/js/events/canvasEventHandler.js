@@ -58,6 +58,10 @@ export class CanvasEventHandler {
         this.isDoing = false;
     }
 
+    handleScaleChange(scale) {
+        this.scale = scale;
+    }
+
     drawWithPencil(x, y) {
         const pencilTool = new PencilTool(this.canvasRenderer, this.colorPicker);
         pencilTool.draw(x, y);
@@ -69,7 +73,6 @@ export class CanvasEventHandler {
     }
 
     getMousePosition(event) {
-        this.scale = this.canvasUtils.canvasManagers[0].scale
         const rect = this.canvas.getBoundingClientRect();
         const x = Math.floor((event.clientX - rect.left) / this.scale);
         const y = Math.floor((event.clientY - rect.top) / this.scale);

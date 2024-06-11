@@ -6,6 +6,7 @@ export class BGCanvasManager {
         this.width = width;
         this.height = height;
         this.scale = scale;
+
         this.updateCanvasSize();
     }
 

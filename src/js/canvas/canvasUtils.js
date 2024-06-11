@@ -4,7 +4,7 @@ import { BGCanvasManager } from './backgroundCanvas/bgCanvasManager.js';
 import { BGCanvasRenderer } from './backgroundCanvas/bgCanvasRenderer.js';
 
 export class CanvasUtils {
-    constructor(canvasManagers) {
+    constructor(canvasManagers, canvasEventHandler) {
         // Set the source of the image
         this.ziImg = document.getElementsByClassName('zoomIn')[0];
         this.ziImg.src = zoomIn;
@@ -12,6 +12,7 @@ export class CanvasUtils {
         this.zoImg.src = zoomOut;
 
         this.canvasManagers = canvasManagers;
+        this.canvasEventHandler = canvasEventHandler;
 
         // Event listeners
         this.ziImg.addEventListener('click', () => this.zoomIn());
@@ -19,23 +20,24 @@ export class CanvasUtils {
     }
 
     zoomIn() {
-        this.setScale(this.canvasManagers[0].scale * 1.2);
+        const newScale = Math.ceil(this.canvasManagers[0].scale * 1.2);
+        this.setScale(newScale);
     }
 
     zoomOut() {
-        this.setScale(this.canvasManagers[0].scale / 1.2);
+        const newScale = Math.floor(this.canvasManagers[0].scale / 1.2);
+        this.setScale(newScale);
     }
 
     setScale(scale) {
         this.canvasManagers.forEach(manager => {
             manager.setScale(scale);
-            manager.updateCanvasSize();
             if (manager instanceof BGCanvasManager) {
-                // Re-render the background if it's a background manager
                 const bgRenderer = new BGCanvasRenderer(manager);
                 bgRenderer.renderBackground();
-            } 
+            }
         });
+        this.canvasEventHandler.handleScaleChange(this.canvasManagers[0].scale);
     }
 
 }

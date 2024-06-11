@@ -2,6 +2,8 @@ export class BGCanvasRenderer {
     constructor(canvasManager) {
         this.ctx = canvasManager.getContext();
         this.cellSize = canvasManager.cellSize;
+        // Disable anti-aliasing
+        this.ctx.imageSmoothingEnabled = false;
     }
 
     renderBackground() {
