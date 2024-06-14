@@ -22,6 +22,13 @@ export class CanvasManager {
         this.scale = scale;
         this.updateCanvasSize();
     }
+
+    resizeCanvas(width, height){
+        this.width = width;
+        this.height = height;
+        
+        this.updateCanvasSize();
+    }
     
     updateCanvasSize() {
         // Adjust the canvas size based on the scale
@@ -34,4 +41,5 @@ export class CanvasManager {
         // Apply the scaling transformation directly to the main canvas context
         this.ctx.scale(this.scale, this.scale);
     }
+
 }

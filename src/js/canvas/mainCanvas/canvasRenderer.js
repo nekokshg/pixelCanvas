@@ -38,5 +38,6 @@ export class CanvasRenderer {
             this.ctx.fillStyle = pixel.color;
             this.ctx.fillRect(pixel.x, pixel.y, 1, 1);
         });
+        console.log('here')
     }
 }

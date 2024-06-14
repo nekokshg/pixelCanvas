@@ -1,4 +1,5 @@
 import './style.css';
+import { calculateBlocks } from './js/canvas/calculateBlocks.js';
 import { BGCanvasManager } from './js/canvas/backgroundCanvas/bgCanvasManager.js';
 import { BGCanvasRenderer } from './js/canvas/backgroundCanvas/bgCanvasRenderer.js';
 import { CanvasManager } from './js/canvas/mainCanvas/canvasManager.js';
@@ -7,11 +8,13 @@ import { ColorPicker } from './js/color/colorPicker.js';
 import { CanvasEventHandler } from './js/events/canvasEventHandler.js';
 import { ColorPickerEventHandler } from './js/events/colorPickerEventHandler.js';
 import { ToolbarEventHandler } from './js/events/toolBarEventHandler.js';
+import { SettingsBarEventHandler } from './js/events/settingsBarEventHandler.js';
 
 export class MainCanvasController {
     constructor() {
-        this.blocksX = 2;
-        this.blocksY = 2;
+        const { blocksX, blocksY} = calculateBlocks(64, 32); //Default size 32px by 32px
+        this.blocksX = blocksX;
+        this.blocksY = blocksY;
         this.blockSize = 16;
 
         this.init();
@@ -38,11 +41,13 @@ export class MainCanvasController {
     }
 
     setupEventHandlers() {
+        
         this.colorPicker = new ColorPicker();
         this.colorPickerEventHandler = new ColorPickerEventHandler(this.colorPicker);
         this.toolbarEventHandler = new ToolbarEventHandler();
         this.canvasEventHandler = new CanvasEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.toolbarEventHandler, this.colorPicker);
         this.canvasEventHandler.init();
+        //this.settingsBarEventHandler = new SettingsBarEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.canvasEventHandler);
     }
 }
 

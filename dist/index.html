@@ -5,21 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>pixelCanvas</title>
-<script defer src="bundle4bba5bac6860866361cf.js"></script></head>
+<script defer src="bundlea5bdcb9fb91e62ba4aa8.js"></script></head>
 <body>
-    <h1>Pixel Canvas</h1>
+    <div id="header_Container">
+        <h1>Pixel Canvas</h1>
+        <div class="settingsBar">
+            <ul class="settingsBar_List">
+                <li class="settingsBarItem">
+                    <img src="" alt="" class="resizeImg">
+                </li>
+                <li class="settingsBarItem">
+
+                </li>
+                <li class="settingsBarItem">
+
+                </li>
+            </ul>
+        </div>
+    </div>
     <div class="container">
         <div class="toolBar_Container">
-            <div class="colorPickerImg_Container">
-                <img id="colorPickerImg" alt="" style="display: none">
-                <canvas id="colorPickerCanvas"></canvas>
-            </div>
-            <div class="colorInfoContainer">
-                <p class="colorPrompt">Color Selected:</p>
-                <div class="hexCode"></div>
-                <div class="rgbValue"></div>
-                <div class="colorBox"></div>
-            </div>
             <ul class="toolBar_List">
                 <li class="toolItem">
                     <div class="pencilButton">
@@ -30,9 +35,6 @@
                     <div class="eraserButton">
                         <img class="eraser" alt="" >
                     </div>
-                </li>
-                <li class="toolItem">
-                    <div class="fillButton"></div>
                 </li>
                 <li class="toolItem">
                     <div class="zoomIn_Button">
@@ -49,6 +51,29 @@
         <div id="pixelCanvas_Container">
             <canvas id="pixelCanvas"></canvas>
             <canvas id="backgroundCanvas"></canvas>
+        </div>
+        <div class="colorPickerImg_Container">
+            <img id="colorPickerImg" alt="" style="display: none">
+            <canvas id="colorPickerCanvas"></canvas>
+            <div class="colorInfoContainer">
+                <p class="colorPrompt">Color Selected:</p>
+                <div class="hexCode"></div>
+                <div class="rgbValue"></div>
+                <div class="colorBox"></div>
+            </div>
+        </div>
+
+        <!-- Modal Structure -->
+        <div id="dimensionModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>Enter Dimensions</h2>
+                <label for="widthInput">Width:</label>
+                <input type="number" id="widthInput" name="widthInput"><br>
+                <label for="heightInput">Height:</label>
+                <input type="number" id="heightInput" name="heightInput"><br>
+                <button id="submitDimensions">Submit</button>
+            </div>
         </div>
     </div>
 </body>

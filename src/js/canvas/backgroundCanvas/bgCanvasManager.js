@@ -23,7 +23,16 @@ export class BGCanvasManager {
         this.updateCanvasSize();
     }
 
-    updateCanvasSize() {
+    updateCanvasSize() {//Zoom
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.canvas.width = this.width * this.cellSize * this.scale;
+        this.canvas.height = this.height * this.cellSize * this.scale;
+        this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+    }
+
+    resizeCanvas(width, height){
+        this.width = width;
+        this.height = height;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.width = this.width * this.cellSize * this.scale;
         this.canvas.height = this.height * this.cellSize * this.scale;
