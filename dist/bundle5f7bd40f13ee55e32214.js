@@ -326,9 +326,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CanvasEventHandler: () => (/* binding */ CanvasEventHandler)
 /* harmony export */ });
-/* harmony import */ var _tools_pencilTool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tools/pencilTool */ "./src/js/tools/pencilTool.js");
-/* harmony import */ var _tools_eraserTool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../tools/eraserTool */ "./src/js/tools/eraserTool.js");
-/* harmony import */ var _tools_zoomTool__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../tools/zoomTool */ "./src/js/tools/zoomTool.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -336,9 +333,6 @@ function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), 
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for pixelCanvas canvas element */
-
-
-
 var CanvasEventHandler = /*#__PURE__*/function () {
   function CanvasEventHandler(canvasManagers, canvasRenderers, toolbar, colorPicker) {
     _classCallCheck(this, CanvasEventHandler);
@@ -357,11 +351,12 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     //Tool Bar
     this.toolbar = toolbar;
     this.selectedTool = null;
-    this.zoomFactor = 1.2;
 
     //Color Picker
     this.colorPicker = colorPicker;
     this.scale = this.canvasManager.scale;
+    this.originX = 0;
+    this.originY = 0;
     this.isDoing = false;
     this.isPopup = false;
   }
@@ -386,7 +381,7 @@ var CanvasEventHandler = /*#__PURE__*/function () {
   }, {
     key: "onMouseDown",
     value: function onMouseDown(event) {
-      if (this.isPopup == false) {
+      if (!this.isPopup) {
         // Get the selected tool from the toolbar
         this.selectedTool = this.toolbar.currentTool; // This will return the selected tool function
         this.isDoing = true;
@@ -396,9 +391,9 @@ var CanvasEventHandler = /*#__PURE__*/function () {
 
         // Perform drawing operations using the selected tool
         if (this.selectedTool === 'pencil') {
-          this.drawWithPencil(x, y);
+          this.draw(x, y);
         } else if (this.selectedTool === 'eraser') {
-          this.eraseWithEraser(x, y);
+          this.erase(x, y);
         } else if (this.selectedTool === 'zoomIn') {
           this.zoomIn(x, y);
         } else if (this.selectedTool === 'zoomOut') {
@@ -409,16 +404,16 @@ var CanvasEventHandler = /*#__PURE__*/function () {
   }, {
     key: "onMouseMove",
     value: function onMouseMove(event) {
-      if (this.isPopup == false && this.isDoing) {
+      if (!this.isPopup && this.isDoing) {
         var _this$getMousePositio2 = this.getMousePosition(event),
           x = _this$getMousePositio2.x,
           y = _this$getMousePositio2.y;
 
         // Perform drawing operations using the selected tool
         if (this.selectedTool === 'pencil') {
-          this.drawWithPencil(x, y);
+          this.draw(x, y);
         } else if (this.selectedTool === 'eraser') {
-          this.eraseWithEraser(x, y);
+          this.erase(x, y);
         } else if (this.selectedTool === 'zoomIn') {
           this.zoomIn(x, y);
         } else if (this.selectedTool === 'zoomOut') {
@@ -450,28 +445,78 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       };
     }
   }, {
-    key: "drawWithPencil",
-    value: function drawWithPencil(x, y) {
-      var pencilTool = new _tools_pencilTool__WEBPACK_IMPORTED_MODULE_0__.PencilTool(this.canvasRenderer, this.colorPicker);
-      pencilTool.draw(x, y);
+    key: "draw",
+    value: function draw(x, y) {
+      var color = this.colorPicker.getColor();
+      this.canvasRenderer.drawPixel(x, y, color);
     }
   }, {
-    key: "eraseWithEraser",
-    value: function eraseWithEraser(x, y) {
-      var eraserTool = new _tools_eraserTool__WEBPACK_IMPORTED_MODULE_1__.EraserTool(this.canvasRenderer);
-      eraserTool.erase(x, y);
+    key: "erase",
+    value: function erase(x, y) {
+      this.canvasRenderer.erasePixel(x, y);
+    }
+  }, {
+    key: "zoom",
+    value: function zoom(zf, x, y) {
+      var _this2 = this;
+      var MIN_SCALE = .1;
+      var MAX_SCALE = 100;
+      var mouseX = x;
+      var mouseY = y;
+      var currScale = this.scale;
+      var zoomFactor = zf;
+      var newScale = 0;
+
+      // Calculate new scale and ensure it does not go below a minimum value
+      if (zoomFactor < 1.2) {
+        newScale = Math.floor(currScale * zoomFactor);
+      } else {
+        newScale = Math.ceil(currScale * zoomFactor);
+      }
+
+      // If the new scale is out of bounds, return without making changes
+      if (newScale < MIN_SCALE || newScale > MAX_SCALE) {
+        alert('Cannot zoom any further');
+        return;
+      }
+
+      // Calculate new origin positions
+      var newOriginX = mouseX / newScale - mouseX / currScale + this.originX;
+      var newOriginY = mouseY / newScale - mouseY / currScale + this.originY;
+
+      // Apply transformations
+      this.canvasRenderers.forEach(function (renderer) {
+        renderer.ctx.translate(newOriginX - _this2.originX, newOriginY - _this2.originY);
+        renderer.ctx.scale(zoomFactor, zoomFactor);
+        renderer.ctx.translate(-newOriginX, -newOriginY);
+      });
+
+      // Update scale and resize canvas
+      this.canvasManagers.forEach(function (manager) {
+        manager.setScale(newScale);
+      });
+
+      // Re-render canvases
+      this.canvasRenderers.forEach(function (renderer) {
+        renderer.render();
+      });
+
+      // Update origin and scale
+      this.originX = newOriginX;
+      this.originY = newOriginY;
+      this.scale = newScale;
     }
   }, {
     key: "zoomIn",
     value: function zoomIn(x, y) {
-      var zoomTool = new _tools_zoomTool__WEBPACK_IMPORTED_MODULE_2__.ZoomTool(this.zoomFactor, this.scale, this.canvasManagers, this.canvasRenderers);
-      this.scale = zoomTool.zoom(x, y);
+      var zoomFactor = 1.2;
+      this.zoom(zoomFactor, x, y);
     }
   }, {
     key: "zoomOut",
     value: function zoomOut(x, y) {
-      var zoomTool = new _tools_zoomTool__WEBPACK_IMPORTED_MODULE_2__.ZoomTool(1 / this.zoomFactor, this.scale, this.canvasManagers, this.canvasRenderers);
-      this.scale = zoomTool.zoom(x, y);
+      var zoomFactor = 1.2;
+      this.zoom(1 / zoomFactor, x, y);
     }
   }]);
 }();
@@ -645,17 +690,13 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
     key: "resizeCanvas",
     value: function resizeCanvas(eventHandler) {
       var _this2 = this;
-      eventHandler.isPopup = true;
+      eventHandler.isPopup = true; //To make sure that the user can't interact with canvas when there is a popup window
       this.canvasManager.canvas.style.display = 'none';
 
-      // Show the modal
-      document.getElementById('dimensionModal').style.display = 'block';
-      document.querySelector('.close-button').addEventListener('click', function () {
-        // Hide the modal
-        document.getElementById('dimensionModal').style.display = 'none';
-        _this2.eventHandler.isPopup = false;
-        _this2.canvasManager.canvas.style.display = 'block';
-      });
+      // Show the resize modal
+      document.getElementById('resizeModal').style.display = 'block';
+
+      // Resize the canvas based on the user input into the resize modal
       document.getElementById('submitDimensions').addEventListener('click', function () {
         // Get the input values
         var widthInput = document.getElementById('widthInput').value;
@@ -669,36 +710,36 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
         if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
           alert("Please enter valid positive numeric values for width and height.");
         } else {
-          // Store the width and height in variables
-          console.log("Width: ".concat(width, ", Height: ").concat(height));
-
-          // You can now use the width and height variables as needed
           var _calculateBlocks = (0,_canvas_calculateBlocks__WEBPACK_IMPORTED_MODULE_1__.calculateBlocks)(width, height),
             blocksX = _calculateBlocks.blocksX,
             blocksY = _calculateBlocks.blocksY;
-          console.log("BlocksX: ".concat(blocksX, ", BlocksY: ").concat(blocksY));
-          _this2.eventHandler.isPopup = false;
-          _this2.canvasManager.canvas.style.display = 'block';
-          //Resize canvas
-          _this2.canvasManager.resizeCanvas(blocksX * 16, blocksY * 16);
-          //Resize bg canvas
-          _this2.bgManager.resizeCanvas(blocksX, blocksY);
-          //Rerender bg canvas
-          _this2.bgRenderer.render();
 
-          //Rerender canvas
+          //Resize canvases
+          _this2.canvasManager.resizeCanvas(blocksX * 16, blocksY * 16);
+          _this2.bgManager.resizeCanvas(blocksX, blocksY);
+
+          //Rerender canvases
           _this2.canvasRenderer.render();
+          _this2.bgRenderer.render();
 
           // Hide the modal
           document.getElementById('dimensionModal').style.display = 'none';
-          console.log(_this2.eventHandler.isPopup);
+          _this2.eventHandler.isPopup = false;
+          _this2.canvasManager.canvas.style.display = 'block';
         }
+      });
+
+      //Close the modal if the user clicks the close button
+      document.querySelector('.close-button').addEventListener('click', function () {
+        document.getElementById('resizeModal').style.display = 'none';
+        _this2.eventHandler.isPopup = false;
+        _this2.canvasManager.canvas.style.display = 'block';
       });
 
       // Close the modal if the user clicks outside of the modal content
       window.onclick = function (event) {
         if (event.target == document.getElementById('dimensionModal')) {
-          document.getElementById('dimensionModal').style.display = 'none';
+          document.getElementById('resizeModal').style.display = 'none';
           _this2.eventHandler.isPopup = false;
           _this2.canvasManager.canvas.style.display = 'block';
         }
@@ -775,139 +816,6 @@ var ToolbarEventHandler = /*#__PURE__*/function () {
     value: function selectTool(newTool) {
       this.currentTool = newTool;
       return this.currentTool; // For simplicity, returning toolName as a string
-    }
-  }]);
-}();
-
-/***/ }),
-
-/***/ "./src/js/tools/eraserTool.js":
-/*!************************************!*\
-  !*** ./src/js/tools/eraserTool.js ***!
-  \************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   EraserTool: () => (/* binding */ EraserTool)
-/* harmony export */ });
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-/* Contains logic for eraser tool */
-
-var EraserTool = /*#__PURE__*/function () {
-  function EraserTool(canvasRenderer) {
-    _classCallCheck(this, EraserTool);
-    this.canvasRenderer = canvasRenderer;
-  }
-  return _createClass(EraserTool, [{
-    key: "erase",
-    value: function erase(x, y) {
-      this.canvasRenderer.erasePixel(x, y);
-    }
-  }]);
-}();
-
-/***/ }),
-
-/***/ "./src/js/tools/pencilTool.js":
-/*!************************************!*\
-  !*** ./src/js/tools/pencilTool.js ***!
-  \************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   PencilTool: () => (/* binding */ PencilTool)
-/* harmony export */ });
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-/* Contains logic for the pencil tool, allowing the user to draw on the canvas */
-var PencilTool = /*#__PURE__*/function () {
-  function PencilTool(canvasRenderer, colorPicker) {
-    _classCallCheck(this, PencilTool);
-    this.canvasRenderer = canvasRenderer;
-    this.colorPicker = colorPicker;
-  }
-  return _createClass(PencilTool, [{
-    key: "draw",
-    value: function draw(x, y) {
-      var color = this.colorPicker.getColor();
-      this.canvasRenderer.drawPixel(x, y, color);
-    }
-  }]);
-}();
-
-/***/ }),
-
-/***/ "./src/js/tools/zoomTool.js":
-/*!**********************************!*\
-  !*** ./src/js/tools/zoomTool.js ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ZoomTool: () => (/* binding */ ZoomTool)
-/* harmony export */ });
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-/* Contains logic for the zoom tool, contains the zoom logic for both zoomIn and zoomOut */
-var ZoomTool = /*#__PURE__*/function () {
-  function ZoomTool(zoomFactor, currScale, canvasManagers, canvasRenderers) {
-    _classCallCheck(this, ZoomTool);
-    this.zoomFactor = zoomFactor;
-    this.currScale = currScale;
-    this.canvasManagers = canvasManagers;
-    this.canvasRenderers = canvasRenderers;
-    this.originX = 0;
-    this.originY = 0;
-  }
-  return _createClass(ZoomTool, [{
-    key: "zoom",
-    value: function zoom(x, y) {
-      var _this = this;
-      var mouseX = x;
-      var mouseY = y;
-
-      //Calculate new scale and visible origin
-      var newScale = Math.ceil(this.currScale * this.zoomFactor);
-      var newOriginX = mouseX / newScale - mouseX / this.currScale + this.originX;
-      var newOriginY = mouseY / newScale - mouseY / this.currScale + this.originY;
-
-      //Apply transformations
-      this.canvasRenderers.forEach(function (renderer) {
-        renderer.ctx.translate(newOriginX - _this.originX, newOriginY - _this.originY);
-        renderer.ctx.scale(_this.zoomFactor, _this.zoomFactor);
-        renderer.ctx.translate(-newOriginX, -newOriginY);
-      });
-
-      //Update scale and resize canvas
-      this.canvasManagers.forEach(function (manager) {
-        manager.setScale(newScale);
-      });
-
-      //Re-render canvases
-      this.canvasRenderers.forEach(function (renderer) {
-        renderer.render();
-      });
-
-      //Update origin and return scale
-      this.originX = newOriginX;
-      this.originY = newOriginY;
-      return newScale;
     }
   }]);
 }();
@@ -1703,7 +1611,7 @@ var MainCanvasController = /*#__PURE__*/function () {
   }, {
     key: "setupBackgroundCanvas",
     value: function setupBackgroundCanvas() {
-      this.bgManager = new _js_canvas_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_2__.BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 5);
+      this.bgManager = new _js_canvas_backgroundCanvas_bgCanvasManager_js__WEBPACK_IMPORTED_MODULE_2__.BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, 1);
       this.bgRenderer = new _js_canvas_backgroundCanvas_bgCanvasRenderer_js__WEBPACK_IMPORTED_MODULE_3__.BGCanvasRenderer(this.bgManager);
       this.bgRenderer.render();
     }
@@ -1712,7 +1620,7 @@ var MainCanvasController = /*#__PURE__*/function () {
     value: function setupMainCanvas() {
       var pixelWidth = this.blocksX * this.blockSize;
       var pixelHeight = this.blocksY * this.blockSize;
-      this.canvasManager = new _js_canvas_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_4__.CanvasManager('pixelCanvas', pixelWidth, pixelHeight, 5);
+      this.canvasManager = new _js_canvas_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_4__.CanvasManager('pixelCanvas', pixelWidth, pixelHeight, 1);
       this.canvasRenderer = new _js_canvas_mainCanvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_5__.CanvasRenderer(this.canvasManager);
     }
   }, {
@@ -1734,4 +1642,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundlea5bdcb9fb91e62ba4aa8.js.map
+//# sourceMappingURL=bundle5f7bd40f13ee55e32214.js.map

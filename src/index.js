@@ -47,7 +47,7 @@ export class MainCanvasController {
         this.toolbarEventHandler = new ToolbarEventHandler();
         this.canvasEventHandler = new CanvasEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.toolbarEventHandler, this.colorPicker);
         this.canvasEventHandler.init();
-        //this.settingsBarEventHandler = new SettingsBarEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.canvasEventHandler);
+        this.settingsBarEventHandler = new SettingsBarEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.canvasEventHandler);
     }
 }
 

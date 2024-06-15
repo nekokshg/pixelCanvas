@@ -25,20 +25,13 @@ export class SettingsBarEventHandler {
     }
 
     resizeCanvas(eventHandler){
-        eventHandler.isPopup = true;
-
+        eventHandler.isPopup = true; //Prevent user interaction with canvas when there is a popup window
         this.canvasManager.canvas.style.display = 'none';
 
-        // Show the modal
-        document.getElementById('dimensionModal').style.display = 'block';
-        
-        document.querySelector('.close-button').addEventListener('click', () => {
-            // Hide the modal
-            document.getElementById('dimensionModal').style.display = 'none';
-            this.eventHandler.isPopup = false;
-            this.canvasManager.canvas.style.display = 'block';
-        });
-        
+        // Show the resize modal
+        document.getElementById('resizeModal').style.display = 'block';
+    
+        // Resize the canvas based on the user input into the resize modal
         document.getElementById('submitDimensions').addEventListener('click', () => {
             // Get the input values
             const widthInput = document.getElementById('widthInput').value;
@@ -51,42 +44,38 @@ export class SettingsBarEventHandler {
             // Check if the inputs are valid numbers
             if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
                 alert("Please enter valid positive numeric values for width and height.");
-            } else {
-                // Store the width and height in variables
-                console.log(`Width: ${width}, Height: ${height}`);
-                
-                // You can now use the width and height variables as needed
+            } 
+            else {
                 const { blocksX, blocksY } = calculateBlocks(width, height);
-                console.log(`BlocksX: ${blocksX}, BlocksY: ${blocksY}`);
+                
+                //Resize canvases
+                this.canvasManager.resizeCanvas(blocksX * 16, blocksY * 16);
+                this.bgManager.resizeCanvas(blocksX, blocksY);
+                
+                //Rerender canvases
+                this.canvasRenderer.render();
+                this.bgRenderer.render();
+        
+                // Hide the modal
+                document.getElementById('resizeModal').style.display = 'none';
 
                 this.eventHandler.isPopup = false;
                 this.canvasManager.canvas.style.display = 'block';
-        //Resize canvas
-                this.canvasManager.resizeCanvas(blocksX * 16, blocksY * 16);
-                        //Resize bg canvas
-            this.bgManager.resizeCanvas(blocksX, blocksY);
-        //Rerender bg canvas
-        this.bgRenderer.render();
-
-                //Rerender canvas
-                this.canvasRenderer.render();
-
-        
-                // Hide the modal
-                document.getElementById('dimensionModal').style.display = 'none';
-
-                console.log(this.eventHandler.isPopup)
-
-                
-                
-                
+    
             }
         });
         
+        //Close the modal if the user clicks the close button
+        document.querySelector('.close-button').addEventListener('click', () => {
+            document.getElementById('resizeModal').style.display = 'none';
+            this.eventHandler.isPopup = false;
+            this.canvasManager.canvas.style.display = 'block';
+        });
+
         // Close the modal if the user clicks outside of the modal content
         window.onclick = (event) => {
-            if (event.target == document.getElementById('dimensionModal')) {
-                document.getElementById('dimensionModal').style.display = 'none';
+            if (event.target == document.getElementById('resizeModal')) {
+                document.getElementById('resizeModal').style.display = 'none';
                 this.eventHandler.isPopup = false;
                 this.canvasManager.canvas.style.display = 'block';
             }
