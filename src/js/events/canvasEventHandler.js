@@ -26,15 +26,18 @@ export class CanvasEventHandler {
         this.isDoing = false;
         this.isPopup = false;
         this.drawPixel = false;
+        this.erasePixel = false;
         this.lastX = null;
         this.lastY = null;
+        this.startX = null;
+        this.startY = null;
     }
 
     init() {
         // Initialize canvas event listeners
         this.canvas.addEventListener('mousedown', (event) => this.onMouseDown(event));
         this.canvas.addEventListener('mousemove', (event) => this.onMouseMove(event));
-        this.canvas.addEventListener('mouseup', () => this.onMouseUp());
+        this.canvas.addEventListener('mouseup', (event) => this.onMouseUp(event));
         this.canvas.addEventListener('mouseleave', () => this.onMouseLeave());
     }
 
@@ -54,11 +57,14 @@ export class CanvasEventHandler {
                 this.drawPixel = true;
                 this.draw(this.lastX, this.lastY, x, y);
             } else if (this.selectedTool === 'eraser') {
-                this.erase(x, y);
+                this.erasePixel = true;
+                this.erase(this.lastX, this.lastY, x, y);
             } else if (this.selectedTool === 'zoomIn'){
                 this.zoomIn(x, y);
             } else if (this.selectedTool === 'zoomOut'){
                 this.zoomOut(x, y);
+            } else if (this.selectedTool === 'line') {
+                this.startLinePreview(x, y);
             }
         }
     }
@@ -72,11 +78,13 @@ export class CanvasEventHandler {
                 //this.drawPixel = false;
                 this.draw(this.lastX, this.lastY, x, y);
             } else if (this.selectedTool === 'eraser') {
-                this.erase(x, y);
+                this.erase(this.lastX, this.lastY, x, y);
             } else if (this.selectedTool === 'zoomIn'){
                 this.zoomIn(x, y);
             } else if (this.selectedTool === 'zoomOut'){
                 this.zoomOut(x, y);
+            } else if (this.selectedTool === 'line') {
+                this.updateLinePreview(this.startX, this.startY, x, y);
             }
 
             this.lastX = x;
@@ -84,7 +92,11 @@ export class CanvasEventHandler {
         }
     }
 
-    onMouseUp() {
+    onMouseUp(event) {
+        if (this.selectedTool === 'line') {
+            const { x, y } = this.getMousePosition(event);
+            this.commitLine(this.startX, this.startY, x, y);
+        } 
         this.isDoing = false;
     }
 
@@ -106,6 +118,15 @@ export class CanvasEventHandler {
             this.drawPixel = false;
         } else{
             this.canvasRenderer.drawLine(prevX, prevY, x, y, color);
+        }
+    }
+
+    erase(prevX, prevY, x, y) {
+        if (this.erasePixel == true){
+            this.canvasRenderer.erasePixel(x, y);
+            this.erasePixel = false;
+        } else {
+            this.canvasRenderer.eraseLine(prevX, prevY, x, y);
         }
     }
 
@@ -166,5 +187,29 @@ export class CanvasEventHandler {
     zoomOut(x, y){
         const zoomFactor = 1.2;
         this.zoom(1 / zoomFactor, x, y);
+    }
+
+    // Save the starting point and preview image for the line
+    startLinePreview(startX, startY) {
+        this.previewImage = this.canvasRenderer.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        this.startX = startX;
+        this.startY = startY;
+    }
+
+    // Update the line preview dynamically
+    updateLinePreview(startX, startY, endX, endY) {
+        // Clear the canvas and redraw the previous image
+        if (this.previewImage) {
+            this.canvasRenderer.ctx.putImageData(this.previewImage, 0, 0);
+        }
+        this.canvasRenderer.drawLinePreview(startX, startY, endX, endY, this.colorPicker.getColor());
+    }
+
+    // Commit the final line to the canvas
+    commitLine(startX, startY, endX, endY) {
+        this.canvasRenderer.drawLine(startX, startY, endX, endY, this.colorPicker.getColor());
+        startX = null;
+        startY = null;
+        this.previewImage = null;
     }
 }

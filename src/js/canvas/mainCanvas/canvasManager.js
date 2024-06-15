@@ -14,10 +14,6 @@ export class CanvasManager {
         return this.ctx;
     }
 
-    clearCanvas() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
     setScale(scale) {
         this.scale = scale;
         this.updateCanvasSize();
