@@ -12,7 +12,7 @@ import { SettingsBarEventHandler } from './js/events/settingsBarEventHandler.js'
 
 export class MainCanvasController {
     constructor() {
-        const { blocksX, blocksY} = calculateBlocks(64, 32); //Default size 32px by 32px
+        const { blocksX, blocksY} = calculateBlocks(256, 256); //Default size 32px by 32px
         this.blocksX = blocksX;
         this.blocksY = blocksY;
         this.blockSize = 16;

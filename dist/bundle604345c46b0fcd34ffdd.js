@@ -243,10 +243,11 @@ var CanvasRenderer = /*#__PURE__*/function () {
     value: function drawPixel(x, y, color) {
       var roundedX = Math.round(x); // Round the coordinates to ensure they align with pixel boundaries
       var roundedY = Math.round(y);
-      this.erasePixel(roundedX, roundedY);
+      this.ctx.clearRect(roundedX, roundedY, 1, 1);
+      this.ctx.beginPath();
       this.ctx.fillStyle = color;
       this.ctx.fillRect(roundedX, roundedY, 1, 1); // Draw a filled rectangle (pixel) at rounded coordinates
-
+      this.ctx.closePath();
       this.pixels.push({
         x: roundedX,
         y: roundedY,
@@ -272,7 +273,6 @@ var CanvasRenderer = /*#__PURE__*/function () {
         _this.ctx.fillStyle = pixel.color;
         _this.ctx.fillRect(pixel.x, pixel.y, 1, 1);
       });
-      console.log('here');
     }
   }]);
 }();
@@ -438,7 +438,7 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       var rect = this.canvas.getBoundingClientRect();
       var x = Math.floor((event.clientX - rect.left) / this.scale);
       var y = Math.floor((event.clientY - rect.top) / this.scale);
-      console.log("Mouse: ".concat(x, ",").concat(y));
+      //console.log(`Mouse: ${x},${y}`)
       return {
         x: x,
         y: y
@@ -690,7 +690,7 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
     key: "resizeCanvas",
     value: function resizeCanvas(eventHandler) {
       var _this2 = this;
-      eventHandler.isPopup = true; //To make sure that the user can't interact with canvas when there is a popup window
+      eventHandler.isPopup = true; //Prevent user interaction with canvas when there is a popup window
       this.canvasManager.canvas.style.display = 'none';
 
       // Show the resize modal
@@ -723,7 +723,7 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
           _this2.bgRenderer.render();
 
           // Hide the modal
-          document.getElementById('dimensionModal').style.display = 'none';
+          document.getElementById('resizeModal').style.display = 'none';
           _this2.eventHandler.isPopup = false;
           _this2.canvasManager.canvas.style.display = 'block';
         }
@@ -738,7 +738,7 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
 
       // Close the modal if the user clicks outside of the modal content
       window.onclick = function (event) {
-        if (event.target == document.getElementById('dimensionModal')) {
+        if (event.target == document.getElementById('resizeModal')) {
           document.getElementById('resizeModal').style.display = 'none';
           _this2.eventHandler.isPopup = false;
           _this2.canvasManager.canvas.style.display = 'block';
@@ -764,6 +764,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_eraser_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../assets/eraser.png */ "./src/assets/eraser.png");
 /* harmony import */ var _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../assets/zoom-in.png */ "./src/assets/zoom-in.png");
 /* harmony import */ var _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../assets/zoom-out.png */ "./src/assets/zoom-out.png");
+/* harmony import */ var _assets_fill_bucket_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../assets/fill-bucket.png */ "./src/assets/fill-bucket.png");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -771,6 +772,7 @@ function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), 
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for toolBar_List element */
+
 
 
 
@@ -1404,6 +1406,16 @@ module.exports = __webpack_require__.p + "assets/eraser.png";
 
 /***/ }),
 
+/***/ "./src/assets/fill-bucket.png":
+/*!************************************!*\
+  !*** ./src/assets/fill-bucket.png ***!
+  \************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/fill-bucket.png";
+
+/***/ }),
+
 /***/ "./src/assets/pencil.png":
 /*!*******************************!*\
   !*** ./src/assets/pencil.png ***!
@@ -1593,7 +1605,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 var MainCanvasController = /*#__PURE__*/function () {
   function MainCanvasController() {
     _classCallCheck(this, MainCanvasController);
-    var _calculateBlocks = (0,_js_canvas_calculateBlocks_js__WEBPACK_IMPORTED_MODULE_1__.calculateBlocks)(64, 32),
+    var _calculateBlocks = (0,_js_canvas_calculateBlocks_js__WEBPACK_IMPORTED_MODULE_1__.calculateBlocks)(256, 256),
       blocksX = _calculateBlocks.blocksX,
       blocksY = _calculateBlocks.blocksY; //Default size 32px by 32px
     this.blocksX = blocksX;
@@ -1642,4 +1654,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle5f7bd40f13ee55e32214.js.map
+//# sourceMappingURL=bundle604345c46b0fcd34ffdd.js.map

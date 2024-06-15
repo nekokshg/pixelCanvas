@@ -3,6 +3,7 @@ import pencil from '../../assets/pencil.png'
 import eraser from '../../assets/eraser.png'
 import zoomIn from '../../assets/zoom-in.png';
 import zoomOut from '../../assets/zoom-out.png';
+import fillBucket from '../../assets/fill-bucket.png'
 
 export class ToolbarEventHandler {
     constructor() {
@@ -11,6 +12,8 @@ export class ToolbarEventHandler {
         this.eraserButton = document.getElementsByClassName('eraser')[0];
         this.zoomInButton = document.getElementsByClassName('zoomIn')[0];
         this.zoomOutButton = document.getElementsByClassName('zoomOut')[0];
+
+
         this.pencilButton.src = pencil;
         this.eraserButton.src = eraser;
         this.zoomInButton.src = zoomIn;

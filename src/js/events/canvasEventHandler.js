@@ -25,6 +25,9 @@ export class CanvasEventHandler {
         this.originY = 0;
         this.isDoing = false;
         this.isPopup = false;
+        this.drawPixel = false;
+        this.lastX = null;
+        this.lastY = null;
     }
 
     init() {
@@ -43,9 +46,13 @@ export class CanvasEventHandler {
 
             const { x, y } = this.getMousePosition(event);
 
+            this.lastX = x;
+            this.lastY = y;
+
             // Perform drawing operations using the selected tool
             if (this.selectedTool === 'pencil') {
-                this.draw(x, y);
+                this.drawPixel = true;
+                this.draw(this.lastX, this.lastY, x, y);
             } else if (this.selectedTool === 'eraser') {
                 this.erase(x, y);
             } else if (this.selectedTool === 'zoomIn'){
@@ -62,7 +69,8 @@ export class CanvasEventHandler {
 
             // Perform drawing operations using the selected tool
             if (this.selectedTool === 'pencil') {
-                this.draw(x, y);
+                //this.drawPixel = false;
+                this.draw(this.lastX, this.lastY, x, y);
             } else if (this.selectedTool === 'eraser') {
                 this.erase(x, y);
             } else if (this.selectedTool === 'zoomIn'){
@@ -70,6 +78,9 @@ export class CanvasEventHandler {
             } else if (this.selectedTool === 'zoomOut'){
                 this.zoomOut(x, y);
             }
+
+            this.lastX = x;
+            this.lastY = y;
         }
     }
 
@@ -85,17 +96,17 @@ export class CanvasEventHandler {
         const rect = this.canvas.getBoundingClientRect();
         const x = Math.floor((event.clientX - rect.left) / this.scale);
         const y = Math.floor((event.clientY - rect.top) / this.scale);
-        console.log(`Mouse: ${x},${y}`)
         return { x, y };
     }
 
-    draw(x, y) {
+    draw(prevX, prevY, x, y) {
         const color = this.colorPicker.getColor();
-        this.canvasRenderer.drawPixel(x, y, color);
-    }
-
-    erase(x, y) {
-        this.canvasRenderer.erasePixel(x, y);
+        if (this.drawPixel == true){
+            this.canvasRenderer.drawPixel(x, y, color);
+            this.drawPixel = false;
+        } else{
+            this.canvasRenderer.drawLine(prevX, prevY, x, y, color);
+        }
     }
 
     zoom(zf, x, y) {
