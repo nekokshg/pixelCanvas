@@ -4,7 +4,7 @@ import eraser from '../../assets/eraser.png'
 import zoomIn from '../../assets/zoom-in.png';
 import zoomOut from '../../assets/zoom-out.png';
 import fillBucket from '../../assets/fill-bucket.png'
-import line from '../../assets/line.png'
+import line from '../../assets/line.png';
 
 export class ToolbarEventHandler {
     constructor() {

@@ -1,4 +1,5 @@
 import resizeButton from '../../assets/resize.png'
+import clear from '../../assets/clear.png'
 import { calculateBlocks } from "../canvas/calculateBlocks";
 
 export class SettingsBarEventHandler {
@@ -15,18 +16,20 @@ export class SettingsBarEventHandler {
         this.eventHandler = eventHandler;
 
         this.resizeButton = document.getElementsByClassName('resizeImg')[0];
+        this.clearButton = document.getElementsByClassName('clear')[0];
         this.resizeButton.src = resizeButton;
+        this.clearButton.src = clear;
 
         this.init();
     }
 
     init(){
         this.resizeButton.addEventListener('click', () => this.resizeCanvas(this.eventHandler));
+        this.clearButton.addEventListener('click', () => this.clearCanvas(this.canvasRenderer));
     }
 
     resizeCanvas(eventHandler){
         eventHandler.isPopup = true; //Prevent user interaction with canvas when there is a popup window
-        this.canvasManager.canvas.style.display = 'none';
 
         // Show the resize modal
         document.getElementById('resizeModal').style.display = 'block';
@@ -81,6 +84,10 @@ export class SettingsBarEventHandler {
             }
         };
 
+    }
+
+    clearCanvas(canvasRenderer){
+        canvasRenderer.clear();
     }
 
 }

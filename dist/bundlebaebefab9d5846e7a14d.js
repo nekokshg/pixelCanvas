@@ -174,11 +174,6 @@ var CanvasManager = /*#__PURE__*/function () {
       return this.ctx;
     }
   }, {
-    key: "clearCanvas",
-    value: function clearCanvas() {
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-  }, {
     key: "setScale",
     value: function setScale(scale) {
       this.scale = scale;
@@ -230,6 +225,8 @@ var CanvasRenderer = /*#__PURE__*/function () {
   function CanvasRenderer(canvasManager) {
     _classCallCheck(this, CanvasRenderer);
     this.canvasManager = canvasManager;
+    this.width = this.canvasManager.canvas.width;
+    this.height = this.canvasManager.canvas.height;
     this.ctx = canvasManager.getContext();
     this.cellSize = canvasManager.cellSize;
     // Disable anti-aliasing
@@ -241,18 +238,54 @@ var CanvasRenderer = /*#__PURE__*/function () {
   return _createClass(CanvasRenderer, [{
     key: "drawPixel",
     value: function drawPixel(x, y, color) {
+      this._drawPixelInternal(x, y, color, true);
+    }
+  }, {
+    key: "_drawPixelInternal",
+    value: function _drawPixelInternal(x, y, color, pushToPixels) {
       var roundedX = Math.round(x); // Round the coordinates to ensure they align with pixel boundaries
       var roundedY = Math.round(y);
-      this.ctx.clearRect(roundedX, roundedY, 1, 1);
       this.ctx.beginPath();
       this.ctx.fillStyle = color;
       this.ctx.fillRect(roundedX, roundedY, 1, 1); // Draw a filled rectangle (pixel) at rounded coordinates
       this.ctx.closePath();
-      this.pixels.push({
-        x: roundedX,
-        y: roundedY,
-        color: color
-      });
+      if (pushToPixels) {
+        this.pixels.push({
+          x: roundedX,
+          y: roundedY,
+          color: color
+        });
+      }
+    }
+  }, {
+    key: "drawLine",
+    value: function drawLine(prevX, prevY, x, y, color) {
+      var dx = x - prevX;
+      var dy = y - prevY;
+      var steps = Math.max(Math.abs(dx), Math.abs(dy));
+      var xIncrement = dx / steps;
+      var yIncrement = dy / steps;
+      for (var i = 0; i <= steps; i++) {
+        var currentX = prevX + xIncrement * i;
+        var currentY = prevY + yIncrement * i;
+        this._drawPixelInternal(currentX, currentY, color, true);
+      }
+    }
+
+    // Enhanced drawLinePreview to clear and redraw the line dynamically
+  }, {
+    key: "drawLinePreview",
+    value: function drawLinePreview(startX, startY, endX, endY, color) {
+      var dx = endX - startX;
+      var dy = endY - startY;
+      var steps = Math.max(Math.abs(dx), Math.abs(dy));
+      var xIncrement = dx / steps;
+      var yIncrement = dy / steps;
+      for (var i = 0; i <= steps; i++) {
+        var currentX = startX + xIncrement * i;
+        var currentY = startY + yIncrement * i;
+        this._drawPixelInternal(currentX, currentY, color, false);
+      }
     }
   }, {
     key: "erasePixel",
@@ -263,6 +296,26 @@ var CanvasRenderer = /*#__PURE__*/function () {
       this.pixels = this.pixels.filter(function (pixel) {
         return pixel.x !== roundedX || pixel.y !== roundedY;
       });
+    }
+  }, {
+    key: "eraseLine",
+    value: function eraseLine(prevX, prevY, x, y) {
+      var dx = x - prevX;
+      var dy = y - prevY;
+      var steps = Math.max(Math.abs(dx), Math.abs(dy));
+      var xIncrement = dx / steps;
+      var yIncrement = dy / steps;
+      for (var i = 0; i <= steps; i++) {
+        var currentX = prevX + xIncrement * i;
+        var currentY = prevY + yIncrement * i;
+        this.erasePixel(currentX, currentY);
+      }
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.ctx.clearRect(0, 0, this.canvasManager.canvas.width, this.canvasManager.canvas.height);
+      this.pixels = [];
     }
   }, {
     key: "render",
@@ -359,6 +412,12 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     this.originY = 0;
     this.isDoing = false;
     this.isPopup = false;
+    this.drawPixel = false;
+    this.erasePixel = false;
+    this.lastX = null;
+    this.lastY = null;
+    this.startX = null;
+    this.startY = null;
   }
   return _createClass(CanvasEventHandler, [{
     key: "init",
@@ -371,8 +430,8 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       this.canvas.addEventListener('mousemove', function (event) {
         return _this.onMouseMove(event);
       });
-      this.canvas.addEventListener('mouseup', function () {
-        return _this.onMouseUp();
+      this.canvas.addEventListener('mouseup', function (event) {
+        return _this.onMouseUp(event);
       });
       this.canvas.addEventListener('mouseleave', function () {
         return _this.onMouseLeave();
@@ -388,16 +447,22 @@ var CanvasEventHandler = /*#__PURE__*/function () {
         var _this$getMousePositio = this.getMousePosition(event),
           x = _this$getMousePositio.x,
           y = _this$getMousePositio.y;
+        this.lastX = x;
+        this.lastY = y;
 
         // Perform drawing operations using the selected tool
         if (this.selectedTool === 'pencil') {
-          this.draw(x, y);
+          this.drawPixel = true;
+          this.draw(this.lastX, this.lastY, x, y);
         } else if (this.selectedTool === 'eraser') {
-          this.erase(x, y);
+          this.erasePixel = true;
+          this.erase(this.lastX, this.lastY, x, y);
         } else if (this.selectedTool === 'zoomIn') {
           this.zoomIn(x, y);
         } else if (this.selectedTool === 'zoomOut') {
           this.zoomOut(x, y);
+        } else if (this.selectedTool === 'line') {
+          this.startLinePreview(x, y);
         }
       }
     }
@@ -411,19 +476,30 @@ var CanvasEventHandler = /*#__PURE__*/function () {
 
         // Perform drawing operations using the selected tool
         if (this.selectedTool === 'pencil') {
-          this.draw(x, y);
+          //this.drawPixel = false;
+          this.draw(this.lastX, this.lastY, x, y);
         } else if (this.selectedTool === 'eraser') {
-          this.erase(x, y);
+          this.erase(this.lastX, this.lastY, x, y);
         } else if (this.selectedTool === 'zoomIn') {
           this.zoomIn(x, y);
         } else if (this.selectedTool === 'zoomOut') {
           this.zoomOut(x, y);
+        } else if (this.selectedTool === 'line') {
+          this.updateLinePreview(this.startX, this.startY, x, y);
         }
+        this.lastX = x;
+        this.lastY = y;
       }
     }
   }, {
     key: "onMouseUp",
-    value: function onMouseUp() {
+    value: function onMouseUp(event) {
+      if (this.selectedTool === 'line') {
+        var _this$getMousePositio3 = this.getMousePosition(event),
+          x = _this$getMousePositio3.x,
+          y = _this$getMousePositio3.y;
+        this.commitLine(this.startX, this.startY, x, y);
+      }
       this.isDoing = false;
     }
   }, {
@@ -438,7 +514,6 @@ var CanvasEventHandler = /*#__PURE__*/function () {
       var rect = this.canvas.getBoundingClientRect();
       var x = Math.floor((event.clientX - rect.left) / this.scale);
       var y = Math.floor((event.clientY - rect.top) / this.scale);
-      //console.log(`Mouse: ${x},${y}`)
       return {
         x: x,
         y: y
@@ -446,14 +521,24 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     }
   }, {
     key: "draw",
-    value: function draw(x, y) {
+    value: function draw(prevX, prevY, x, y) {
       var color = this.colorPicker.getColor();
-      this.canvasRenderer.drawPixel(x, y, color);
+      if (this.drawPixel == true) {
+        this.canvasRenderer.drawPixel(x, y, color);
+        this.drawPixel = false;
+      } else {
+        this.canvasRenderer.drawLine(prevX, prevY, x, y, color);
+      }
     }
   }, {
     key: "erase",
-    value: function erase(x, y) {
-      this.canvasRenderer.erasePixel(x, y);
+    value: function erase(prevX, prevY, x, y) {
+      if (this.erasePixel == true) {
+        this.canvasRenderer.erasePixel(x, y);
+        this.erasePixel = false;
+      } else {
+        this.canvasRenderer.eraseLine(prevX, prevY, x, y);
+      }
     }
   }, {
     key: "zoom",
@@ -517,6 +602,36 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     value: function zoomOut(x, y) {
       var zoomFactor = 1.2;
       this.zoom(1 / zoomFactor, x, y);
+    }
+
+    // Save the starting point and preview image for the line
+  }, {
+    key: "startLinePreview",
+    value: function startLinePreview(startX, startY) {
+      this.previewImage = this.canvasRenderer.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+      this.startX = startX;
+      this.startY = startY;
+    }
+
+    // Update the line preview dynamically
+  }, {
+    key: "updateLinePreview",
+    value: function updateLinePreview(startX, startY, endX, endY) {
+      // Clear the canvas and redraw the previous image
+      if (this.previewImage) {
+        this.canvasRenderer.ctx.putImageData(this.previewImage, 0, 0);
+      }
+      this.canvasRenderer.drawLinePreview(startX, startY, endX, endY, this.colorPicker.getColor());
+    }
+
+    // Commit the final line to the canvas
+  }, {
+    key: "commitLine",
+    value: function commitLine(startX, startY, endX, endY) {
+      this.canvasRenderer.drawLine(startX, startY, endX, endY, this.colorPicker.getColor());
+      startX = null;
+      startY = null;
+      this.previewImage = null;
     }
   }]);
 }();
@@ -691,7 +806,6 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
     value: function resizeCanvas(eventHandler) {
       var _this2 = this;
       eventHandler.isPopup = true; //Prevent user interaction with canvas when there is a popup window
-      this.canvasManager.canvas.style.display = 'none';
 
       // Show the resize modal
       document.getElementById('resizeModal').style.display = 'block';
@@ -765,6 +879,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../assets/zoom-in.png */ "./src/assets/zoom-in.png");
 /* harmony import */ var _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../assets/zoom-out.png */ "./src/assets/zoom-out.png");
 /* harmony import */ var _assets_fill_bucket_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../assets/fill-bucket.png */ "./src/assets/fill-bucket.png");
+/* harmony import */ var _assets_line_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../assets/line.png */ "./src/assets/line.png");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -772,6 +887,7 @@ function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), 
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /* Centralizes event listeners for user interactions, such as mouse clicks and movements for toolBar_List element */
+
 
 
 
@@ -785,10 +901,12 @@ var ToolbarEventHandler = /*#__PURE__*/function () {
     this.eraserButton = document.getElementsByClassName('eraser')[0];
     this.zoomInButton = document.getElementsByClassName('zoomIn')[0];
     this.zoomOutButton = document.getElementsByClassName('zoomOut')[0];
+    this.lineButton = document.getElementsByClassName('line')[0];
     this.pencilButton.src = _assets_pencil_png__WEBPACK_IMPORTED_MODULE_0__;
     this.eraserButton.src = _assets_eraser_png__WEBPACK_IMPORTED_MODULE_1__;
     this.zoomInButton.src = _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_2__;
     this.zoomOutButton.src = _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_3__;
+    this.lineButton.src = _assets_line_png__WEBPACK_IMPORTED_MODULE_5__;
 
     //Set default tool
     this.currentTool = 'pencil';
@@ -811,6 +929,9 @@ var ToolbarEventHandler = /*#__PURE__*/function () {
       });
       this.zoomOutButton.addEventListener('click', function () {
         return _this.selectTool('zoomOut');
+      });
+      this.lineButton.addEventListener('click', function () {
+        return _this.selectTool('line');
       });
     }
   }, {
@@ -1416,6 +1537,16 @@ module.exports = __webpack_require__.p + "assets/fill-bucket.png";
 
 /***/ }),
 
+/***/ "./src/assets/line.png":
+/*!*****************************!*\
+  !*** ./src/assets/line.png ***!
+  \*****************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/line.png";
+
+/***/ }),
+
 /***/ "./src/assets/pencil.png":
 /*!*******************************!*\
   !*** ./src/assets/pencil.png ***!
@@ -1654,4 +1785,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle604345c46b0fcd34ffdd.js.map
+//# sourceMappingURL=bundlebaebefab9d5846e7a14d.js.map
