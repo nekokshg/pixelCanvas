@@ -770,13 +770,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SettingsBarEventHandler: () => (/* binding */ SettingsBarEventHandler)
 /* harmony export */ });
 /* harmony import */ var _assets_resize_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../assets/resize.png */ "./src/assets/resize.png");
-/* harmony import */ var _canvas_calculateBlocks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../canvas/calculateBlocks */ "./src/js/canvas/calculateBlocks.js");
+/* harmony import */ var _assets_clear_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../assets/clear.png */ "./src/assets/clear.png");
+/* harmony import */ var _canvas_calculateBlocks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../canvas/calculateBlocks */ "./src/js/canvas/calculateBlocks.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
 
 
 var SettingsBarEventHandler = /*#__PURE__*/function () {
@@ -790,7 +792,9 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
     this.bgRenderer = this.canvasRenderers[1];
     this.eventHandler = eventHandler;
     this.resizeButton = document.getElementsByClassName('resizeImg')[0];
+    this.clearButton = document.getElementsByClassName('clear')[0];
     this.resizeButton.src = _assets_resize_png__WEBPACK_IMPORTED_MODULE_0__;
+    this.clearButton.src = _assets_clear_png__WEBPACK_IMPORTED_MODULE_1__;
     this.init();
   }
   return _createClass(SettingsBarEventHandler, [{
@@ -799,6 +803,9 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
       var _this = this;
       this.resizeButton.addEventListener('click', function () {
         return _this.resizeCanvas(_this.eventHandler);
+      });
+      this.clearButton.addEventListener('click', function () {
+        return _this.clearCanvas(_this.canvasRenderer);
       });
     }
   }, {
@@ -824,7 +831,7 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
         if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
           alert("Please enter valid positive numeric values for width and height.");
         } else {
-          var _calculateBlocks = (0,_canvas_calculateBlocks__WEBPACK_IMPORTED_MODULE_1__.calculateBlocks)(width, height),
+          var _calculateBlocks = (0,_canvas_calculateBlocks__WEBPACK_IMPORTED_MODULE_2__.calculateBlocks)(width, height),
             blocksX = _calculateBlocks.blocksX,
             blocksY = _calculateBlocks.blocksY;
 
@@ -858,6 +865,11 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
           _this2.canvasManager.canvas.style.display = 'block';
         }
       };
+    }
+  }, {
+    key: "clearCanvas",
+    value: function clearCanvas(canvasRenderer) {
+      canvasRenderer.clear();
     }
   }]);
 }();
@@ -984,8 +996,12 @@ ul{
 }
 
 .toolBar_Container {
-    width: 400px; /* Set a width for the toolbar */
-    /* Additional toolbar styles */
+    width: 200px;
+    background-color: grey;
+}
+
+.toolButton:hover{
+    background-color: white;
 }
 
 #pixelCanvas_Container { 
@@ -1062,7 +1078,7 @@ ul{
     text-decoration: none;
     cursor: pointer;
 }
-`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"AAAA;IACI,aAAa;AACjB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,cAAc;AAClB;;AAEA;IACI,qBAAqB;IACrB,kBAAkB;AACtB;;AAEA;IACI,YAAY,EAAE,gCAAgC;IAC9C,8BAA8B;AAClC;;AAEA;IACI,aAAa;IACb,sBAAsB,EAAE,8BAA8B;IACtD,aAAa;IACb,YAAY;IACZ,kBAAkB;AACtB;;AAEA;IACI,kBAAkB;IAClB,YAAY,EAAE,4CAA4C;IAC1D,gBAAgB,EAAE,oCAAoC;AAC1D;;AAEA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,cAAc;AAClB;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;AAC5B;;AAEA;IACI,aAAa,EAAE,sBAAsB;IACrC,eAAe,EAAE,kBAAkB;IACnC,UAAU,EAAE,eAAe;IAC3B,OAAO;IACP,MAAM;IACN,WAAW,EAAE,eAAe;IAC5B,YAAY,EAAE,gBAAgB;IAC9B,cAAc,EAAE,4BAA4B;IAC5C,4BAA4B,EAAE,mBAAmB;IACjD,iCAAiC,EAAE,qBAAqB;IACxD,iBAAiB;AACrB;;AAEA;IACI,yBAAyB;IACzB,eAAe,EAAE,kCAAkC;IACnD,aAAa;IACb,sBAAsB;IACtB,UAAU,EAAE,oDAAoD;AACpE;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;IACf,iBAAiB;AACrB;;AAEA;;IAEI,YAAY;IACZ,qBAAqB;IACrB,eAAe;AACnB","sourcesContent":[".container {\n    display: flex;\n}\n\nul{\n    list-style: none;\n}\n\n#header_Container{\n    display: flex;\n    background-color: blue;\n    flex: 0 0 100%;\n}\n\n.settingsBarItem{\n    display: inline-block;\n    margin-right: 10px;\n}\n\n.toolBar_Container {\n    width: 400px; /* Set a width for the toolbar */\n    /* Additional toolbar styles */\n}\n\n#pixelCanvas_Container { \n    display: flex;\n    flex-direction: column; /* Stack children vertically */\n    height: 100vh;\n    width: 100vw;\n    position: relative;\n}\n\n.canvasWrapper {\n    position: relative;\n    flex-grow: 1; /* Allow it to take up the remaining space */\n    overflow: hidden; /* Ensure canvases do not overflow */\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    top: 0;\n    left: 0;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n}\n\n.colorInfoContainer {\n    display: flex;\n}\n\n.colorBox {\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n}\n\n.modal {\n    display: none; /* Hidden by default */\n    position: fixed; /* Stay in place */\n    z-index: 1; /* Sit on top */\n    left: 0;\n    top: 0;\n    width: 100%; /* Full width */\n    height: 100%; /* Full height */\n    overflow: auto; /* Enable scroll if needed */\n    background-color: rgb(0,0,0); /* Fallback color */\n    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */\n    padding-top: 60px;\n}\n\n.modal-content {\n    background-color: #fefefe;\n    margin: 5% auto; /* 15% from the top and centered */\n    padding: 20px;\n    border: 1px solid #888;\n    width: 80%; /* Could be more or less, depending on screen size */\n}\n\n.close-button {\n    color: #aaa;\n    float: right;\n    font-size: 28px;\n    font-weight: bold;\n}\n\n.close-button:hover,\n.close-button:focus {\n    color: black;\n    text-decoration: none;\n    cursor: pointer;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"AAAA;IACI,aAAa;AACjB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,cAAc;AAClB;;AAEA;IACI,qBAAqB;IACrB,kBAAkB;AACtB;;AAEA;IACI,YAAY;IACZ,sBAAsB;AAC1B;;AAEA;IACI,uBAAuB;AAC3B;;AAEA;IACI,aAAa;IACb,sBAAsB,EAAE,8BAA8B;IACtD,aAAa;IACb,YAAY;IACZ,kBAAkB;AACtB;;AAEA;IACI,kBAAkB;IAClB,YAAY,EAAE,4CAA4C;IAC1D,gBAAgB,EAAE,oCAAoC;AAC1D;;AAEA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,cAAc;AAClB;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;AAC5B;;AAEA;IACI,aAAa,EAAE,sBAAsB;IACrC,eAAe,EAAE,kBAAkB;IACnC,UAAU,EAAE,eAAe;IAC3B,OAAO;IACP,MAAM;IACN,WAAW,EAAE,eAAe;IAC5B,YAAY,EAAE,gBAAgB;IAC9B,cAAc,EAAE,4BAA4B;IAC5C,4BAA4B,EAAE,mBAAmB;IACjD,iCAAiC,EAAE,qBAAqB;IACxD,iBAAiB;AACrB;;AAEA;IACI,yBAAyB;IACzB,eAAe,EAAE,kCAAkC;IACnD,aAAa;IACb,sBAAsB;IACtB,UAAU,EAAE,oDAAoD;AACpE;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;IACf,iBAAiB;AACrB;;AAEA;;IAEI,YAAY;IACZ,qBAAqB;IACrB,eAAe;AACnB","sourcesContent":[".container {\n    display: flex;\n}\n\nul{\n    list-style: none;\n}\n\n#header_Container{\n    display: flex;\n    background-color: blue;\n    flex: 0 0 100%;\n}\n\n.settingsBarItem{\n    display: inline-block;\n    margin-right: 10px;\n}\n\n.toolBar_Container {\n    width: 200px;\n    background-color: grey;\n}\n\n.toolButton:hover{\n    background-color: white;\n}\n\n#pixelCanvas_Container { \n    display: flex;\n    flex-direction: column; /* Stack children vertically */\n    height: 100vh;\n    width: 100vw;\n    position: relative;\n}\n\n.canvasWrapper {\n    position: relative;\n    flex-grow: 1; /* Allow it to take up the remaining space */\n    overflow: hidden; /* Ensure canvases do not overflow */\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    top: 0;\n    left: 0;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n}\n\n.colorInfoContainer {\n    display: flex;\n}\n\n.colorBox {\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n}\n\n.modal {\n    display: none; /* Hidden by default */\n    position: fixed; /* Stay in place */\n    z-index: 1; /* Sit on top */\n    left: 0;\n    top: 0;\n    width: 100%; /* Full width */\n    height: 100%; /* Full height */\n    overflow: auto; /* Enable scroll if needed */\n    background-color: rgb(0,0,0); /* Fallback color */\n    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */\n    padding-top: 60px;\n}\n\n.modal-content {\n    background-color: #fefefe;\n    margin: 5% auto; /* 15% from the top and centered */\n    padding: 20px;\n    border: 1px solid #888;\n    width: 80%; /* Could be more or less, depending on screen size */\n}\n\n.close-button {\n    color: #aaa;\n    float: right;\n    font-size: 28px;\n    font-weight: bold;\n}\n\n.close-button:hover,\n.close-button:focus {\n    color: black;\n    text-decoration: none;\n    cursor: pointer;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1507,6 +1523,16 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
+/***/ "./src/assets/clear.png":
+/*!******************************!*\
+  !*** ./src/assets/clear.png ***!
+  \******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/clear.png";
+
+/***/ }),
+
 /***/ "./src/assets/colorPicker.jpeg":
 /*!*************************************!*\
   !*** ./src/assets/colorPicker.jpeg ***!
@@ -1785,4 +1811,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundlebaebefab9d5846e7a14d.js.map
+//# sourceMappingURL=bundle69b42bf5db1d5876d256.js.map

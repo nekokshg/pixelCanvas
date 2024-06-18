@@ -94,4 +94,61 @@ export class CanvasRenderer {
             this.ctx.fillRect(pixel.x, pixel.y, 1, 1);
         });
     }
+
+    colorsAreEqual(color1, color2, includeAlpha = false) {
+        if (includeAlpha) {
+            return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b && color1.a === color2.a;
+        }
+        return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
+    }
+    
+    floodFill(x, y, targetColor, fillColor) {
+        const stack = [{ x, y }];
+        const width = this.canvasManager.canvas.width;
+        const height = this.canvasManager.canvas.height;
+        const imageData = this.ctx.getImageData(0, 0, width, height);
+        const data = imageData.data;
+    
+        const getPixelColor = (x, y) => {
+            const index = (y * width + x) * 4;
+            return {
+                r: data[index],
+                g: data[index + 1],
+                b: data[index + 2],
+                a: data[index + 3]
+            };
+        };
+    
+        const setPixelColor = (x, y, color) => {
+            const index = (y * width + x) * 4;
+            data[index] = color.r;
+            data[index + 1] = color.g;
+            data[index + 2] = color.b;
+            data[index + 3] = color.a;
+            this.pixels.push({ x, y, color: `rgba(${color.r},${color.g},${color.b},${color.a / 255})` });
+        };
+    
+        while (stack.length) {
+            const { x, y } = stack.pop();
+    
+            if (x < 0 || y < 0 || x >= width || y >= height) {
+                continue;
+            }
+    
+            const currentColor = getPixelColor(x, y);
+    
+            // Fill if currentColor matches targetColor or if the pixel is transparent
+            if (this.colorsAreEqual(currentColor, targetColor, true) || currentColor.a === 0) {
+                setPixelColor(x, y, fillColor);
+    
+                stack.push({ x: x + 1, y });
+                stack.push({ x: x - 1, y });
+                stack.push({ x, y: y + 1 });
+                stack.push({ x, y: y - 1 });
+            }
+        }
+    
+        this.ctx.putImageData(imageData, 0, 0);
+    }
+
 }

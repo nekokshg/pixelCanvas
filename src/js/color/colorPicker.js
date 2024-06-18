@@ -1,7 +1,7 @@
 /* Manages the color */
 export class ColorPicker {
     constructor (){
-        this.currentColor = '#000000'; // Default color
+        this.currentColor = 'rgba(0,0,0,255)'; // Default color
     }
 
     setColor(color){

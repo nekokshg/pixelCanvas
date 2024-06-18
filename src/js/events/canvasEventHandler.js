@@ -39,6 +39,7 @@ export class CanvasEventHandler {
         this.canvas.addEventListener('mousemove', (event) => this.onMouseMove(event));
         this.canvas.addEventListener('mouseup', (event) => this.onMouseUp(event));
         this.canvas.addEventListener('mouseleave', () => this.onMouseLeave());
+        this.canvas.addEventListener('click', (event) => this.onMouseClick(event));
     }
 
     onMouseDown(event) {
@@ -102,6 +103,13 @@ export class CanvasEventHandler {
 
     onMouseLeave(){ //fix logic if mouse is down and leave still want to be able to paint if mouse is down and enters
         this.isDoing = false;
+    }
+
+    onMouseClick(event) {
+        const { x, y } = this.getMousePosition(event);
+        if (this.selectedTool === 'fill') {
+            this.fillArea(x, y);
+        }
     }
 
     getMousePosition(event) {
@@ -211,5 +219,42 @@ export class CanvasEventHandler {
         startX = null;
         startY = null;
         this.previewImage = null;
+    }
+
+    fillArea(x, y) {
+        const targetColor = this.getColorAtPixel(x, y);
+        const colorString = this.colorPicker.getColor();
+        const rgbaValues = colorString.match(/\d+(\.\d+)?/g); //This regex pattern matches all digits (\d+), optionally followed by a dot and more digits (.\d+), globally (g). This extracts all numerical values from the RGBA string.
+
+        // Extract individual RGBA values
+        const r = parseInt(rgbaValues[0]);
+        const g = parseInt(rgbaValues[1]);
+        const b = parseInt(rgbaValues[2]);
+        const a = parseFloat(rgbaValues[3]); // Parse alpha as float
+
+        // Construct the fillColor object
+        const fillColor = { r, g, b, a };
+    
+        // Proceed to fill only if the target is not already the fill color
+        if (!this.colorsAreEqual(targetColor, fillColor, true)) {
+            this.canvasRenderer.floodFill(x, y, targetColor, fillColor);
+        }
+    }
+    
+    getColorAtPixel(x, y) {
+        const pixel = this.canvasRenderer.ctx.getImageData(x, y, 1, 1).data;
+        return {
+            r: pixel[0],
+            g: pixel[1],
+            b: pixel[2],
+            a: pixel[3]
+        };
+    }
+    
+    colorsAreEqual(color1, color2, includeAlpha = false) {
+        if (includeAlpha) {
+            return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b && color1.a === color2.a;
+        }
+        return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
     }
 }

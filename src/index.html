@@ -7,83 +7,75 @@
     <title>pixelCanvas</title>
 </head>
 <body>
-    <div id="header_Container">
-        <h1>Pixel Canvas</h1>
+    <div id="headerContainer">
+        <h1>PixelCanvas</h1>
         <div class="settingsBar">
             <ul class="settingsBar_List">
                 <li class="settingsBarItem">
-                    <img src="" alt="" class="resizeImg">
+                    <img src="" alt="" class="resizeImg settingButton">
                 </li>
                 <li class="settingsBarItem">
-                    <div class="clear_Button">
-                        <img src="" alt="" class="clear">
-                    </div>
+                    <img src="" alt="" class="clear settingButton">
                 </li>
                 <li class="settingsBarItem">
 
                 </li>
-            </ul>
+            </ul>   
         </div>
     </div>
-    <div class="container">
-        <div class="toolBar_Container">
-            <ul class="toolBar_List">
+    <div class="mainContainer">
+        <div class="leftCol">
+            <ul class="toolBarList">
                 <li class="toolItem">
-                    <div class="pencilButton">
-                        <img class="pencil" alt="" >
-                    </div>
+                    <img class="pencil toolButton" >
                 </li>
                 <li class="toolItem">
-                    <div class="eraserButton">
-                        <img class="eraser" alt="" >
-                    </div>
+                    <img class="eraser toolButton" alt="" >
                 </li>
                 <li class="toolItem">
-                    <div class="zoomIn_Button">
-                        <img src="" alt="" class="zoomIn">
-                    </div>
+                    <img class="zoomIn toolButton">
                 </li>
                 <li class="toolItem">
-                    <div class="zoomOut_Button">
-                        <img src="" alt="" class="zoomOut">
-                    </div>
+                    <img class="zoomOut toolButton">
                 </li>
                 <li class="toolItem">
-                    <div class="line_Button">
-                        <img src="" alt="" class="line">
-                    </div>
+                    <img class="line toolButton">
                 </li>
                 <li class="toolItem">
-
+                    <img class="fill toolButton">
                 </li>
             </ul>
         </div>
-        <div id="pixelCanvas_Container">
-            <canvas id="pixelCanvas"></canvas>
-            <canvas id="backgroundCanvas"></canvas>
-        </div>
-        <div class="colorPickerImg_Container">
-            <img id="colorPickerImg" alt="" style="display: none">
-            <canvas id="colorPickerCanvas"></canvas>
-            <div class="colorInfoContainer">
-                <p class="colorPrompt">Color Selected:</p>
-                <div class="hexCode"></div>
-                <div class="rgbValue"></div>
-                <div class="colorBox"></div>
+        <div class="centerCol">
+            <div class="canvasWrapper">
+                <canvas id="pixelCanvas"></canvas>
+                <canvas id="backgroundCanvas"></canvas>
             </div>
         </div>
-
-        <div id="resizeModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <h2>Enter Dimensions</h2>
-                <label for="widthInput">Width:</label>
-                <input type="number" id="widthInput" name="widthInput"><br>
-                <label for="heightInput">Height:</label>
-                <input type="number" id="heightInput" name="heightInput"><br>
-                <button id="submitDimensions">Submit</button>
+        <div class="rightCol">
+            <div class="colorPickerImg_Container">
+                <img id="colorPickerImg" alt="" style="display: none">
+                <canvas id="colorPickerCanvas"></canvas>
+                <div class="colorInfoContainer">
+                    <p class="colorPrompt">Color Selected:</p>
+                    <div class="hexCode"></div>
+                    <div class="rgbValue"></div>
+                    <div class="colorBox"></div>
+                </div>
             </div>
         </div>
     </div>
+    <div id="resizeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Enter Dimensions</h2>
+            <label for="widthInput">Width:</label>
+            <input type="number" id="widthInput" name="widthInput"><br>
+            <label for="heightInput">Height:</label>
+            <input type="number" id="heightInput" name="heightInput"><br>
+            <button id="submitDimensions">Submit</button>
+        </div>
+    </div>
+
 </body>
 </html>

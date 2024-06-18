@@ -1,15 +1,35 @@
-.container {
+body {
+    margin: 0;
+    padding: 0;
     display: flex;
+    flex-direction: column;
+    height: 100vh; /* Ensure the body takes the full height of the viewport */
 }
 
-ul{
-    list-style: none;
+ul {
+    padding-inline-start: 0px;
 }
 
-#header_Container{
+li {
+    list-style-type: none;
+}
+
+.mainContainer{
+    display: flex;
+    flex: 1; /* Allow the container to grow and fill the available space */
+}
+
+#headerContainer{
     display: flex;
     background-color: blue;
-    flex: 0 0 100%;
+    flex: 0 0 auto; /* Ensure the header does not shrink or grow */
+    width: 100%; /* Ensure the header takes full width */
+    height: 70px;
+}
+
+.settingsBar{
+    padding-left: 20px;
+    padding-top: 10px;
 }
 
 .settingsBarItem{
@@ -17,23 +37,44 @@ ul{
     margin-right: 10px;
 }
 
-.toolBar_Container {
-    width: 400px; /* Set a width for the toolbar */
-    /* Additional toolbar styles */
+.settingButton:hover{
+    background-color: white;
 }
 
-#pixelCanvas_Container { 
+.leftCol{
+    flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */
+    background-color: black;
+}
+
+.toolBarList{
+    width: 30px;
+    background-color: grey;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.toolItem{
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.toolButton:hover{
+    background-color: white;
+}
+
+.centerCol{
     display: flex;
     flex-direction: column; /* Stack children vertically */
-    height: 100vh;
     width: 100vw;
-    position: relative;
+    background-color: green;
 }
 
 .canvasWrapper {
     position: relative;
     flex-grow: 1; /* Allow it to take up the remaining space */
-    overflow: hidden; /* Ensure canvases do not overflow */
+    overflow-y: scroll;
+    overflow-x: scroll;
 }
 
 #backgroundCanvas, #pixelCanvas {

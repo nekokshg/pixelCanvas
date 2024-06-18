@@ -65,22 +65,30 @@ export class ColorPickerEventHandler {
         const r = imageData[0];
         const g = imageData[1];
         const b = imageData[2];
-        const rgb = `rgb(${r}, ${g}, ${b})`;
-        const hex =  this.rgbToHex(r,g,b);
-        this.colorPicker.setColor(rgb);
-        this.displayColor(hex, rgb);
+        const a = imageData[3];
+        const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
+        const hex =  this.rgbaToHex(r,g,b,a);
+        this.colorPicker.setColor(rgba);
+        this.displayColor(hex, rgba);
     }
 
-    rgbToHex(r, g, b){
-        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    rgbaToHex(r, g, b, a) {
+        const toHex = (n) => n.toString(16).padStart(2, '0').toUpperCase();
+    
+        const red = toHex(r);
+        const green = toHex(g);
+        const blue = toHex(b);
+        const alpha = toHex(Math.round(a * 255 / 100)); // Ensure alpha is in the range [0, 255]
+    
+        return `#${red}${green}${blue}${alpha}`;
     }
 
-    displayColor(hex, rgb){
+    displayColor(hex, rgba){
         const hexcode = document.getElementsByClassName('hexCode')[0];
-        const rgbVal = document.getElementsByClassName('rgbValue')[0];
+        const rgbaVal = document.getElementsByClassName('rgbValue')[0];
         const colorBox = document.getElementsByClassName('colorBox')[0];
         hexcode.textContent = `hexcode: ${hex}`;
-        rgbVal.textContent = rgb;
-        colorBox.style.backgroundColor = hex;
+        rgbaVal.textContent = rgba;
+        colorBox.style.backgroundColor = rgba;
     }
 }

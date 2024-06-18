@@ -49,6 +49,8 @@ export class MainCanvasController {
         this.canvasEventHandler.init();
         this.settingsBarEventHandler = new SettingsBarEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.canvasEventHandler);
     }
+
+    
 }
 
 document.addEventListener('DOMContentLoaded', () => {
