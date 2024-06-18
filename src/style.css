@@ -7,6 +7,8 @@ body {
 }
 
 ul {
+    margin-block-start: 0px;
+    margin-block-end: 0px;
     padding-inline-start: 0px;
 }
 
@@ -63,24 +65,28 @@ li {
     background-color: white;
 }
 
-.centerCol{
+.centerCol {
     display: flex;
-    flex-direction: column; /* Stack children vertically */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center the content vertically */
     width: 100vw;
     background-color: green;
 }
 
 .canvasWrapper {
     position: relative;
-    flex-grow: 1; /* Allow it to take up the remaining space */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the canvases */
     overflow-y: scroll;
     overflow-x: scroll;
+    width: 100%;
+    height: 100%; /* Make sure it takes up all available space */
 }
 
 #backgroundCanvas, #pixelCanvas {
     position: absolute;
-    top: 0;
-    left: 0;
     display: block;
 }
 
