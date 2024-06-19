@@ -31,9 +31,15 @@ export class ColorPickerEventHandler {
 
     onImageLoad() {
         const cpImg = document.getElementById('colorPickerImg');
+        cpImg.style.maxWidth = "100%";
+        cpImg.style.height = "auto";
+
         // Set canvas size to match the image
         this.canvas.width = cpImg.width;
         this.canvas.height = cpImg.height;
+
+        this.canvas.style.maxWidth = "100%";
+        this.canvas.style.height = "auto";
 
         // Draw the image onto the canvas
         this.ctx.drawImage(cpImg, 0, 0, cpImg.width, cpImg.height);
@@ -57,17 +63,19 @@ export class ColorPickerEventHandler {
         this.isPicking = false;
     }
 
-    pickColor(event){
+    pickColor(event) {
         const rect = this.canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const x = (event.clientX - rect.left) * scaleX;
+        const y = (event.clientY - rect.top) * scaleY;
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
         const r = imageData[0];
         const g = imageData[1];
         const b = imageData[2];
         const a = imageData[3];
         const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
-        const hex =  this.rgbaToHex(r,g,b,a);
+        const hex = this.rgbaToHex(r, g, b, a);
         this.colorPicker.setColor(rgba);
         this.displayColor(hex, rgba);
     }

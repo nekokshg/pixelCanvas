@@ -4,9 +4,10 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh; /* Ensure the body takes the full height of the viewport */
+    font-family: "Pixelify Sans", sans-serif;
 }
 
-ul {
+ul{
     margin-block-start: 0px;
     margin-block-end: 0px;
     padding-inline-start: 0px;
@@ -26,12 +27,17 @@ li {
     background-color: blue;
     flex: 0 0 auto; /* Ensure the header does not shrink or grow */
     width: 100%; /* Ensure the header takes full width */
-    height: 70px;
+    height: 80px;
+    padding-left: 10px;
+}
+
+h1 {
+    font-weight: lighter;
 }
 
 .settingsBar{
     padding-left: 20px;
-    padding-top: 10px;
+    padding-top: 30px;
 }
 
 .settingsBarItem{
@@ -98,8 +104,13 @@ li {
     z-index: 2;
 }
 
+.colorPickerImg_Container{
+    width: 200px;
+}
+
 .colorInfoContainer {
     display: flex;
+    flex-direction: column;
 }
 
 .colorBox {

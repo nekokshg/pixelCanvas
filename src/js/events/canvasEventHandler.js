@@ -101,8 +101,10 @@ export class CanvasEventHandler {
         this.isDoing = false;
     }
 
-    onMouseLeave(){ //fix logic if mouse is down and leave still want to be able to paint if mouse is down and enters
-        this.isDoing = false;
+    onMouseLeave(){
+        if (this.selectedTool != 'line'){
+            this.isDoing = false;
+        }
     }
 
     onMouseClick(event) {
