@@ -27,7 +27,6 @@ export class MainCanvasController {
         this.setupEventHandlers();
     }
     setupBackgroundCanvas() {
-
         this.bgManager = new BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, this.scale);
         this.bgRenderer = new BGCanvasRenderer(this.bgManager);
         this.bgRenderer.render();

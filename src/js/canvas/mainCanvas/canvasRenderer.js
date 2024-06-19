@@ -94,7 +94,7 @@ export class CanvasRenderer {
             this.ctx.fillRect(pixel.x, pixel.y, 1, 1);
         });
     }
-
+    
     colorsAreEqual(color1, color2, includeAlpha = false) {
         if (includeAlpha) {
             return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b && color1.a === color2.a;
@@ -103,14 +103,15 @@ export class CanvasRenderer {
     }
     
     floodFill(x, y, targetColor, fillColor) {
+        const scale = this.canvasManager.scale; // Get the current scale from the canvas manager
         const stack = [{ x, y }];
-        const width = this.canvasManager.canvas.width;
-        const height = this.canvasManager.canvas.height;
-        const imageData = this.ctx.getImageData(0, 0, width, height);
+        const width = this.canvasManager.canvas.width / scale;
+        const height = this.canvasManager.canvas.height / scale;
+        const imageData = this.ctx.getImageData(0, 0, width * scale, height * scale);
         const data = imageData.data;
     
         const getPixelColor = (x, y) => {
-            const index = (y * width + x) * 4;
+            const index = ((y * scale) * (width * scale) + (x * scale)) * 4;
             return {
                 r: data[index],
                 g: data[index + 1],
@@ -120,11 +121,15 @@ export class CanvasRenderer {
         };
     
         const setPixelColor = (x, y, color) => {
-            const index = (y * width + x) * 4;
-            data[index] = color.r;
-            data[index + 1] = color.g;
-            data[index + 2] = color.b;
-            data[index + 3] = color.a;
+            for (let i = 0; i < scale; i++) {
+                for (let j = 0; j < scale; j++) {
+                    const index = (((y * scale) + j) * (width * scale) + ((x * scale) + i)) * 4;
+                    data[index] = color.r;
+                    data[index + 1] = color.g;
+                    data[index + 2] = color.b;
+                    data[index + 3] = color.a;
+                }
+            }
             this.pixels.push({ x, y, color: `rgba(${color.r},${color.g},${color.b},${color.a / 255})` });
         };
     
@@ -147,8 +152,7 @@ export class CanvasRenderer {
                 stack.push({ x, y: y - 1 });
             }
         }
-    
         this.ctx.putImageData(imageData, 0, 0);
     }
-
+    
 }

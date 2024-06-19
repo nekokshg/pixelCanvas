@@ -224,23 +224,21 @@ export class CanvasEventHandler {
     fillArea(x, y) {
         const targetColor = this.getColorAtPixel(x, y);
         const colorString = this.colorPicker.getColor();
-        const rgbaValues = colorString.match(/\d+(\.\d+)?/g); //This regex pattern matches all digits (\d+), optionally followed by a dot and more digits (.\d+), globally (g). This extracts all numerical values from the RGBA string.
-
-        // Extract individual RGBA values
+        const rgbaValues = colorString.match(/\d+(\.\d+)?/g);
+    
         const r = parseInt(rgbaValues[0]);
         const g = parseInt(rgbaValues[1]);
         const b = parseInt(rgbaValues[2]);
-        const a = parseFloat(rgbaValues[3]); // Parse alpha as float
-
-        // Construct the fillColor object
+        const a = parseInt(rgbaValues[3]);
+    
         const fillColor = { r, g, b, a };
     
-        // Proceed to fill only if the target is not already the fill color
+        // Fill only if the target is not already the fill color
         if (!this.colorsAreEqual(targetColor, fillColor, true)) {
             this.canvasRenderer.floodFill(x, y, targetColor, fillColor);
         }
     }
-    
+      
     getColorAtPixel(x, y) {
         const pixel = this.canvasRenderer.ctx.getImageData(x, y, 1, 1).data;
         return {
