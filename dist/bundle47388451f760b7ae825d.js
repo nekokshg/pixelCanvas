@@ -343,17 +343,17 @@ var CanvasRenderer = /*#__PURE__*/function () {
     key: "floodFill",
     value: function floodFill(x, y, targetColor, fillColor) {
       var _this2 = this;
+      var scale = this.canvasManager.scale; // Get the current scale from the canvas manager
       var stack = [{
         x: x,
         y: y
       }];
-      var width = this.canvasManager.canvas.width;
-      var height = this.canvasManager.canvas.height;
-      alert(height);
-      var imageData = this.ctx.getImageData(0, 0, width, height);
+      var width = this.canvasManager.canvas.width / scale;
+      var height = this.canvasManager.canvas.height / scale;
+      var imageData = this.ctx.getImageData(0, 0, width * scale, height * scale);
       var data = imageData.data;
       var getPixelColor = function getPixelColor(x, y) {
-        var index = (y * width + x) * 4;
+        var index = (y * scale * (width * scale) + x * scale) * 4;
         return {
           r: data[index],
           g: data[index + 1],
@@ -362,11 +362,15 @@ var CanvasRenderer = /*#__PURE__*/function () {
         };
       };
       var setPixelColor = function setPixelColor(x, y, color) {
-        var index = (y * width + x) * 4;
-        data[index] = color.r;
-        data[index + 1] = color.g;
-        data[index + 2] = color.b;
-        data[index + 3] = color.a;
+        for (var i = 0; i < scale; i++) {
+          for (var j = 0; j < scale; j++) {
+            var index = ((y * scale + j) * (width * scale) + (x * scale + i)) * 4;
+            data[index] = color.r;
+            data[index + 1] = color.g;
+            data[index + 2] = color.b;
+            data[index + 3] = color.a;
+          }
+        }
         _this2.pixels.push({
           x: x,
           y: y,
@@ -586,8 +590,9 @@ var CanvasEventHandler = /*#__PURE__*/function () {
   }, {
     key: "onMouseLeave",
     value: function onMouseLeave() {
-      //fix logic if mouse is down and leave still want to be able to paint if mouse is down and enters
-      this.isDoing = false;
+      if (this.selectedTool != 'line') {
+        this.isDoing = false;
+      }
     }
   }, {
     key: "onMouseClick",
@@ -729,15 +734,11 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     value: function fillArea(x, y) {
       var targetColor = this.getColorAtPixel(x, y);
       var colorString = this.colorPicker.getColor();
-      var rgbaValues = colorString.match(/\d+(\.\d+)?/g); //This regex pattern matches all digits (\d+), optionally followed by a dot and more digits (.\d+), globally (g). This extracts all numerical values from the RGBA string.
-
-      // Extract individual RGBA values
+      var rgbaValues = colorString.match(/\d+(\.\d+)?/g);
       var r = parseInt(rgbaValues[0]);
       var g = parseInt(rgbaValues[1]);
       var b = parseInt(rgbaValues[2]);
-      var a = parseFloat(rgbaValues[3]); // Parse alpha as float
-
-      // Construct the fillColor object
+      var a = parseInt(rgbaValues[3]);
       var fillColor = {
         r: r,
         g: g,
@@ -745,7 +746,7 @@ var CanvasEventHandler = /*#__PURE__*/function () {
         a: a
       };
 
-      // Proceed to fill only if the target is not already the fill color
+      // Fill only if the target is not already the fill color
       if (!this.colorsAreEqual(targetColor, fillColor, true)) {
         this.canvasRenderer.floodFill(x, y, targetColor, fillColor);
       }
@@ -833,9 +834,14 @@ var ColorPickerEventHandler = /*#__PURE__*/function () {
     key: "onImageLoad",
     value: function onImageLoad() {
       var cpImg = document.getElementById('colorPickerImg');
+      cpImg.style.maxWidth = "100%";
+      cpImg.style.height = "auto";
+
       // Set canvas size to match the image
       this.canvas.width = cpImg.width;
       this.canvas.height = cpImg.height;
+      this.canvas.style.maxWidth = "100%";
+      this.canvas.style.height = "auto";
 
       // Draw the image onto the canvas
       this.ctx.drawImage(cpImg, 0, 0, cpImg.width, cpImg.height);
@@ -865,8 +871,10 @@ var ColorPickerEventHandler = /*#__PURE__*/function () {
     key: "pickColor",
     value: function pickColor(event) {
       var rect = this.canvas.getBoundingClientRect();
-      var x = event.clientX - rect.left;
-      var y = event.clientY - rect.top;
+      var scaleX = this.canvas.width / rect.width;
+      var scaleY = this.canvas.height / rect.height;
+      var x = (event.clientX - rect.left) * scaleX;
+      var y = (event.clientY - rect.top) * scaleY;
       var imageData = this.ctx.getImageData(x, y, 1, 1).data;
       var r = imageData[0];
       var g = imageData[1];
@@ -1142,9 +1150,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
     display: flex;
     flex-direction: column;
     height: 100vh; /* Ensure the body takes the full height of the viewport */
+    font-family: "Pixelify Sans", sans-serif;
 }
 
-ul {
+ul{
     margin-block-start: 0px;
     margin-block-end: 0px;
     padding-inline-start: 0px;
@@ -1164,12 +1173,16 @@ li {
     background-color: blue;
     flex: 0 0 auto; /* Ensure the header does not shrink or grow */
     width: 100%; /* Ensure the header takes full width */
-    height: 70px;
+    height: 80px;
+}
+
+h1 {
+    font-weight: lighter;
 }
 
 .settingsBar{
     padding-left: 20px;
-    padding-top: 10px;
+    padding-top: 30px;
 }
 
 .settingsBarItem{
@@ -1183,12 +1196,10 @@ li {
 
 .leftCol{
     flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */
-    background-color: black;
 }
 
 .toolBarList{
     width: 30px;
-    background-color: grey;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1236,14 +1247,31 @@ li {
     z-index: 2;
 }
 
+.colorPickerImg_Container{
+    width: 200px;
+    padding: 10px;
+}
+
 .colorInfoContainer {
     display: flex;
+    flex-direction: column;
+}
+
+.promptBox{
+    display: flex;
+    gap: 10px;
+}
+
+.colorPrompt{
+    margin-block-start: 2px;
+    margin-block-end: 2px;
 }
 
 .colorBox {
-    width: 10px;
-    height: 10px;
-    border: 4px dotted black;
+    width: 15px;
+    height: 15px;
+    border: 1px solid black;
+    align-self: center;
 }
 
 .modal {
@@ -1281,7 +1309,7 @@ li {
     text-decoration: none;
     cursor: pointer;
 }
-`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"AAAA;IACI,SAAS;IACT,UAAU;IACV,aAAa;IACb,sBAAsB;IACtB,aAAa,EAAE,0DAA0D;AAC7E;;AAEA;IACI,uBAAuB;IACvB,qBAAqB;IACrB,yBAAyB;AAC7B;;AAEA;IACI,qBAAqB;AACzB;;AAEA;IACI,aAAa;IACb,OAAO,EAAE,6DAA6D;AAC1E;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,cAAc,EAAE,8CAA8C;IAC9D,WAAW,EAAE,uCAAuC;IACpD,YAAY;AAChB;;AAEA;IACI,kBAAkB;IAClB,iBAAiB;AACrB;;AAEA;IACI,qBAAqB;IACrB,kBAAkB;AACtB;;AAEA;IACI,uBAAuB;AAC3B;;AAEA;IACI,YAAY,EAAE,uDAAuD;IACrE,uBAAuB;AAC3B;;AAEA;IACI,WAAW;IACX,sBAAsB;IACtB,aAAa;IACb,sBAAsB;IACtB,mBAAmB;AACvB;;AAEA;IACI,gBAAgB;IAChB,mBAAmB;AACvB;;AAEA;IACI,uBAAuB;AAC3B;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,uBAAuB,EAAE,kCAAkC;IAC3D,YAAY;IACZ,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,uBAAuB,EAAE,wBAAwB;IACjD,kBAAkB;IAClB,kBAAkB;IAClB,WAAW;IACX,YAAY,EAAE,8CAA8C;AAChE;;AAEA;IACI,kBAAkB;IAClB,cAAc;AAClB;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,wBAAwB;AAC5B;;AAEA;IACI,aAAa,EAAE,sBAAsB;IACrC,eAAe,EAAE,kBAAkB;IACnC,UAAU,EAAE,eAAe;IAC3B,OAAO;IACP,MAAM;IACN,WAAW,EAAE,eAAe;IAC5B,YAAY,EAAE,gBAAgB;IAC9B,cAAc,EAAE,4BAA4B;IAC5C,4BAA4B,EAAE,mBAAmB;IACjD,iCAAiC,EAAE,qBAAqB;IACxD,iBAAiB;AACrB;;AAEA;IACI,yBAAyB;IACzB,eAAe,EAAE,kCAAkC;IACnD,aAAa;IACb,sBAAsB;IACtB,UAAU,EAAE,oDAAoD;AACpE;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;IACf,iBAAiB;AACrB;;AAEA;;IAEI,YAAY;IACZ,qBAAqB;IACrB,eAAe;AACnB","sourcesContent":["body {\n    margin: 0;\n    padding: 0;\n    display: flex;\n    flex-direction: column;\n    height: 100vh; /* Ensure the body takes the full height of the viewport */\n}\n\nul {\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n    padding-inline-start: 0px;\n}\n\nli {\n    list-style-type: none;\n}\n\n.mainContainer{\n    display: flex;\n    flex: 1; /* Allow the container to grow and fill the available space */\n}\n\n#headerContainer{\n    display: flex;\n    background-color: blue;\n    flex: 0 0 auto; /* Ensure the header does not shrink or grow */\n    width: 100%; /* Ensure the header takes full width */\n    height: 70px;\n}\n\n.settingsBar{\n    padding-left: 20px;\n    padding-top: 10px;\n}\n\n.settingsBarItem{\n    display: inline-block;\n    margin-right: 10px;\n}\n\n.settingButton:hover{\n    background-color: white;\n}\n\n.leftCol{\n    flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */\n    background-color: black;\n}\n\n.toolBarList{\n    width: 30px;\n    background-color: grey;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n}\n\n.toolItem{\n    padding-top: 1px;\n    padding-bottom: 1px;\n}\n\n.toolButton:hover{\n    background-color: white;\n}\n\n.centerCol {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center; /* Center the content vertically */\n    width: 100vw;\n    background-color: green;\n}\n\n.canvasWrapper {\n    position: relative;\n    display: flex;\n    align-items: center;\n    justify-content: center; /* Center the canvases */\n    overflow-y: scroll;\n    overflow-x: scroll;\n    width: 100%;\n    height: 100%; /* Make sure it takes up all available space */\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n}\n\n.colorInfoContainer {\n    display: flex;\n}\n\n.colorBox {\n    width: 10px;\n    height: 10px;\n    border: 4px dotted black;\n}\n\n.modal {\n    display: none; /* Hidden by default */\n    position: fixed; /* Stay in place */\n    z-index: 1; /* Sit on top */\n    left: 0;\n    top: 0;\n    width: 100%; /* Full width */\n    height: 100%; /* Full height */\n    overflow: auto; /* Enable scroll if needed */\n    background-color: rgb(0,0,0); /* Fallback color */\n    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */\n    padding-top: 60px;\n}\n\n.modal-content {\n    background-color: #fefefe;\n    margin: 5% auto; /* 15% from the top and centered */\n    padding: 20px;\n    border: 1px solid #888;\n    width: 80%; /* Could be more or less, depending on screen size */\n}\n\n.close-button {\n    color: #aaa;\n    float: right;\n    font-size: 28px;\n    font-weight: bold;\n}\n\n.close-button:hover,\n.close-button:focus {\n    color: black;\n    text-decoration: none;\n    cursor: pointer;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"AAAA;IACI,SAAS;IACT,UAAU;IACV,aAAa;IACb,sBAAsB;IACtB,aAAa,EAAE,0DAA0D;IACzE,wCAAwC;AAC5C;;AAEA;IACI,uBAAuB;IACvB,qBAAqB;IACrB,yBAAyB;AAC7B;;AAEA;IACI,qBAAqB;AACzB;;AAEA;IACI,aAAa;IACb,OAAO,EAAE,6DAA6D;AAC1E;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,cAAc,EAAE,8CAA8C;IAC9D,WAAW,EAAE,uCAAuC;IACpD,YAAY;AAChB;;AAEA;IACI,oBAAoB;AACxB;;AAEA;IACI,kBAAkB;IAClB,iBAAiB;AACrB;;AAEA;IACI,qBAAqB;IACrB,kBAAkB;AACtB;;AAEA;IACI,uBAAuB;AAC3B;;AAEA;IACI,YAAY,EAAE,uDAAuD;AACzE;;AAEA;IACI,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,mBAAmB;AACvB;;AAEA;IACI,gBAAgB;IAChB,mBAAmB;AACvB;;AAEA;IACI,uBAAuB;AAC3B;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,uBAAuB,EAAE,kCAAkC;IAC3D,YAAY;IACZ,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,uBAAuB,EAAE,wBAAwB;IACjD,kBAAkB;IAClB,kBAAkB;IAClB,WAAW;IACX,YAAY,EAAE,8CAA8C;AAChE;;AAEA;IACI,kBAAkB;IAClB,cAAc;AAClB;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;;AAEA;IACI,aAAa;IACb,SAAS;AACb;;AAEA;IACI,uBAAuB;IACvB,qBAAqB;AACzB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,uBAAuB;IACvB,kBAAkB;AACtB;;AAEA;IACI,aAAa,EAAE,sBAAsB;IACrC,eAAe,EAAE,kBAAkB;IACnC,UAAU,EAAE,eAAe;IAC3B,OAAO;IACP,MAAM;IACN,WAAW,EAAE,eAAe;IAC5B,YAAY,EAAE,gBAAgB;IAC9B,cAAc,EAAE,4BAA4B;IAC5C,4BAA4B,EAAE,mBAAmB;IACjD,iCAAiC,EAAE,qBAAqB;IACxD,iBAAiB;AACrB;;AAEA;IACI,yBAAyB;IACzB,eAAe,EAAE,kCAAkC;IACnD,aAAa;IACb,sBAAsB;IACtB,UAAU,EAAE,oDAAoD;AACpE;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;IACf,iBAAiB;AACrB;;AAEA;;IAEI,YAAY;IACZ,qBAAqB;IACrB,eAAe;AACnB","sourcesContent":["body {\n    margin: 0;\n    padding: 0;\n    display: flex;\n    flex-direction: column;\n    height: 100vh; /* Ensure the body takes the full height of the viewport */\n    font-family: \"Pixelify Sans\", sans-serif;\n}\n\nul{\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n    padding-inline-start: 0px;\n}\n\nli {\n    list-style-type: none;\n}\n\n.mainContainer{\n    display: flex;\n    flex: 1; /* Allow the container to grow and fill the available space */\n}\n\n#headerContainer{\n    display: flex;\n    background-color: blue;\n    flex: 0 0 auto; /* Ensure the header does not shrink or grow */\n    width: 100%; /* Ensure the header takes full width */\n    height: 80px;\n}\n\nh1 {\n    font-weight: lighter;\n}\n\n.settingsBar{\n    padding-left: 20px;\n    padding-top: 30px;\n}\n\n.settingsBarItem{\n    display: inline-block;\n    margin-right: 10px;\n}\n\n.settingButton:hover{\n    background-color: white;\n}\n\n.leftCol{\n    flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */\n}\n\n.toolBarList{\n    width: 30px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n}\n\n.toolItem{\n    padding-top: 1px;\n    padding-bottom: 1px;\n}\n\n.toolButton:hover{\n    background-color: white;\n}\n\n.centerCol {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center; /* Center the content vertically */\n    width: 100vw;\n    background-color: green;\n}\n\n.canvasWrapper {\n    position: relative;\n    display: flex;\n    align-items: center;\n    justify-content: center; /* Center the canvases */\n    overflow-y: scroll;\n    overflow-x: scroll;\n    width: 100%;\n    height: 100%; /* Make sure it takes up all available space */\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n}\n\n.colorPickerImg_Container{\n    width: 200px;\n    padding: 10px;\n}\n\n.colorInfoContainer {\n    display: flex;\n    flex-direction: column;\n}\n\n.promptBox{\n    display: flex;\n    gap: 10px;\n}\n\n.colorPrompt{\n    margin-block-start: 2px;\n    margin-block-end: 2px;\n}\n\n.colorBox {\n    width: 15px;\n    height: 15px;\n    border: 1px solid black;\n    align-self: center;\n}\n\n.modal {\n    display: none; /* Hidden by default */\n    position: fixed; /* Stay in place */\n    z-index: 1; /* Sit on top */\n    left: 0;\n    top: 0;\n    width: 100%; /* Full width */\n    height: 100%; /* Full height */\n    overflow: auto; /* Enable scroll if needed */\n    background-color: rgb(0,0,0); /* Fallback color */\n    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */\n    padding-top: 60px;\n}\n\n.modal-content {\n    background-color: #fefefe;\n    margin: 5% auto; /* 15% from the top and centered */\n    padding: 20px;\n    border: 1px solid #888;\n    width: 80%; /* Could be more or less, depending on screen size */\n}\n\n.close-button {\n    color: #aaa;\n    float: right;\n    font-size: 28px;\n    font-weight: bold;\n}\n\n.close-button:hover,\n.close-button:focus {\n    color: black;\n    text-decoration: none;\n    cursor: pointer;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2029,4 +2057,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundlef61c891103aef5b35da0.js.map
+//# sourceMappingURL=bundle47388451f760b7ae825d.js.map

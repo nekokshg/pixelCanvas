@@ -28,7 +28,6 @@ li {
     flex: 0 0 auto; /* Ensure the header does not shrink or grow */
     width: 100%; /* Ensure the header takes full width */
     height: 80px;
-    padding-left: 10px;
 }
 
 h1 {
@@ -51,12 +50,10 @@ h1 {
 
 .leftCol{
     flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */
-    background-color: black;
 }
 
 .toolBarList{
     width: 30px;
-    background-color: grey;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -106,6 +103,7 @@ h1 {
 
 .colorPickerImg_Container{
     width: 200px;
+    padding: 10px;
 }
 
 .colorInfoContainer {
@@ -113,10 +111,21 @@ h1 {
     flex-direction: column;
 }
 
+.promptBox{
+    display: flex;
+    gap: 10px;
+}
+
+.colorPrompt{
+    margin-block-start: 2px;
+    margin-block-end: 2px;
+}
+
 .colorBox {
-    width: 10px;
-    height: 10px;
-    border: 4px dotted black;
+    width: 15px;
+    height: 15px;
+    border: 1px solid black;
+    align-self: center;
 }
 
 .modal {

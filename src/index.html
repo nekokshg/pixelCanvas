@@ -20,7 +20,7 @@
                     <img src="" alt="" class="clear settingButton">
                 </li>
                 <li class="settingsBarItem">
-
+                    <button class="downloadButton">Download as PNG</button>
                 </li>
             </ul>   
         </div>
@@ -59,10 +59,12 @@
                 <img id="colorPickerImg" alt="" style="display: none">
                 <canvas id="colorPickerCanvas"></canvas>
                 <div class="colorInfoContainer">
-                    <p class="colorPrompt">Color Selected:</p>
+                    <div class="promptBox">
+                        <p class="colorPrompt">Color Selected:</p>
+                        <div class="colorBox"></div>
+                    </div>
                     <div class="hexCode"></div>
                     <div class="rgbValue"></div>
-                    <div class="colorBox"></div>
                 </div>
             </div>
         </div>

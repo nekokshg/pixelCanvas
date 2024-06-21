@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <title>pixelCanvas</title>
-<script defer src="bundlef61c891103aef5b35da0.js"></script></head>
+<script defer src="bundle47388451f760b7ae825d.js"></script></head>
 <body>
     <div id="headerContainer">
         <h1>PixelCanvas</h1>
@@ -57,10 +59,12 @@
                 <img id="colorPickerImg" alt="" style="display: none">
                 <canvas id="colorPickerCanvas"></canvas>
                 <div class="colorInfoContainer">
-                    <p class="colorPrompt">Color Selected:</p>
+                    <div class="promptBox">
+                        <p class="colorPrompt">Color Selected:</p>
+                        <div class="colorBox"></div>
+                    </div>
                     <div class="hexCode"></div>
                     <div class="rgbValue"></div>
-                    <div class="colorBox"></div>
                 </div>
             </div>
         </div>

@@ -17,6 +17,7 @@ export class SettingsBarEventHandler {
 
         this.resizeButton = document.getElementsByClassName('resizeImg')[0];
         this.clearButton = document.getElementsByClassName('clear')[0];
+        this.downloadButton = document.getElementsByClassName('downloadButton')[0];
         this.resizeButton.src = resizeButton;
         this.clearButton.src = clear;
 
@@ -26,6 +27,7 @@ export class SettingsBarEventHandler {
     init(){
         this.resizeButton.addEventListener('click', () => this.resizeCanvas(this.eventHandler));
         this.clearButton.addEventListener('click', () => this.clearCanvas(this.canvasRenderer));
+        this.downloadButton.addEventListener('click', () => this.download());
     }
 
     resizeCanvas(eventHandler){
@@ -88,6 +90,31 @@ export class SettingsBarEventHandler {
 
     clearCanvas(canvasRenderer){
         canvasRenderer.clear();
+    }
+
+    download(){
+        const oldScale = this.canvasManager.scale;
+
+        //Scale canvas down
+        this.canvasManager.setScale(1);
+        this.canvasRenderer.render();
+
+        const canvas = this.canvasManager.canvas;
+        const image = canvas.toDataURL('image/png');
+
+        //Create a temporary link element
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = 'canvas-image.png'; //Alter here later to take file name that the user sets
+
+        //Trigger the download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        //Revert canvas back to old scale and rerender
+        this.canvasManager.setScale(oldScale);
+        this.canvasRenderer.render();
     }
 
 }
