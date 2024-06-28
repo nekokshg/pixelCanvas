@@ -2,6 +2,7 @@
 export class CanvasRenderer {
     constructor(canvasManager) {
         this.canvasManager = canvasManager;
+        this.canvas = this.canvasManager.canvas;
         this.width = this.canvasManager.canvas.width;
         this.height = this.canvasManager.canvas.height;
         this.ctx = canvasManager.getContext();
@@ -88,6 +89,9 @@ export class CanvasRenderer {
     }
 
     render() {
+        this.ctx.imageSmoothingEnabled = false;
+        this.ctx.clearRect(0, 0, this.canvasManager.canvas.width, this.canvasManager.canvas.height);
+        
         // Re-draw all stored pixels
         this.pixels.forEach(pixel => {
             this.ctx.fillStyle = pixel.color;

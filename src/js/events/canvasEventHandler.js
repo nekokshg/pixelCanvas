@@ -37,6 +37,7 @@ export class CanvasEventHandler {
         this.notZooming = true;
         this.zoomOut_ = false;
         this.zoomPoints = [];
+        this.zoomFactor = 1;
     }
 
     init() {
@@ -61,7 +62,6 @@ export class CanvasEventHandler {
 
             // Perform drawing operations using the selected tool
             if (this.selectedTool === 'pencil') {
-                console.log('drawing')
                 this.drawPixel = true;
                 this.draw(this.lastX, this.lastY, x, y);
             } else if (this.selectedTool === 'eraser') {
@@ -107,15 +107,16 @@ export class CanvasEventHandler {
     }
 
     onMouseClick(event) {
-
+        const { x, y } = this.getMousePosition(event);
         if (this.selectedTool === 'fill') {
-            const { x, y } = this.getMousePosition(event);
             this.fillArea(x, y);
         } else if (this.selectedTool === 'zoomIn'){
             this.zoomIn(event);
         } else if (this.selectedTool === 'zoomOut'){
             this.zoomOut(event);
         }
+        this.lastX = x;
+        this.lastY = y;
     }
 
     getMousePosition(event) {
@@ -126,7 +127,6 @@ export class CanvasEventHandler {
         const y_canvas = event.clientY - rect.top;
 
         // Transform the coordinates considering the current offset and scale
-        console.log(this.offsetX)
         let x = (x_canvas - this.offsetX) / this.scale;
         let y = (y_canvas - this.offsetY) / this.scale;
         
@@ -166,33 +166,42 @@ export class CanvasEventHandler {
         // Ensure the scale stays within the specified bounds
         let newScale = prevScale * zoomFactor;
         newScale = Math.min(Math.max(newScale, MIN_SCALE), MAX_SCALE);
+
+        //Check if scale ratio is a whole number and if not zooming out
+        const scaleRatio = newScale / prevScale
+        if (scaleRatio * 10 % 10 != 0 && this.zoomOut_ == false) {
+            return;
+        }
+
         // Update the scale property
         this.scale = newScale;
 
         let x, y;
 
         if (this.zoomOut_ == false){
+            this.zoomFactor = zoomFactor;
             // Get the cursor position relative to the canvas
             let rect = canvas.getBoundingClientRect();
-            x = event.clientX - rect.left;
-            y = event.clientY - rect.top;
+            x = Math.floor(event.clientX - rect.left);
+            y = Math.floor(event.clientY - rect.top);
 
             // Push the zoom point to the stack on zoom in
             if (zoomFactor > 1) {
                 this.zoomPoints.push({ x, y });
-                console.log(this.zoomPoints)
             }
         } else {
+            if (this.zoomFactor > 1){
+                this.zoomFactor -= 1;
+            }
             let { x: zoomedX, y: zoomedY } = this.zoomPoints.pop();
             x = zoomedX;
             y = zoomedY;
         }
 
         // Calculate the new transformation
-        const scaleRatio = newScale / prevScale
         let dx = x - x * scaleRatio;
         let dy = y - y * scaleRatio;
-
+        
         // Calculate the position of the cursor in the coordinate system
         // before the zoom
         let prevCoordX = (x - this.offsetX) / prevScale;
@@ -218,7 +227,7 @@ export class CanvasEventHandler {
             manager.ctx.translate(dx, dy);
             manager.ctx.scale(scaleRatio, scaleRatio);
             manager.ctx.transform(t.a, t.b, t.c, t.d, t.e, t.f);
-            manager.scale = newScale;
+            manager.scale = Math.round(newScale); //this affects the fill but when its unrounded the fill doesnt work after
         });
     
         // Render all canvas renderers
@@ -227,16 +236,16 @@ export class CanvasEventHandler {
     }
     
     zoomIn(event){
-        const zoomFactor = 1.2;
-        this.zoom(zoomFactor, event);
+        const zoomFactor = this.zoomFactor;
+        this.zoom(zoomFactor + 1, event);
     }
 
     zoomOut(event){
-        const zoomFactor = 1 / 1.2;
+        const zoomFactor = 1 / this.zoomFactor;
         if (this.zoomPoints.length > 0) {
             this.zoomOut_ = true;
             this.zoom(zoomFactor, event);
-        }
+        } 
         this.zoomOut_ = false;
     }
 
