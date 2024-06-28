@@ -1,5 +1,11 @@
-import resizeButton from '../../assets/resize.png'
+import resize from '../../assets/resize.png'
 import clear from '../../assets/clear.png'
+import export_ from '../../assets/export.png'
+import file from '../../assets/file.png'
+import layer from '../../assets/layer.png'
+import setting from '../../assets/setting.png'
+import select from '../../assets/select.png'
+
 import { calculateBlocks } from "../canvas/calculateBlocks";
 
 export class SettingsBarEventHandler {
@@ -15,19 +21,32 @@ export class SettingsBarEventHandler {
 
         this.eventHandler = eventHandler;
 
-        this.resizeButton = document.getElementsByClassName('resizeImg')[0];
+        this.resizeButton = document.getElementsByClassName('resize')[0];
         this.clearButton = document.getElementsByClassName('clear')[0];
-        this.downloadButton = document.getElementsByClassName('downloadButton')[0];
-        this.resizeButton.src = resizeButton;
-        this.clearButton.src = clear;
+        this.exportButton = document.getElementsByClassName('export')[0];
 
+        this.fileImg = document.getElementsByClassName('fileImg')[0];
+        this.fileImg.src = file;
+        this.clearImg = document.getElementsByClassName('clearImg')[0];
+        this.clearImg.src = clear;
+        this.resizeImg = document.getElementsByClassName('resizeImg')[0];
+        this.resizeImg.src = resize;
+        this.exportImg = document.getElementsByClassName('exportImg')[0];
+        this.exportImg.src = export_;
+        this.layerImg = document.getElementsByClassName('layerImg')[0];
+        this.layerImg.src = layer;
+        this.selectImg = document.getElementsByClassName('selectImg')[0];
+        this.selectImg.src = select;
+        this.settingsImg = document.getElementsByClassName('settingsImg')[0];
+        this.settingsImg.src = setting;
+    
         this.init();
     }
 
     init(){
         this.resizeButton.addEventListener('click', () => this.resizeCanvas(this.eventHandler));
         this.clearButton.addEventListener('click', () => this.clearCanvas(this.canvasRenderer));
-        this.downloadButton.addEventListener('click', () => this.download());
+        this.exportButton.addEventListener('click', () => this.export());
     }
 
     resizeCanvas(eventHandler){
@@ -92,7 +111,7 @@ export class SettingsBarEventHandler {
         canvasRenderer.clear();
     }
 
-    download(){
+    export(){
         const oldScale = this.canvasManager.scale;
 
         //Scale canvas down

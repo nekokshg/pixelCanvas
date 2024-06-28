@@ -231,7 +231,7 @@ var CanvasRenderer = /*#__PURE__*/function () {
     this.width = this.canvasManager.canvas.width;
     this.height = this.canvasManager.canvas.height;
     this.ctx = canvasManager.getContext();
-    this.cellSize = canvasManager.cellSize;
+
     // Disable anti-aliasing
     this.ctx.imageSmoothingEnabled = false;
 
@@ -490,8 +490,6 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     //Color Picker
     this.colorPicker = colorPicker;
     this.scale = this.canvasManager.scale;
-    this.originX = 0;
-    this.originY = 0;
     this.isDoing = false;
     this.isPopup = false;
     this.drawPixel = false;
@@ -500,6 +498,11 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     this.lastY = null;
     this.startX = null;
     this.startY = null;
+    // Initialize translation offsets
+    this.offsetX = 0;
+    this.offsetY = 0;
+    this.prevX = 0;
+    this.notZooming = true;
   }
   return _createClass(CanvasEventHandler, [{
     key: "init",
@@ -537,15 +540,12 @@ var CanvasEventHandler = /*#__PURE__*/function () {
 
         // Perform drawing operations using the selected tool
         if (this.selectedTool === 'pencil') {
+          console.log('drawing');
           this.drawPixel = true;
           this.draw(this.lastX, this.lastY, x, y);
         } else if (this.selectedTool === 'eraser') {
           this.erasePixel = true;
           this.erase(this.lastX, this.lastY, x, y);
-        } else if (this.selectedTool === 'zoomIn') {
-          this.zoomIn(x, y);
-        } else if (this.selectedTool === 'zoomOut') {
-          this.zoomOut(x, y);
         } else if (this.selectedTool === 'line') {
           this.startLinePreview(x, y);
         }
@@ -565,10 +565,6 @@ var CanvasEventHandler = /*#__PURE__*/function () {
           this.draw(this.lastX, this.lastY, x, y);
         } else if (this.selectedTool === 'eraser') {
           this.erase(this.lastX, this.lastY, x, y);
-        } else if (this.selectedTool === 'zoomIn') {
-          this.zoomIn(x, y);
-        } else if (this.selectedTool === 'zoomOut') {
-          this.zoomOut(x, y);
         } else if (this.selectedTool === 'line') {
           this.updateLinePreview(this.startX, this.startY, x, y);
         }
@@ -597,19 +593,34 @@ var CanvasEventHandler = /*#__PURE__*/function () {
   }, {
     key: "onMouseClick",
     value: function onMouseClick(event) {
-      var _this$getMousePositio4 = this.getMousePosition(event),
-        x = _this$getMousePositio4.x,
-        y = _this$getMousePositio4.y;
       if (this.selectedTool === 'fill') {
+        var _this$getMousePositio4 = this.getMousePosition(event),
+          x = _this$getMousePositio4.x,
+          y = _this$getMousePositio4.y;
         this.fillArea(x, y);
+      } else if (this.selectedTool === 'zoomIn') {
+        this.zoomIn(event);
+      } else if (this.selectedTool === 'zoomOut') {
+        this.zoomOut(event);
       }
     }
   }, {
     key: "getMousePosition",
     value: function getMousePosition(event) {
       var rect = this.canvas.getBoundingClientRect();
-      var x = Math.floor((event.clientX - rect.left) / this.scale);
-      var y = Math.floor((event.clientY - rect.top) / this.scale);
+
+      // Mouse coordinates relative to the canvas
+      var x_canvas = event.clientX - rect.left;
+      var y_canvas = event.clientY - rect.top;
+
+      // Transform the coordinates considering the current offset and scale
+      var x = (x_canvas - this.offsetX) / this.scale;
+      var y = (y_canvas - this.offsetY) / this.scale;
+      x = Math.floor(x);
+      y = Math.floor(y);
+      console.log("scale: ".concat(this.scale));
+      console.log("Canvas Mouse Position: (".concat(x_canvas, ", ").concat(y_canvas, ")"));
+      console.log("Transformed Mouse Position: (".concat(x, ", ").concat(y, ")"));
       return {
         x: x,
         y: y
@@ -638,66 +649,81 @@ var CanvasEventHandler = /*#__PURE__*/function () {
     }
   }, {
     key: "zoom",
-    value: function zoom(zf, x, y) {
-      var _this2 = this;
-      var MIN_SCALE = .1;
+    value: function zoom(zf, event) {
+      this.notZooming = false;
+      event.preventDefault();
+      var canvas = this.canvas;
+      var MIN_SCALE = 0.1;
       var MAX_SCALE = 100;
-      var mouseX = x;
-      var mouseY = y;
-      var currScale = this.scale;
+      var prevScale = this.scale;
       var zoomFactor = zf;
-      var newScale = 0;
 
-      // Calculate new scale and ensure it does not go below a minimum value
-      if (zoomFactor < 1.2) {
-        newScale = Math.floor(currScale * zoomFactor);
-      } else {
-        newScale = Math.ceil(currScale * zoomFactor);
-      }
-
-      // If the new scale is out of bounds, return without making changes
-      if (newScale < MIN_SCALE || newScale > MAX_SCALE) {
-        alert('Cannot zoom any further');
-        return;
-      }
-
-      // Calculate new origin positions
-      var newOriginX = mouseX / newScale - mouseX / currScale + this.originX;
-      var newOriginY = mouseY / newScale - mouseY / currScale + this.originY;
-
-      // Apply transformations
-      this.canvasRenderers.forEach(function (renderer) {
-        renderer.ctx.translate(newOriginX - _this2.originX, newOriginY - _this2.originY);
-        renderer.ctx.scale(zoomFactor, zoomFactor);
-        renderer.ctx.translate(-newOriginX, -newOriginY);
-      });
-
-      // Update scale and resize canvas
-      this.canvasManagers.forEach(function (manager) {
-        manager.setScale(newScale);
-      });
-
-      // Re-render canvases
-      this.canvasRenderers.forEach(function (renderer) {
-        renderer.render();
-      });
-
-      // Update origin and scale
-      this.originX = newOriginX;
-      this.originY = newOriginY;
+      // Ensure the scale stays within the specified bounds
+      var newScale = prevScale * zoomFactor;
+      newScale = Math.min(Math.max(newScale, MIN_SCALE), MAX_SCALE);
+      // Update the scale property
       this.scale = newScale;
+
+      // Get the cursor position relative to the canvas
+      var rect = canvas.getBoundingClientRect();
+      var x = event.clientX - rect.left;
+      var y = event.clientY - rect.top;
+
+      // Calculate the new transformation
+      var scaleRatio = newScale / prevScale;
+      var dx = x - x * scaleRatio;
+      var dy = y - y * scaleRatio;
+
+      // Calculate the position of the cursor in the coordinate system
+      // before the zoom
+      var prevCoordX = (x - this.offsetX) / prevScale;
+      var prevCoordY = (y - this.offsetY) / prevScale;
+
+      // Calculate the position of the cursor in the coordinate system
+      // after the zoom
+      var newCoordX = prevCoordX * newScale;
+      var newCoordY = prevCoordY * newScale;
+      var DX = x - newCoordX;
+      var DY = y - newCoordY;
+
+      // Calculate the new offsets
+      this.offsetX = DX;
+      this.offsetY = DY;
+
+      // Debugging output
+      console.log("Zoom Factor: ".concat(zoomFactor));
+      console.log("Previous Scale: ".concat(prevScale));
+      console.log("New Scale: ".concat(newScale));
+      console.log("Mouse Position: (".concat(x, ", ").concat(y, ")"));
+      console.log("Offset Changes: (".concat(dx, ", ").concat(dy, ")"));
+      console.log("New Offsets: (".concat(this.offsetX, ", ").concat(this.offsetY, ")"));
+
+      // Transform the cursor position from screen space into the transformed canvas context
+      this.canvasManagers.forEach(function (manager) {
+        manager.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var t = manager.ctx.getTransform();
+        manager.ctx.resetTransform();
+        manager.ctx.translate(dx, dy);
+        manager.ctx.scale(scaleRatio, scaleRatio);
+        manager.ctx.transform(t.a, t.b, t.c, t.d, t.e, t.f);
+        manager.scale = newScale;
+      });
+
+      // Render all canvas renderers
+      this.canvasRenderer.render();
+      this.bgRenderer.render();
     }
   }, {
     key: "zoomIn",
-    value: function zoomIn(x, y) {
+    value: function zoomIn(event) {
       var zoomFactor = 1.2;
-      this.zoom(zoomFactor, x, y);
+      this.zoom(zoomFactor, event);
     }
   }, {
     key: "zoomOut",
-    value: function zoomOut(x, y) {
+    value: function zoomOut(event) {
       var zoomFactor = 1.2;
-      this.zoom(1 / zoomFactor, x, y);
+      this.zoom(1 / zoomFactor, event);
     }
 
     // Save the starting point and preview image for the line
@@ -945,10 +971,9 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
     this.canvasRenderer = this.canvasRenderers[0];
     this.bgRenderer = this.canvasRenderers[1];
     this.eventHandler = eventHandler;
-    this.resizeButton = document.getElementsByClassName('resizeImg')[0];
+    this.resizeButton = document.getElementsByClassName('resize')[0];
     this.clearButton = document.getElementsByClassName('clear')[0];
-    this.resizeButton.src = _assets_resize_png__WEBPACK_IMPORTED_MODULE_0__;
-    this.clearButton.src = _assets_clear_png__WEBPACK_IMPORTED_MODULE_1__;
+    this.exportButton = document.getElementsByClassName('export')[0];
     this.init();
   }
   return _createClass(SettingsBarEventHandler, [{
@@ -960,6 +985,9 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
       });
       this.clearButton.addEventListener('click', function () {
         return _this.clearCanvas(_this.canvasRenderer);
+      });
+      this.exportButton.addEventListener('click', function () {
+        return _this.export();
       });
     }
   }, {
@@ -1024,6 +1052,31 @@ var SettingsBarEventHandler = /*#__PURE__*/function () {
     key: "clearCanvas",
     value: function clearCanvas(canvasRenderer) {
       canvasRenderer.clear();
+    }
+  }, {
+    key: "export",
+    value: function _export() {
+      var oldScale = this.canvasManager.scale;
+
+      //Scale canvas down
+      this.canvasManager.setScale(1);
+      this.canvasRenderer.render();
+      var canvas = this.canvasManager.canvas;
+      var image = canvas.toDataURL('image/png');
+
+      //Create a temporary link element
+      var link = document.createElement('a');
+      link.href = image;
+      link.download = 'canvas-image.png'; //Alter here later to take file name that the user sets
+
+      //Trigger the download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      //Revert canvas back to old scale and rerender
+      this.canvasManager.setScale(oldScale);
+      this.canvasRenderer.render();
     }
   }]);
 }();
@@ -1117,7 +1170,7 @@ var ToolbarEventHandler = /*#__PURE__*/function () {
       // Select the new tool
       this.currentTool = newTool;
       this.selectedButton = button;
-      this.selectedButton.style.border = "1px solid green";
+      this.selectedButton.style.border = "1px solid #f3f6f4";
       return this.currentTool; // For simplicity, returning toolName as a string
     }
   }]);
@@ -1144,13 +1197,46 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `body {
+___CSS_LOADER_EXPORT___.push([module.id, `
+
+/*=============== VARIABLES CSS ===============*/
+:root {
+    /*========== Colors ==========*/
+    --header-column-background: #24305a;
+    --border-color: #141b35;
+    --canvas-background: #060a19;
+    --main-color: 	#f3f6f4;
+  
+    /*========== Font and typography ==========*/
+    --body-font: "Pixelify Sans", sans-serif;
+    --biggest-font-size: 2.5rem;
+    --h1-font-size: 2rem;
+    --h2-font-size: 1.25rem;
+    --h3-font-size: 1.125rem;
+    --normal-font-size: .938rem;
+    --small-font-size: .813rem;
+    --smaller-font-size: .75rem;
+  
+    /*========== Font weight ==========*/
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-semi-bold: 600;
+    --font-bold: 700;
+}
+
+/*=============== BASE ===============*/
+body {
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Ensure the body takes the full height of the viewport */
-    font-family: "Pixelify Sans", sans-serif;
+    height: 100vh;
+    font-family: var(--body-font);
+    color: var(--main-color)
+}
+
+button {
+    font-family: var(--body-font);
 }
 
 ul{
@@ -1163,67 +1249,107 @@ li {
     list-style-type: none;
 }
 
+h1 {
+    font-weight: lighter;
+    font-size: var(--h1-font-size);
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
+
+/*=============== HEADER ===============*/
+#headerContainer{
+    display: flex;
+    background-color: var(--header-column-background);
+    border: 1px solid var(--border-color);
+    flex: 0 0 auto;
+    width: 100%;
+    align-items: center;
+}
+
+.title{
+    padding-left: 10px;
+}
+
+/* Dropdown Button */
+.dropbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 8px;
+    font-size: var(--h3-font-size);
+    border: none;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .settingsBar {
+    position: relative;
+    display: inline-block;
+    padding-left: 10px;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 3;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content div {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content div:hover {background-color: #ddd;}
+  
+  /* Show the dropdown menu on hover */
+  .settingsBar:hover .dropdown-content {display: block;}
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .settingsBar:hover .dropbtn {background-color: #3e8e41;}
+
+/*=============== MAIN ===============*/
 .mainContainer{
     display: flex;
     flex: 1; /* Allow the container to grow and fill the available space */
 }
 
-#headerContainer{
-    display: flex;
-    background-color: blue;
-    flex: 0 0 auto; /* Ensure the header does not shrink or grow */
-    width: 100%; /* Ensure the header takes full width */
-    height: 80px;
-}
-
-h1 {
-    font-weight: lighter;
-}
-
-.settingsBar{
-    padding-left: 20px;
-    padding-top: 30px;
-}
-
-.settingsBarItem{
-    display: inline-block;
-    margin-right: 10px;
-}
-
-.settingButton:hover{
-    background-color: white;
-}
-
+/*=============== LEFT COLUMN ===============*/
 .leftCol{
+    background-color: var(--header-column-background);
+    border: 1px solid var(--border-color);
     flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */
 }
 
 .toolBarList{
-    width: 30px;
+    width: 34px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.toolItem{
-    padding-top: 1px;
-    padding-bottom: 1px;
-}
-
 .toolButton:hover{
-    background-color: white;
+    background-color: var(--main-color);
 }
 
+/*=============== CENTER COLUMN ===============*/
 .centerCol {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center; /* Center the content vertically */
     width: 100vw;
-    background-color: green;
+    background-color: var(--canvas-background);
 }
 
 .canvasWrapper {
+    margin-top: 20px;
+    margin-bottom: 20px;
     position: relative;
     display: flex;
     align-items: center;
@@ -1231,10 +1357,11 @@ h1 {
     overflow-y: scroll;
     overflow-x: scroll;
     width: 100%;
-    height: 100%; /* Make sure it takes up all available space */
+    height: 100%;
 }
 
 #backgroundCanvas, #pixelCanvas {
+    
     position: absolute;
     display: block;
 }
@@ -1245,6 +1372,12 @@ h1 {
 
 #pixelCanvas {
     z-index: 2;
+}
+
+/*=============== RIGHT COLUMN ===============*/
+.rightCol{
+    background-color: var(--header-column-background);
+    border: 1px solid var(--border-color);
 }
 
 .colorPickerImg_Container{
@@ -1270,10 +1403,11 @@ h1 {
 .colorBox {
     width: 15px;
     height: 15px;
-    border: 1px solid black;
+    border: 1px solid var(--main-color);
     align-self: center;
 }
 
+/*=============== MODAL ===============*/
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -1309,7 +1443,7 @@ h1 {
     text-decoration: none;
     cursor: pointer;
 }
-`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"AAAA;IACI,SAAS;IACT,UAAU;IACV,aAAa;IACb,sBAAsB;IACtB,aAAa,EAAE,0DAA0D;IACzE,wCAAwC;AAC5C;;AAEA;IACI,uBAAuB;IACvB,qBAAqB;IACrB,yBAAyB;AAC7B;;AAEA;IACI,qBAAqB;AACzB;;AAEA;IACI,aAAa;IACb,OAAO,EAAE,6DAA6D;AAC1E;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,cAAc,EAAE,8CAA8C;IAC9D,WAAW,EAAE,uCAAuC;IACpD,YAAY;AAChB;;AAEA;IACI,oBAAoB;AACxB;;AAEA;IACI,kBAAkB;IAClB,iBAAiB;AACrB;;AAEA;IACI,qBAAqB;IACrB,kBAAkB;AACtB;;AAEA;IACI,uBAAuB;AAC3B;;AAEA;IACI,YAAY,EAAE,uDAAuD;AACzE;;AAEA;IACI,WAAW;IACX,aAAa;IACb,sBAAsB;IACtB,mBAAmB;AACvB;;AAEA;IACI,gBAAgB;IAChB,mBAAmB;AACvB;;AAEA;IACI,uBAAuB;AAC3B;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,uBAAuB,EAAE,kCAAkC;IAC3D,YAAY;IACZ,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,uBAAuB,EAAE,wBAAwB;IACjD,kBAAkB;IAClB,kBAAkB;IAClB,WAAW;IACX,YAAY,EAAE,8CAA8C;AAChE;;AAEA;IACI,kBAAkB;IAClB,cAAc;AAClB;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;;AAEA;IACI,aAAa;IACb,SAAS;AACb;;AAEA;IACI,uBAAuB;IACvB,qBAAqB;AACzB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,uBAAuB;IACvB,kBAAkB;AACtB;;AAEA;IACI,aAAa,EAAE,sBAAsB;IACrC,eAAe,EAAE,kBAAkB;IACnC,UAAU,EAAE,eAAe;IAC3B,OAAO;IACP,MAAM;IACN,WAAW,EAAE,eAAe;IAC5B,YAAY,EAAE,gBAAgB;IAC9B,cAAc,EAAE,4BAA4B;IAC5C,4BAA4B,EAAE,mBAAmB;IACjD,iCAAiC,EAAE,qBAAqB;IACxD,iBAAiB;AACrB;;AAEA;IACI,yBAAyB;IACzB,eAAe,EAAE,kCAAkC;IACnD,aAAa;IACb,sBAAsB;IACtB,UAAU,EAAE,oDAAoD;AACpE;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;IACf,iBAAiB;AACrB;;AAEA;;IAEI,YAAY;IACZ,qBAAqB;IACrB,eAAe;AACnB","sourcesContent":["body {\n    margin: 0;\n    padding: 0;\n    display: flex;\n    flex-direction: column;\n    height: 100vh; /* Ensure the body takes the full height of the viewport */\n    font-family: \"Pixelify Sans\", sans-serif;\n}\n\nul{\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n    padding-inline-start: 0px;\n}\n\nli {\n    list-style-type: none;\n}\n\n.mainContainer{\n    display: flex;\n    flex: 1; /* Allow the container to grow and fill the available space */\n}\n\n#headerContainer{\n    display: flex;\n    background-color: blue;\n    flex: 0 0 auto; /* Ensure the header does not shrink or grow */\n    width: 100%; /* Ensure the header takes full width */\n    height: 80px;\n}\n\nh1 {\n    font-weight: lighter;\n}\n\n.settingsBar{\n    padding-left: 20px;\n    padding-top: 30px;\n}\n\n.settingsBarItem{\n    display: inline-block;\n    margin-right: 10px;\n}\n\n.settingButton:hover{\n    background-color: white;\n}\n\n.leftCol{\n    flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */\n}\n\n.toolBarList{\n    width: 30px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n}\n\n.toolItem{\n    padding-top: 1px;\n    padding-bottom: 1px;\n}\n\n.toolButton:hover{\n    background-color: white;\n}\n\n.centerCol {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center; /* Center the content vertically */\n    width: 100vw;\n    background-color: green;\n}\n\n.canvasWrapper {\n    position: relative;\n    display: flex;\n    align-items: center;\n    justify-content: center; /* Center the canvases */\n    overflow-y: scroll;\n    overflow-x: scroll;\n    width: 100%;\n    height: 100%; /* Make sure it takes up all available space */\n}\n\n#backgroundCanvas, #pixelCanvas {\n    position: absolute;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n}\n\n.colorPickerImg_Container{\n    width: 200px;\n    padding: 10px;\n}\n\n.colorInfoContainer {\n    display: flex;\n    flex-direction: column;\n}\n\n.promptBox{\n    display: flex;\n    gap: 10px;\n}\n\n.colorPrompt{\n    margin-block-start: 2px;\n    margin-block-end: 2px;\n}\n\n.colorBox {\n    width: 15px;\n    height: 15px;\n    border: 1px solid black;\n    align-self: center;\n}\n\n.modal {\n    display: none; /* Hidden by default */\n    position: fixed; /* Stay in place */\n    z-index: 1; /* Sit on top */\n    left: 0;\n    top: 0;\n    width: 100%; /* Full width */\n    height: 100%; /* Full height */\n    overflow: auto; /* Enable scroll if needed */\n    background-color: rgb(0,0,0); /* Fallback color */\n    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */\n    padding-top: 60px;\n}\n\n.modal-content {\n    background-color: #fefefe;\n    margin: 5% auto; /* 15% from the top and centered */\n    padding: 20px;\n    border: 1px solid #888;\n    width: 80%; /* Could be more or less, depending on screen size */\n}\n\n.close-button {\n    color: #aaa;\n    float: right;\n    font-size: 28px;\n    font-weight: bold;\n}\n\n.close-button:hover,\n.close-button:focus {\n    color: black;\n    text-decoration: none;\n    cursor: pointer;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"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","sourcesContent":["\n\n/*=============== VARIABLES CSS ===============*/\n:root {\n    /*========== Colors ==========*/\n    --header-column-background: #24305a;\n    --border-color: #141b35;\n    --canvas-background: #060a19;\n    --main-color: \t#f3f6f4;\n  \n    /*========== Font and typography ==========*/\n    --body-font: \"Pixelify Sans\", sans-serif;\n    --biggest-font-size: 2.5rem;\n    --h1-font-size: 2rem;\n    --h2-font-size: 1.25rem;\n    --h3-font-size: 1.125rem;\n    --normal-font-size: .938rem;\n    --small-font-size: .813rem;\n    --smaller-font-size: .75rem;\n  \n    /*========== Font weight ==========*/\n    --font-regular: 400;\n    --font-medium: 500;\n    --font-semi-bold: 600;\n    --font-bold: 700;\n}\n\n/*=============== BASE ===============*/\nbody {\n    margin: 0;\n    padding: 0;\n    display: flex;\n    flex-direction: column;\n    height: 100vh;\n    font-family: var(--body-font);\n    color: var(--main-color)\n}\n\nbutton {\n    font-family: var(--body-font);\n}\n\nul{\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n    padding-inline-start: 0px;\n}\n\nli {\n    list-style-type: none;\n}\n\nh1 {\n    font-weight: lighter;\n    font-size: var(--h1-font-size);\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n}\n\n/*=============== HEADER ===============*/\n#headerContainer{\n    display: flex;\n    background-color: var(--header-column-background);\n    border: 1px solid var(--border-color);\n    flex: 0 0 auto;\n    width: 100%;\n    align-items: center;\n}\n\n.title{\n    padding-left: 10px;\n}\n\n/* Dropdown Button */\n.dropbtn {\n    background-color: #04AA6D;\n    color: white;\n    padding: 8px;\n    font-size: var(--h3-font-size);\n    border: none;\n  }\n  \n  /* The container <div> - needed to position the dropdown content */\n  .settingsBar {\n    position: relative;\n    display: inline-block;\n    padding-left: 10px;\n  }\n  \n  /* Dropdown Content (Hidden by Default) */\n  .dropdown-content {\n    display: none;\n    position: absolute;\n    background-color: #f1f1f1;\n    min-width: 160px;\n    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n    z-index: 3;\n  }\n  \n  /* Links inside the dropdown */\n  .dropdown-content div {\n    color: black;\n    padding: 12px 16px;\n    text-decoration: none;\n    display: block;\n  }\n  \n  /* Change color of dropdown links on hover */\n  .dropdown-content div:hover {background-color: #ddd;}\n  \n  /* Show the dropdown menu on hover */\n  .settingsBar:hover .dropdown-content {display: block;}\n  \n  /* Change the background color of the dropdown button when the dropdown content is shown */\n  .settingsBar:hover .dropbtn {background-color: #3e8e41;}\n\n/*=============== MAIN ===============*/\n.mainContainer{\n    display: flex;\n    flex: 1; /* Allow the container to grow and fill the available space */\n}\n\n/*=============== LEFT COLUMN ===============*/\n.leftCol{\n    background-color: var(--header-column-background);\n    border: 1px solid var(--border-color);\n    flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */\n}\n\n.toolBarList{\n    width: 34px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n}\n\n.toolButton:hover{\n    background-color: var(--main-color);\n}\n\n/*=============== CENTER COLUMN ===============*/\n.centerCol {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center; /* Center the content vertically */\n    width: 100vw;\n    background-color: var(--canvas-background);\n}\n\n.canvasWrapper {\n    margin-top: 20px;\n    margin-bottom: 20px;\n    position: relative;\n    display: flex;\n    align-items: center;\n    justify-content: center; /* Center the canvases */\n    overflow-y: scroll;\n    overflow-x: scroll;\n    width: 100%;\n    height: 100%;\n}\n\n#backgroundCanvas, #pixelCanvas {\n    \n    position: absolute;\n    display: block;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n}\n\n/*=============== RIGHT COLUMN ===============*/\n.rightCol{\n    background-color: var(--header-column-background);\n    border: 1px solid var(--border-color);\n}\n\n.colorPickerImg_Container{\n    width: 200px;\n    padding: 10px;\n}\n\n.colorInfoContainer {\n    display: flex;\n    flex-direction: column;\n}\n\n.promptBox{\n    display: flex;\n    gap: 10px;\n}\n\n.colorPrompt{\n    margin-block-start: 2px;\n    margin-block-end: 2px;\n}\n\n.colorBox {\n    width: 15px;\n    height: 15px;\n    border: 1px solid var(--main-color);\n    align-self: center;\n}\n\n/*=============== MODAL ===============*/\n.modal {\n    display: none; /* Hidden by default */\n    position: fixed; /* Stay in place */\n    z-index: 1; /* Sit on top */\n    left: 0;\n    top: 0;\n    width: 100%; /* Full width */\n    height: 100%; /* Full height */\n    overflow: auto; /* Enable scroll if needed */\n    background-color: rgb(0,0,0); /* Fallback color */\n    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */\n    padding-top: 60px;\n}\n\n.modal-content {\n    background-color: #fefefe;\n    margin: 5% auto; /* 15% from the top and centered */\n    padding: 20px;\n    border: 1px solid #888;\n    width: 80%; /* Could be more or less, depending on screen size */\n}\n\n.close-button {\n    color: #aaa;\n    float: right;\n    font-size: 28px;\n    font-weight: bold;\n}\n\n.close-button:hover,\n.close-button:focus {\n    color: black;\n    text-decoration: none;\n    cursor: pointer;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2057,4 +2191,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle47388451f760b7ae825d.js.map
+//# sourceMappingURL=bundle77469287398c8f9921c8.js.map

@@ -9,20 +9,44 @@
     <title>pixelCanvas</title>
 </head>
 <body>
+<body>
     <div id="headerContainer">
-        <h1>PixelCanvas</h1>
+        <h1 class="title">PixelCanvas</h1>
         <div class="settingsBar">
-            <ul class="settingsBar_List">
-                <li class="settingsBarItem">
-                    <img src="" alt="" class="resizeImg settingButton">
-                </li>
-                <li class="settingsBarItem">
-                    <img src="" alt="" class="clear settingButton">
-                </li>
-                <li class="settingsBarItem">
-                    <button class="downloadButton">Download as PNG</button>
-                </li>
-            </ul>   
+            <div class="dropdown">
+                <button class="dropbtn">File
+                    <img src="" alt="" class="fileImg">
+                </button>
+                <div class="dropdown-content">
+                    <div class="clear settingButton">
+                        Clear
+                        <img class="clearImg">
+                    </div>
+                    <div class="resize settingButton">
+                        Resize
+                        <img src="" alt="" class="resizeImg">
+                    </div>
+                    <div class="export settingButton">
+                        Export/Download
+                        <img src="" alt="" class="exportImg">
+                    </div>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">Select
+                    <img src="" alt="" class="selectImg">
+                </button>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">Layer
+                    <img src="" alt="" class="layerImg">
+                </button>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">Settings
+                    <img src="" alt="" class="settingsImg">
+                </button>
+            </div>
         </div>
     </div>
     <div class="mainContainer">
@@ -43,7 +67,7 @@
                 <li class="toolItem">
                     <img class="line toolButton">
                 </li>
-                <li class="toolItem">
+                <li class="toolItem lastButton">
                     <img class="fill toolButton">
                 </li>
             </ul>
@@ -58,13 +82,14 @@
             <div class="colorPickerImg_Container">
                 <img id="colorPickerImg" alt="" style="display: none">
                 <canvas id="colorPickerCanvas"></canvas>
-                <div class="colorInfoContainer">
-                    <div class="promptBox">
+                <div class="container">
+                    <div class="colorInfoContainer">
                         <p class="colorPrompt">Color Selected:</p>
-                        <div class="colorBox"></div>
+                        <div class="hexCode" style="background-color: #000000;">#000000</div>
                     </div>
-                    <div class="hexCode"></div>
-                    <div class="rgbValue"></div>
+                    <div class="paletteContainer">
+                        aa
+                    </div>
                 </div>
             </div>
         </div>

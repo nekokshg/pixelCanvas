@@ -1,10 +1,60 @@
+/*=============== VARIABLES CSS ===============*/
+:root {
+    /*========== Colors ==========*/
+    --white-color: #FFFFFF;
+
+    /** CSS DARK THEME PRIMARY COLORS */
+    --color-primary-100: #f1d217;
+    --color-primary-200: #f5d741;
+    --color-primary-300: #f8dc5e;
+    --color-primary-400: #fae177;
+    --color-primary-500: #fde58e;
+    --color-primary-600: #feeaa5;
+    /** CSS DARK THEME SURFACE COLORS */
+    --color-surface-100: #121212;
+    --color-surface-200: #282828;
+    --color-surface-300: #3f3f3f;
+    --color-surface-400: #575757;
+    --color-surface-500: #717171;
+    --color-surface-600: #8b8b8b;
+    /** CSS DARK THEME MIXED SURFACE COLORS */
+    --color-surface-mixed-100: #796a22;
+    --color-surface-mixed-200: #88793a;
+    --color-surface-mixed-300: #978951;
+    --color-surface-mixed-400: #a69969;
+    --color-surface-mixed-500: #b5a981;
+    --color-surface-mixed-600: #c4ba99;
+  
+    /*========== Font and typography ==========*/
+    --body-font: "Pixelify Sans", sans-serif;
+    --biggest-font-size: 2.5rem;
+    --h1-font-size: 2rem;
+    --h2-font-size: 1.25rem;
+    --h3-font-size: 1.125rem;
+    --normal-font-size: .938rem;
+    --small-font-size: .813rem;
+    --smaller-font-size: .75rem;
+  
+    /*========== Font weight ==========*/
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-semi-bold: 600;
+    --font-bold: 700;
+}
+
+/*=============== BASE ===============*/
 body {
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Ensure the body takes the full height of the viewport */
-    font-family: "Pixelify Sans", sans-serif;
+    height: 100vh;
+    font-family: var(--body-font);
+    color: var(--white-color)
+}
+
+button {
+    font-family: var(--body-font);
 }
 
 ul{
@@ -17,67 +67,139 @@ li {
     list-style-type: none;
 }
 
+h1 {
+    font-weight: lighter;
+    font-size: var(--h1-font-size);
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
+
+/*=============== HEADER ===============*/
+#headerContainer {
+    display: flex;
+    background-color: var(--color-surface-300);
+    flex: 0 0 auto;
+    width: 100%;
+    align-items: center;
+    padding: 2px;
+}
+
+.title {
+    font-size: var(--h2-font-size);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.settingsBar {
+    display: flex;
+    gap: 10px; /* Adds space between buttons */
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: var(--color-primary-400);
+    color: var(--color-surface-100);
+    font-size: var(--normal-font-size);
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.settingButton {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 3;
+    font-size: var(--normal-font-size);
+}
+
+.dropdown-content div {
+    color: black;
+    padding: 4px;
+    text-decoration: none;
+}
+
+.dropdown-content div:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    cursor: pointer;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: var(--color-primary-100);
+    cursor: pointer;
+}
+
+
+
+/*=============== MAIN ===============*/
 .mainContainer{
     display: flex;
     flex: 1; /* Allow the container to grow and fill the available space */
 }
 
-#headerContainer{
-    display: flex;
-    background-color: blue;
-    flex: 0 0 auto; /* Ensure the header does not shrink or grow */
-    width: 100%; /* Ensure the header takes full width */
-    height: 80px;
-}
-
-h1 {
-    font-weight: lighter;
-}
-
-.settingsBar{
-    padding-left: 20px;
-    padding-top: 30px;
-}
-
-.settingsBarItem{
-    display: inline-block;
-    margin-right: 10px;
-}
-
-.settingButton:hover{
-    background-color: white;
-}
-
+/*=============== LEFT COLUMN ===============*/
 .leftCol{
+    background-color: var(--color-surface-300);
     flex-grow: 1; /* Allow leftCol to grow and fill the remaining space */
 }
 
 .toolBarList{
-    width: 30px;
+    width: 34px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .toolItem{
-    padding-top: 1px;
-    padding-bottom: 1px;
+    background-color: var(--color-surface-mixed-200);
+}
+
+.toolButton{
+    background-color: var(--color-primary-400);
+    border: 1px solid var(--color-primary-400);
 }
 
 .toolButton:hover{
-    background-color: white;
+    background-color: var(--color-primary-100);
+    border: 1px solid var(--color-primary-100);
+    cursor: pointer;
 }
 
+.toolButton.selected {
+    border: none;
+    background-color:var(--color-primary-100);
+}
+
+/*=============== CENTER COLUMN ===============*/
 .centerCol {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center; /* Center the content vertically */
     width: 100vw;
-    background-color: green;
+    background-color: var(--color-surface-100);
 }
 
 .canvasWrapper {
+    margin-top: 20px;
+    margin-bottom: 20px;
     position: relative;
     display: flex;
     align-items: center;
@@ -85,10 +207,11 @@ h1 {
     overflow-y: scroll;
     overflow-x: scroll;
     width: 100%;
-    height: 100%; /* Make sure it takes up all available space */
+    height: 100%;
 }
 
 #backgroundCanvas, #pixelCanvas {
+    
     position: absolute;
     display: block;
 }
@@ -101,19 +224,21 @@ h1 {
     z-index: 2;
 }
 
+/*=============== RIGHT COLUMN ===============*/
+.rightCol{
+    background-color: var(--color-surface-300);
+}
+
 .colorPickerImg_Container{
     width: 200px;
-    padding: 10px;
+    padding-left: 8px;
+    padding-right: 10px;
 }
 
-.colorInfoContainer {
+.container{
     display: flex;
     flex-direction: column;
-}
-
-.promptBox{
-    display: flex;
-    gap: 10px;
+    gap: 5px;
 }
 
 .colorPrompt{
@@ -121,13 +246,15 @@ h1 {
     margin-block-end: 2px;
 }
 
-.colorBox {
-    width: 15px;
-    height: 15px;
-    border: 1px solid black;
-    align-self: center;
+.hexCode{
+    color: var(--second-color);
 }
 
+.paletteContainer{
+    background-color: var(--color-surface-200);
+}
+
+/*=============== MODAL ===============*/
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */

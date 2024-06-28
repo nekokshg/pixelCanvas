@@ -5,7 +5,7 @@ export class CanvasRenderer {
         this.width = this.canvasManager.canvas.width;
         this.height = this.canvasManager.canvas.height;
         this.ctx = canvasManager.getContext();
-        this.cellSize = canvasManager.cellSize; 
+
         // Disable anti-aliasing
         this.ctx.imageSmoothingEnabled = false;
 

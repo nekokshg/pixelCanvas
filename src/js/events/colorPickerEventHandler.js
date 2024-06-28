@@ -75,28 +75,37 @@ export class ColorPickerEventHandler {
         const b = imageData[2];
         const a = imageData[3];
         const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
-        const hex = this.rgbaToHex(r, g, b, a);
+        const hex = this.rgbaToHex(r, g, b);
         this.colorPicker.setColor(rgba);
         this.displayColor(hex, rgba);
     }
 
-    rgbaToHex(r, g, b, a) {
+    rgbaToHex(r, g, b) {
         const toHex = (n) => n.toString(16).padStart(2, '0').toUpperCase();
     
         const red = toHex(r);
         const green = toHex(g);
         const blue = toHex(b);
-        const alpha = toHex(Math.round(a * 255 / 100)); // Ensure alpha is in the range [0, 255]
     
-        return `#${red}${green}${blue}${alpha}`;
+        return `#${red}${green}${blue}`;
     }
 
-    displayColor(hex, rgba){
+    displayColor(hex, rgba) {
         const hexcode = document.getElementsByClassName('hexCode')[0];
-        const rgbaVal = document.getElementsByClassName('rgbValue')[0];
-        const colorBox = document.getElementsByClassName('colorBox')[0];
-        hexcode.textContent = `hexcode: ${hex}`;
-        rgbaVal.textContent = rgba;
-        colorBox.style.backgroundColor = rgba;
+        
+        // Set the hex code and background color
+        hexcode.style.backgroundColor = rgba;
+        hexcode.textContent = hex;
+        
+        // Check if the RGBA color is too light
+        const rgbValues = rgba.match(/\d+/g); // Extract RGB values
+        const brightness = (parseInt(rgbValues[0]) * 299 + parseInt(rgbValues[1]) * 587 + parseInt(rgbValues[2]) * 114) / 1000; // Calculate brightness using a weighted formula
+        
+        // Set text color based on brightness
+        if (brightness > 125) { // Adjust the threshold value as needed
+            hexcode.style.color = 'black'; // Change text color to black
+        } else {
+            hexcode.style.color = 'white'; // Keep text color white
+        }
     }
 }
