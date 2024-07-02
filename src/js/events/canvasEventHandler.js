@@ -9,6 +9,11 @@ export class CanvasEventHandler {
         this.canvasRenderer = this.canvasRenderers[0];
         this.canvas = this.canvasManager.canvas;
 
+        //Canvas Info
+        this.xCoordInfo = document.getElementsByClassName('xCoord')[0];
+        this.yCoordInfo = document.getElementsByClassName('yCoord')[0];
+        this.zoomAmountInfo = document.getElementsByClassName('zoomAmount')[0];
+
         //BG Canvas
         this.bgManager = this.canvasManagers[1];
         this.bgRenderer = this.canvasRenderers[1];
@@ -30,14 +35,13 @@ export class CanvasEventHandler {
         this.lastY = null;
         this.startX = null;
         this.startY = null;
-        // Initialize translation offsets
-        this.offsetX = 0;
-        this.offsetY = 0;
+
         this.prevX = 0;
         this.notZooming = true;
         this.zoomOut_ = false;
         this.zoomPoints = [];
         this.zoomFactor = 1;
+        this.rounded = true;
     }
 
     init() {
@@ -55,7 +59,7 @@ export class CanvasEventHandler {
             this.selectedTool = this.toolbar.currentTool; // This will return the selected tool function
             this.isDoing = true;
 
-            const { x, y } = this.getMousePosition(event);
+            const { x, y } = this.getMousePosition(event, this.rounded);
 
             this.lastX = x;
             this.lastY = y;
@@ -75,7 +79,7 @@ export class CanvasEventHandler {
 
     onMouseMove(event) {
         if (!this.isPopup && this.isDoing) {
-            const { x, y } = this.getMousePosition(event);
+            const { x, y } = this.getMousePosition(event, this.rounded);
 
             // Perform drawing operations using the selected tool
             if (this.selectedTool === 'pencil') {
@@ -94,7 +98,7 @@ export class CanvasEventHandler {
 
     onMouseUp(event) {
         if (this.selectedTool === 'line') {
-            const { x, y } = this.getMousePosition(event);
+            const { x, y } = this.getMousePosition(event, this.rounded);
             this.commitLine(this.startX, this.startY, x, y);
         } 
         this.isDoing = false;
@@ -107,19 +111,19 @@ export class CanvasEventHandler {
     }
 
     onMouseClick(event) {
-        const { x, y } = this.getMousePosition(event);
         if (this.selectedTool === 'fill') {
+            this.rounded = false;
+            const { x, y } = this.getMousePosition(event, this.rounded);
             this.fillArea(x, y);
+            this.rounded = true;
         } else if (this.selectedTool === 'zoomIn'){
             this.zoomIn(event);
         } else if (this.selectedTool === 'zoomOut'){
             this.zoomOut(event);
         }
-        this.lastX = x;
-        this.lastY = y;
     }
 
-    getMousePosition(event) {
+    getMousePosition(event, rounded) {
         const rect = this.canvas.getBoundingClientRect();
         
         // Mouse coordinates relative to the canvas
@@ -127,14 +131,19 @@ export class CanvasEventHandler {
         const y_canvas = event.clientY - rect.top;
 
         // Transform the coordinates considering the current offset and scale
-        let x = (x_canvas - this.offsetX) / this.scale;
-        let y = (y_canvas - this.offsetY) / this.scale;
-        
-        x = Math.floor(x);
-        y = Math.floor(y);
+        let x = x_canvas / this.scale;
+        let y = y_canvas / this.scale;
+
+        if (rounded == true){
+            x = Math.floor(x)
+            y = Math.floor(y)
+        }
+
+        this.xCoordInfo.textContent = `X: ${x}`;
+        this.yCoordInfo.textContent = `Y: ${y}`;
 
         return { x, y };
-    }
+    }  
 
     draw(prevX, prevY, x, y) {
         const color = this.colorPicker.getColor();
@@ -154,6 +163,7 @@ export class CanvasEventHandler {
             this.canvasRenderer.eraseLine(prevX, prevY, x, y);
         }
     }
+
 
     zoom(zf, event) {
         this.notZooming = false;
@@ -198,43 +208,20 @@ export class CanvasEventHandler {
             y = zoomedY;
         }
 
-        // Calculate the new transformation
-        let dx = x - x * scaleRatio;
-        let dy = y - y * scaleRatio;
-        
-        // Calculate the position of the cursor in the coordinate system
-        // before the zoom
-        let prevCoordX = (x - this.offsetX) / prevScale;
-        let prevCoordY = (y - this.offsetY) / prevScale;
-
-        // Calculate the position of the cursor in the coordinate system
-        // after the zoom
-        let newCoordX = prevCoordX * newScale;
-        let newCoordY = prevCoordY * newScale;
-
-        let DX = x - newCoordX;
-        let DY = y - newCoordY;
-        
-        // Calculate the new offsets
-        this.offsetX = DX;
-        this.offsetY = DY;
-
-        // Transform the cursor position from screen space into the transformed canvas context
+        // Resize canvases based on newScale
         this.canvasManagers.forEach(manager => {
-            manager.ctx.clearRect(0,0, canvas.width, canvas.height);
-            let t = manager.ctx.getTransform();
-            manager.ctx.setTransform(1, 0, 0, 1, 0, 0);
-            manager.ctx.translate(dx, dy);
-            manager.ctx.scale(scaleRatio, scaleRatio);
-            manager.ctx.transform(t.a, t.b, t.c, t.d, t.e, t.f);
-            manager.scale = Math.round(newScale); //this affects the fill but when its unrounded the fill doesnt work after
+            manager.resize(newScale);
         });
     
         // Render all canvas renderers
         this.canvasRenderer.render();
         this.bgRenderer.render();
+
+        // Scroll to mouse click on canvas
+        
+        
     }
-    
+
     zoomIn(event){
         const zoomFactor = this.zoomFactor;
         this.zoom(zoomFactor + 1, event);
@@ -274,7 +261,7 @@ export class CanvasEventHandler {
     }
 
     fillArea(x, y) {
-        const targetColor = this.getColorAtPixel(x, y);
+        const targetColor = this.canvasRenderer.getColorAtPixel(x, y);
         const colorString = this.colorPicker.getColor();
         const rgbaValues = colorString.match(/\d+(\.\d+)?/g);
     
@@ -286,25 +273,9 @@ export class CanvasEventHandler {
         const fillColor = { r, g, b, a };
     
         // Fill only if the target is not already the fill color
-        if (!this.colorsAreEqual(targetColor, fillColor, true)) {
+        if (!this.canvasRenderer.colorsAreEqual(targetColor, fillColor, true)) {
             this.canvasRenderer.floodFill(x, y, targetColor, fillColor);
-        }
+        } 
     }
-      
-    getColorAtPixel(x, y) {
-        const pixel = this.canvasRenderer.ctx.getImageData(x, y, 1, 1).data;
-        return {
-            r: pixel[0],
-            g: pixel[1],
-            b: pixel[2],
-            a: pixel[3]
-        };
-    }
-    
-    colorsAreEqual(color1, color2, includeAlpha = false) {
-        if (includeAlpha) {
-            return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b && color1.a === color2.a;
-        }
-        return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
-    }
-}
+
+}    

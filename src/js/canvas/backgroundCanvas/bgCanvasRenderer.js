@@ -1,6 +1,7 @@
 export class BGCanvasRenderer {
     constructor(canvasManager) {
         this.canvasManager = canvasManager;
+        this.canvas = this.canvasManager.canvas;
         this.width = this.canvasManager.canvas.width;
         this.height = this.canvasManager.canvas.height;
         this.ctx = canvasManager.getContext();
@@ -10,8 +11,8 @@ export class BGCanvasRenderer {
     }
 
     render() {
-        const blocksX = this.ctx.canvas.width / this.cellSize;
-        const blocksY = this.ctx.canvas.height / this.cellSize;
+        const blocksX = this.canvas.width / this.cellSize;
+        const blocksY = this.canvas.height / this.cellSize;
     
         for (let i = 0; i < Math.ceil(blocksY); i++) {
             for (let j = 0; j < Math.ceil(blocksX); j++) {

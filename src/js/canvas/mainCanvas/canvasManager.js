@@ -8,6 +8,9 @@ export class CanvasManager {
         this.scale = scale;
         this.imageData = null;
         this.updateCanvasSize();
+        const canvasContainer = document.getElementsByClassName("canvasWrapper")[0];
+        canvasContainer.style.width = `${this.canvas.width}px`;
+        canvasContainer.style.height = `${this.canvas.height}px`;
     }
 
     getContext() {
@@ -17,6 +20,19 @@ export class CanvasManager {
     setScale(scale) {
         this.scale = scale;
         this.updateCanvasSize();
+    }
+
+    resize(scale){
+        this.scale = scale;
+        this.canvas.width = this.width * this.scale;
+        this.canvas.height = this.height * this.scale;
+
+        const canvasContainer = document.getElementsByClassName("canvasWrapper")[0];
+        canvasContainer.style.width = `${this.canvas.width}px`;
+        canvasContainer.style.height = `${this.canvas.height}px`;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.scale(this.scale, this.scale);
     }
 
     resizeCanvas(width, height){

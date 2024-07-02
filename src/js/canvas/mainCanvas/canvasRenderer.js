@@ -105,58 +105,51 @@ export class CanvasRenderer {
         }
         return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
     }
-    
+
+    getColorAtPixel(mouseX, mouseY) {
+        const x = mouseX * this.canvasManager.scale;
+        const y = mouseY * this.canvasManager.scale;
+        const pixel = this.ctx.getImageData(x, y, 1, 1).data;
+
+        return {
+            r: pixel[0],
+            g: pixel[1],
+            b: pixel[2],
+            a: pixel[3]
+        };
+    }
+
     floodFill(x, y, targetColor, fillColor) {
-        const scale = this.canvasManager.scale; // Get the current scale from the canvas manager
-        const stack = [{ x, y }];
-        const width = this.canvasManager.canvas.width / scale;
-        const height = this.canvasManager.canvas.height / scale;
-        const imageData = this.ctx.getImageData(0, 0, width * scale, height * scale);
-        const data = imageData.data;
-    
-        const getPixelColor = (x, y) => {
-            const index = ((y * scale) * (width * scale) + (x * scale)) * 4;
-            return {
-                r: data[index],
-                g: data[index + 1],
-                b: data[index + 2],
-                a: data[index + 3]
-            };
-        };
-    
-        const setPixelColor = (x, y, color) => {
-            for (let i = 0; i < scale; i++) {
-                for (let j = 0; j < scale; j++) {
-                    const index = (((y * scale) + j) * (width * scale) + ((x * scale) + i)) * 4;
-                    data[index] = color.r;
-                    data[index + 1] = color.g;
-                    data[index + 2] = color.b;
-                    data[index + 3] = color.a;
-                }
-            }
-            this.pixels.push({ x, y, color: `rgba(${color.r},${color.g},${color.b},${color.a / 255})` });
-        };
-    
+    //NEED TO OPTIMIZE IT FREEZES WHEN TRYING TO FILL LARGE AREAS ON THE CANVAS
+        const stack = [{ x: Math.floor(x), y: Math.floor(y) }];
+        const width = this.canvasManager.canvas.width;
+        const height = this.canvasManager.canvas.height;
+
         while (stack.length) {
             const { x, y } = stack.pop();
     
             if (x < 0 || y < 0 || x >= width || y >= height) {
+                continue; // Skip if out of bounds
+            }
+
+            const currentColor = this.getColorAtPixel(x, y);
+    
+            // Skip if the current pixel is already filled with fillColor
+            if (this.colorsAreEqual(currentColor, fillColor, true)) {
                 continue;
             }
     
-            const currentColor = getPixelColor(x, y);
-    
-            // Fill if currentColor matches targetColor or if the pixel is transparent
+            // Fill if currentColor matches targetColor or if it's transparent
             if (this.colorsAreEqual(currentColor, targetColor, true) || currentColor.a === 0) {
-                setPixelColor(x, y, fillColor);
+                this.drawPixel(x, y, `rgba(${fillColor.r},${fillColor.g},${fillColor.b},${fillColor.a})`);
     
+                // Push adjacent pixels onto the stack
                 stack.push({ x: x + 1, y });
                 stack.push({ x: x - 1, y });
                 stack.push({ x, y: y + 1 });
                 stack.push({ x, y: y - 1 });
             }
         }
-        this.ctx.putImageData(imageData, 0, 0);
     }
-    
+
 }
