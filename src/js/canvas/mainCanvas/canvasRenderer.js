@@ -3,7 +3,6 @@ export class CanvasRenderer {
     constructor(canvasManager) {
         this.canvasManager = canvasManager;
         this.canvas = this.canvasManager.canvas;
-
         this.width = this.canvasManager.canvas.width;
         this.height = this.canvasManager.canvas.height;
         this.ctx = canvasManager.getContext();

@@ -218,7 +218,7 @@ export class CanvasEventHandler {
         this.bgRenderer.render();
 
         // Scroll to mouse click on canvas
-
+        this.scrollToClickedArea(event)
     }
 
     zoomIn(event){
@@ -233,6 +233,28 @@ export class CanvasEventHandler {
             this.zoom(zoomFactor, event);
         } 
         this.zoomOut_ = false;
+    }
+
+    scrollToClickedArea(event) {
+        const canvasContainer = document.getElementsByClassName('canvasWrapper')[0]; // Replace with your canvas container ID or reference
+        const containerRect = canvasContainer.getBoundingClientRect();
+    
+        // Get mouse position relative to the canvas
+        const { x, y } = this.getMousePosition(event);
+
+        // Calculate how much to scroll to make the clicked area visible
+        const scrollX = x * this.scale - containerRect.width / 2;
+        const scrollY = y * this.scale - containerRect.height / 2;
+
+        console.log(`Clicked Canvas X: ${x}, Y: ${y}`);
+        console.log(`Scroll X: ${scrollX}, Scroll Y: ${scrollY}`);
+
+        // Scroll the container to the calculated position
+        canvasContainer.scrollTo({
+            left: scrollX * this.scale,
+            top: scrollY * this.scale,
+            behavior: 'smooth' // Optional: Use smooth scrolling
+        });
     }
 
     // Save the starting point and preview image for the line
