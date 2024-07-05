@@ -218,8 +218,7 @@ export class CanvasEventHandler {
         this.bgRenderer.render();
 
         // Scroll to mouse click on canvas
-        
-        
+
     }
 
     zoomIn(event){
@@ -260,7 +259,10 @@ export class CanvasEventHandler {
         this.previewImage = null;
     }
 
-    fillArea(x, y) {
+    fillArea(mouseX, mouseY) {
+        const x = mouseX * this.originalScale;
+        const y = mouseY * this.originalScale;
+
         const targetColor = this.canvasRenderer.getColorAtPixel(x, y);
         const colorString = this.colorPicker.getColor();
         const rgbaValues = colorString.match(/\d+(\.\d+)?/g);
@@ -274,7 +276,7 @@ export class CanvasEventHandler {
     
         // Fill only if the target is not already the fill color
         if (!this.canvasRenderer.colorsAreEqual(targetColor, fillColor, true)) {
-            this.canvasRenderer.floodFill(x, y, targetColor, fillColor);
+            this.canvasRenderer.floodFill(mouseX, mouseY, targetColor, fillColor);
         } 
     }
 

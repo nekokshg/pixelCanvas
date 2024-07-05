@@ -3,6 +3,9 @@ export class CanvasManager {
     constructor(canvasId, width, height, scale) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
+        this.origWidth = width;
+        this.origHeight = height;
+
         this.width = width;
         this.height = height;
         this.scale = scale;
@@ -11,6 +14,19 @@ export class CanvasManager {
         const canvasContainer = document.getElementsByClassName("canvasWrapper")[0];
         canvasContainer.style.width = `${this.canvas.width}px`;
         canvasContainer.style.height = `${this.canvas.height}px`;
+
+    }
+
+    getOrigWidth(){
+        const width = this.origWidth;
+
+        return width;
+    }
+
+    getOrigHeight(){
+        const height = this.origHeight;
+
+        return height;
     }
 
     getContext() {
