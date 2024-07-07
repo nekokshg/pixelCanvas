@@ -78,6 +78,11 @@
             </ul>
         </div>
         <div class="centerCol">
+            <div class="canvasMisc">
+                <div class="resizeBar"></div>
+                <img src="" alt="" class="undo">
+                <img src="" alt="" class="redo">
+            </div>
             <div class="canvasWrapper">
                 <canvas id="pixelCanvas"></canvas>
                 <canvas id="backgroundCanvas"></canvas>
@@ -97,8 +102,12 @@
                         <p class="colorPrompt">Color Selected:</p>
                         <div class="hexCode" style="background-color: #000000;">#000000</div>
                     </div>
-                    <div class="paletteContainer">
-                        aa
+                    <button id="add-color">Add Color</button>
+                    <div class="palette-container">
+                        <div class="color-swatch" style="background-color: #000000;"></div>
+                        <div class="color-swatch" style="background-color: #000000;"></div>
+                        <div class="color-swatch" style="background-color: #000000;"></div>
+                        <button id="addColorSwatch">+</button>
                     </div>
                 </div>
             </div>
@@ -107,11 +116,15 @@
     <div id="resizeModal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h2>Enter Dimensions</h2>
-            <label for="widthInput">Width:</label>
-            <input type="number" id="widthInput" name="widthInput"><br>
-            <label for="heightInput">Height:</label>
-            <input type="number" id="heightInput" name="heightInput"><br>
+            <h2 class="dimensions">Enter Dimensions</h2>
+            <div class="resizeWidthContainer">
+                <label class="widthResize" for="widthInput">Width:</label>
+                <input type="number" id="widthInput" name="widthInput"><br>
+            </div>
+            <div class="resizeHeightContainer">
+                <label for="heightInput">Height:</label>
+                <input type="number" id="heightInput" name="heightInput"><br>
+            </div>
             <button id="submitDimensions">Submit</button>
         </div>
     </div>

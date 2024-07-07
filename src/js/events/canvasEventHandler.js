@@ -139,8 +139,8 @@ export class CanvasEventHandler {
             y = Math.floor(y)
         }
 
-        this.xCoordInfo.textContent = `X: ${x}`;
-        this.yCoordInfo.textContent = `Y: ${y}`;
+        this.xCoordInfo.textContent = `X: ${ Math.floor(x)}`;
+        this.yCoordInfo.textContent = `Y: ${Math.floor(y)}`;
 
         return { x, y };
     }  
@@ -235,6 +235,7 @@ export class CanvasEventHandler {
         this.zoomOut_ = false;
     }
 
+    //DEBUG LATER
     scrollToClickedArea(event) {
         const canvasContainer = document.getElementsByClassName('canvasWrapper')[0]; // Replace with your canvas container ID or reference
         const containerRect = canvasContainer.getBoundingClientRect();
@@ -300,6 +301,14 @@ export class CanvasEventHandler {
         if (!this.canvasRenderer.colorsAreEqual(targetColor, fillColor, true)) {
             this.canvasRenderer.floodFill(mouseX, mouseY, targetColor, fillColor);
         } 
+    }
+
+    undo() {
+        
+    }
+
+    redo() {
+
     }
 
 }    

@@ -14,6 +14,9 @@ export class ColorPickerEventHandler {
         this.colorPicker = colorPicker;
         this.isPicking = false;
 
+        this.addColorSwatchButton = document.getElementById('addColorSwatch');
+        this.paletteContainer = document.querySelector('.palette-container');
+
         // Event listeners
         this.initEventListeners();
     }
@@ -27,6 +30,7 @@ export class ColorPickerEventHandler {
         this.canvas.addEventListener('mousedown', (event) => this.onMouseDown(event));
         this.canvas.addEventListener('mousemove', (event) => this.onMouseMove(event));
         this.canvas.addEventListener('mouseup', () => this.onMouseUp());
+        this.addColorSwatchButton.addEventListener('click', () => this.onMouseClick());
     }
 
     onImageLoad() {
@@ -108,4 +112,5 @@ export class ColorPickerEventHandler {
             hexcode.style.color = 'white'; // Keep text color white
         }
     }
+
 }

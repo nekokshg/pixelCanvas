@@ -24,6 +24,7 @@ export class BGCanvasManager {
     }
 
     resize(scale){
+        //Function to resize the canvas based on a new scale
         this.scale = scale;
         this.canvas.width = this.width * this.cellSize * this.scale;
         this.canvas.height = this.height * this.cellSize * this.scale;
@@ -32,19 +33,21 @@ export class BGCanvasManager {
         this.ctx.scale(this.scale, this.scale);
     }
 
-    updateCanvasSize() {//Zoom
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.canvas.width = this.width * this.cellSize * this.scale;
-        this.canvas.height = this.height * this.cellSize * this.scale;
-        this.ctx.scale(this.scale, this.scale)
-    }
-
     resizeCanvas(width, height){
+        //Function to resize the canvas based on new width and height
         this.width = width;
         this.height = height;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.width = this.width * this.cellSize * this.scale;
         this.canvas.height = this.height * this.cellSize * this.scale;
         this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+    }
+
+    updateCanvasSize() {
+        
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.canvas.width = this.width * this.cellSize * this.scale;
+        this.canvas.height = this.height * this.cellSize * this.scale;
+        this.ctx.scale(this.scale, this.scale)
     }
 }
