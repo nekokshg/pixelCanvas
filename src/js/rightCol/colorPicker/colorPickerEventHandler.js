@@ -1,8 +1,13 @@
-/* Centralizes event listeners for user interactions, such as mouse clicks and movements for colorPicker canvas element */
-import cp from '../../assets/colorPicker.jpeg'
+/**
+ * This class handles the events and interactions for a color picker feature in PixelCanvas application.
+ * It allows users to pick colors from an image loaded onto a canvas, and then display the selected 
+ * color in both hex and RGBA formats.
+ */
+
+import cp from '../../../assets/colorPicker.jpeg';
 
 export class ColorPickerEventHandler {
-    constructor(colorPicker){
+    constructor(colorManager){
         //Set the source of the image
         const cpImg = document.getElementById('colorPickerImg');
         cpImg.src = cp;
@@ -11,7 +16,7 @@ export class ColorPickerEventHandler {
         this.canvas = document.getElementById('colorPickerCanvas');
         this.ctx = this.canvas.getContext('2d');
 
-        this.colorPicker = colorPicker;
+        this.colorManager = colorManager;
         this.isPicking = false;
 
         this.addColorSwatchButton = document.getElementById('addColorSwatch');
@@ -30,7 +35,6 @@ export class ColorPickerEventHandler {
         this.canvas.addEventListener('mousedown', (event) => this.onMouseDown(event));
         this.canvas.addEventListener('mousemove', (event) => this.onMouseMove(event));
         this.canvas.addEventListener('mouseup', () => this.onMouseUp());
-        this.addColorSwatchButton.addEventListener('click', () => this.onMouseClick());
     }
 
     onImageLoad() {
@@ -80,7 +84,7 @@ export class ColorPickerEventHandler {
         const a = imageData[3];
         const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
         const hex = this.rgbaToHex(r, g, b);
-        this.colorPicker.setColor(rgba);
+        this.colorManager.setColor(rgba);
         this.displayColor(hex, rgba);
     }
 
@@ -112,5 +116,4 @@ export class ColorPickerEventHandler {
             hexcode.style.color = 'white'; // Keep text color white
         }
     }
-
 }

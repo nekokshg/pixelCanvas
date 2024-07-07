@@ -1,16 +1,17 @@
 import './style.css';
-import { calculateBlocks } from './js/canvas/calculateBlocks.js';
-import { BGCanvasManager } from './js/canvas/backgroundCanvas/bgCanvasManager.js';
-import { BGCanvasRenderer } from './js/canvas/backgroundCanvas/bgCanvasRenderer.js';
-import { CanvasManager } from './js/canvas/mainCanvas/canvasManager.js';
-import { CanvasRenderer } from './js/canvas/mainCanvas/canvasRenderer.js';
-import { ColorPicker } from './js/color/colorPicker.js';
-import { CanvasEventHandler } from './js/events/canvasEventHandler.js';
-import { ColorPickerEventHandler } from './js/events/colorPickerEventHandler.js';
-import { ToolbarEventHandler } from './js/events/toolBarEventHandler.js';
-import { SettingsBarEventHandler } from './js/events/settingsBarEventHandler.js';
+import { calculateBlocks } from './js/utils/calculateBlocks.js';
+import { BGManager } from './js/middleCol/bgCanvas/bgManager.js';
+import { BGRenderer } from './js/middleCol/bgCanvas/bgRenderer.js';
+import { CanvasManager } from './js/middleCol/mainCanvas/canvasManager.js';
+import { CanvasRenderer } from './js/middleCol/mainCanvas/canvasRenderer.js';
+import { ColorManager } from './js/utils/colorManager.js';
+import { ToolManager } from './js/utils/toolManager.js';
+import { LeftColInitializer } from './js/leftCol/leftColInitializer.js';
+import { RightColInitializer } from './js/rightCol/rightColInitializer.js';
+import { TopRowInitializer } from './js/topRow/topRowInitializer.js';
+import { MiddleColEventHandler } from './js/middleCol/middleColEventHandler.js';
 
-export class MainCanvasController {
+export class IndexJS {
     constructor() {
         const { blocksX, blocksY} = calculateBlocks(256, 256); //Default size 32px by 32px
         this.blocksX = blocksX;
@@ -24,11 +25,14 @@ export class MainCanvasController {
     init() {
         this.setupBackgroundCanvas();
         this.setupMainCanvas();
+        this.setupUtils();
+        this.setupInitializers();
         this.setupEventHandlers();
     }
+
     setupBackgroundCanvas() {
-        this.bgManager = new BGCanvasManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, this.scale);
-        this.bgRenderer = new BGCanvasRenderer(this.bgManager);
+        this.bgManager = new BGManager('backgroundCanvas', this.blocksX, this.blocksY, this.blockSize, this.scale);
+        this.bgRenderer = new BGRenderer(this.bgManager);
         this.bgRenderer.render();
     }
 
@@ -40,13 +44,20 @@ export class MainCanvasController {
         this.canvasRenderer = new CanvasRenderer(this.canvasManager);
     }
 
+    setupUtils(){
+        this.colorManager = new ColorManager();
+        this.toolManager = new ToolManager();
+    }
+
+    setupInitializers(){
+        this.rightColInitializer = new RightColInitializer(this.colorManager);
+        this.leftColInitializer = new LeftColInitializer(this.toolManager);
+        this.topRowInitializer = new TopRowInitializer(this.canvasManager, this.canvasRenderer, this.bgManager, this.bgRenderer);
+    }
+
     setupEventHandlers() {
-        this.colorPicker = new ColorPicker();
-        this.colorPickerEventHandler = new ColorPickerEventHandler(this.colorPicker);
-        this.toolbarEventHandler = new ToolbarEventHandler();
-        this.canvasEventHandler = new CanvasEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.toolbarEventHandler, this.colorPicker);
-        this.canvasEventHandler.init();
-        this.settingsBarEventHandler = new SettingsBarEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.canvasEventHandler);
+        this.middleColEventHandler = new MiddleColEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.colorManager, this.toolManager);
+        this.middleColEventHandler.init();
     }
 
     getScale() {
@@ -64,9 +75,8 @@ export class MainCanvasController {
 
         return Math.floor(scale);
     }
-    
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const mainCanvasController = new MainCanvasController();
+    const indexJS = new IndexJS();
 });

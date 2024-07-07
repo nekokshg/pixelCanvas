@@ -7,19 +7,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <title>pixelCanvas</title>
-<script defer src="bundle77469287398c8f9921c8.js"></script></head>
+<script defer src="bundle82f72efeddc53c87b4b7.js"></script></head>
+<body>
 <body>
     <div id="headerContainer">
         <h1 class="title">PixelCanvas</h1>
         <div class="settingsBar">
-            <button class="dropbtn">File</button>   
-            <div class="dropdown-content">
-                <div class="clear settingButton">
-                    Clear
-                    <img src="../src/assets/clear.png" alt="">
+            <div class="dropdown">
+                <button id="fileBtn" class="dropbtn">File
+                    <img src="" alt="" class="fileImg">
+                </button>
+                <div class="dropdown-content fileContent">
+                    <div class="clear settingButton">
+                        Clear
+                        <img class="clearImg">
+                    </div>
+                    <div class="resize settingButton">
+                        Resize
+                        <img src="" alt="" class="resizeImg">
+                    </div>
+                    <div class="export settingButton">
+                        Export/Download
+                        <img src="" alt="" class="exportImg">
+                    </div>
                 </div>
-                <div class="resize settingButton">Resize</div>
-                <div class="export settingButton">Export/Download</div>
+
+                
             </div>
         </div>
     </div>
@@ -41,28 +54,43 @@
                 <li class="toolItem">
                     <img class="line toolButton">
                 </li>
-                <li class="toolItem">
+                <li class="toolItem lastButton">
                     <img class="fill toolButton">
                 </li>
             </ul>
         </div>
         <div class="centerCol">
+            <div class="canvasMisc">
+                <div class="resizeBar"></div>
+                <img src="" alt="" class="undo">
+                <img src="" alt="" class="redo">
+            </div>
             <div class="canvasWrapper">
                 <canvas id="pixelCanvas"></canvas>
                 <canvas id="backgroundCanvas"></canvas>
+            </div>
+            <div class="canvasInfo">
+                <p class="xCoord">X: </p>
+                <p class="yCoord">Y: </p>
+                <p class="zoomAmount"> Zoom Amount: 0%</p>
             </div>
         </div>
         <div class="rightCol">
             <div class="colorPickerImg_Container">
                 <img id="colorPickerImg" alt="" style="display: none">
                 <canvas id="colorPickerCanvas"></canvas>
-                <div class="colorInfoContainer">
-                    <div class="promptBox">
+                <div class="container">
+                    <div class="colorInfoContainer">
                         <p class="colorPrompt">Color Selected:</p>
-                        <div class="colorBox"></div>
+                        <div class="hexCode" style="background-color: #000000;">#000000</div>
                     </div>
-                    <div class="hexCode"></div>
-                    <div class="rgbValue"></div>
+                    <button id="add-color">Add Color</button>
+                    <div class="palette-container">
+                        <div class="color-swatch" style="background-color: #000000;"></div>
+                        <div class="color-swatch" style="background-color: #000000;"></div>
+                        <div class="color-swatch" style="background-color: #000000;"></div>
+                        <button id="addColorSwatch">+</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,11 +98,15 @@
     <div id="resizeModal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h2>Enter Dimensions</h2>
-            <label for="widthInput">Width:</label>
-            <input type="number" id="widthInput" name="widthInput"><br>
-            <label for="heightInput">Height:</label>
-            <input type="number" id="heightInput" name="heightInput"><br>
+            <h2 class="dimensions">Enter Dimensions</h2>
+            <div class="resizeWidthContainer">
+                <label class="widthResize" for="widthInput">Width:</label>
+                <input type="number" id="widthInput" name="widthInput"><br>
+            </div>
+            <div class="resizeHeightContainer">
+                <label for="heightInput">Height:</label>
+                <input type="number" id="heightInput" name="heightInput"><br>
+            </div>
             <button id="submitDimensions">Submit</button>
         </div>
     </div>

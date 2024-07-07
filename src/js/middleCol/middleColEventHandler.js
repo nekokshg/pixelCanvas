@@ -1,6 +1,15 @@
-/* Centralizes event listeners for user interactions, such as mouse clicks and movements for pixelCanvas canvas element */
-export class CanvasEventHandler {
-    constructor(canvasManagers, canvasRenderers, toolbar, colorPicker){
+/**
+ * Centralizes event listeners for user interactions, such as mouse clicks for elements in the mainCol.
+ * 
+ * The purpose of the mainCol is for centralizing actions related to the mainCanvas and bgCanvas.
+ * This includes:
+ * - Drawing on the canvas
+ * - Zooming in on a point on the canvas
+ * - Other canvas-related interactions
+ */
+
+export class MiddleColEventHandler {
+    constructor(canvasManagers, canvasRenderers, colorManager, toolManager){
         this.canvasManagers = canvasManagers;
         this.canvasRenderers = canvasRenderers;
 
@@ -18,24 +27,23 @@ export class CanvasEventHandler {
         this.bgManager = this.canvasManagers[1];
         this.bgRenderer = this.canvasRenderers[1];
 
-        //Tool Bar
-        this.toolbar = toolbar;
+        //Color Manager
+        this.colorManager = colorManager;
+
+        //Tool Manager
+        this.toolManager = toolManager;
         this.selectedTool = null;
 
-        //Color Picker
-        this.colorPicker = colorPicker;
-
-        this.scale = this.canvasManager.scale;
-        this.originalScale = this.canvasManager.scale;
+        this.scale = this.canvasManager.getScale();
+        this.originalScale = this.canvasManager.getOrigScale();
         this.isDoing = false;
-        this.isPopup = false;
+
         this.drawPixel = false;
         this.erasePixel = false;
         this.lastX = null;
         this.lastY = null;
         this.startX = null;
         this.startY = null;
-
         this.prevX = 0;
         this.notZooming = true;
         this.zoomOut_ = false;
@@ -54,31 +62,29 @@ export class CanvasEventHandler {
     }
 
     onMouseDown(event) {
-        if (!this.isPopup){
-            // Get the selected tool from the toolbar
-            this.selectedTool = this.toolbar.currentTool; // This will return the selected tool function
-            this.isDoing = true;
+        // Get the selected tool from the toolbar
+        this.selectedTool = this.toolManager.getTool(); // This will return the selected tool
+        this.isDoing = true;
 
-            const { x, y } = this.getMousePosition(event, this.rounded);
+        const { x, y } = this.getMousePosition(event, this.rounded);
 
-            this.lastX = x;
-            this.lastY = y;
+        this.lastX = x;
+        this.lastY = y;
 
-            // Perform drawing operations using the selected tool
-            if (this.selectedTool === 'pencil') {
-                this.drawPixel = true;
-                this.draw(this.lastX, this.lastY, x, y);
-            } else if (this.selectedTool === 'eraser') {
-                this.erasePixel = true;
-                this.erase(this.lastX, this.lastY, x, y);
-            } else if (this.selectedTool === 'line') {
-                this.startLinePreview(x, y);
-            }
+        // Perform drawing operations using the selected tool
+        if (this.selectedTool === 'pencil') {
+            this.drawPixel = true;
+            this.draw(this.lastX, this.lastY, x, y);
+        } else if (this.selectedTool === 'eraser') {
+            this.erasePixel = true;
+            this.erase(this.lastX, this.lastY, x, y);
+        } else if (this.selectedTool === 'line') {
+            this.startLinePreview(x, y);
         }
     }
 
     onMouseMove(event) {
-        if (!this.isPopup && this.isDoing) {
+        if (this.isDoing) {
             const { x, y } = this.getMousePosition(event, this.rounded);
 
             // Perform drawing operations using the selected tool
@@ -125,12 +131,8 @@ export class CanvasEventHandler {
 
     getMousePosition(event, rounded) {
         const rect = this.canvas.getBoundingClientRect();
-        
-        // Mouse coordinates relative to the canvas
         const x_canvas = event.clientX - rect.left;
         const y_canvas = event.clientY - rect.top;
-
-        // Transform the coordinates considering the current offset and scale
         let x = x_canvas / this.scale;
         let y = y_canvas / this.scale;
 
@@ -143,12 +145,13 @@ export class CanvasEventHandler {
         this.yCoordInfo.textContent = `Y: ${Math.floor(y)}`;
 
         return { x, y };
-    }  
+    }
 
     draw(prevX, prevY, x, y) {
-        const color = this.colorPicker.getColor();
+        const color = this.colorManager.getColor();
+
         if (this.drawPixel == true){
-            this.canvasRenderer.drawPixel(x, y, color);
+            this.canvasRenderer.drawPixel(x, y, color, true);
             this.drawPixel = false;
         } else{
             this.canvasRenderer.drawLine(prevX, prevY, x, y, color);
@@ -163,7 +166,6 @@ export class CanvasEventHandler {
             this.canvasRenderer.eraseLine(prevX, prevY, x, y);
         }
     }
-
 
     zoom(zf, event) {
         this.notZooming = false;
@@ -180,6 +182,7 @@ export class CanvasEventHandler {
         //Check if scale ratio is a whole number and if not zooming out
         const scaleRatio = newScale / prevScale
         if (scaleRatio * 10 % 10 != 0 && this.zoomOut_ == false) {
+            alert('Can not zoom further')
             return;
         }
 
@@ -210,7 +213,7 @@ export class CanvasEventHandler {
 
         // Resize canvases based on newScale
         this.canvasManagers.forEach(manager => {
-            manager.resize(newScale);
+            manager.scaleCanvas(newScale);
         });
     
         // Render all canvas renderers
@@ -267,16 +270,20 @@ export class CanvasEventHandler {
 
     // Update the line preview dynamically
     updateLinePreview(startX, startY, endX, endY) {
+        const color = this.colorManager.getColor();
+
         // Clear the canvas and redraw the previous image
         if (this.previewImage) {
             this.canvasRenderer.ctx.putImageData(this.previewImage, 0, 0);
         }
-        this.canvasRenderer.drawLinePreview(startX, startY, endX, endY, this.colorPicker.getColor());
+        this.canvasRenderer.drawLinePreview(startX, startY, endX, endY, color);
     }
 
     // Commit the final line to the canvas
     commitLine(startX, startY, endX, endY) {
-        this.canvasRenderer.drawLine(startX, startY, endX, endY, this.colorPicker.getColor());
+        const color = this.colorManager.getColor();
+
+        this.canvasRenderer.drawLine(startX, startY, endX, endY, color);
         startX = null;
         startY = null;
         this.previewImage = null;
@@ -286,8 +293,8 @@ export class CanvasEventHandler {
         const x = mouseX * this.originalScale;
         const y = mouseY * this.originalScale;
 
-        const targetColor = this.canvasRenderer.getColorAtPixel(x, y);
-        const colorString = this.colorPicker.getColor();
+        const targetColor = this.canvasRenderer.getColorAtCoord(x, y);
+        const colorString = this.colorManager.getColor();
         const rgbaValues = colorString.match(/\d+(\.\d+)?/g);
     
         const r = parseInt(rgbaValues[0]);
@@ -303,12 +310,5 @@ export class CanvasEventHandler {
         } 
     }
 
-    undo() {
-        
-    }
 
-    redo() {
-
-    }
-
-}    
+}

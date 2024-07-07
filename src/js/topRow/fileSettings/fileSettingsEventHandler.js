@@ -1,57 +1,51 @@
-import resize from '../../assets/resize.png'
-import clear from '../../assets/clear.png'
-import export_ from '../../assets/export.png'
-import file from '../../assets/file.png'
-import layer from '../../assets/layer.png'
-import setting from '../../assets/setting.png'
-import select from '../../assets/select.png'
+import clear from '../../../assets/clear.png';
+import resize from '../../../assets/resize.png';
+import export_ from '../../../assets/export.png';
 
-import { calculateBlocks } from "../canvas/calculateBlocks";
+export class FileSettingsEventHandler{
+    constructor(canvasManager, canvasRenderer, bgManager, bgRenderer){
+        this.canvasManager = canvasManager;
+        this.canvasRenderer = canvasRenderer;
+        this.bgManager = bgManager;
+        this.bgRenderer = bgRenderer;
 
-export class SettingsBarEventHandler {
-    constructor(canvasManagers, canvasRenderers, eventHandler){
-        this.canvasManagers = canvasManagers;
-        this.canvasRenderers = canvasRenderers;
-
-        this.canvasManager = this.canvasManagers[0];
-        this.bgManager = this.canvasManagers[1];
-
-        this.canvasRenderer = this.canvasRenderers[0];
-        this.bgRenderer = this.canvasRenderers[1];
-
-        this.eventHandler = eventHandler;
-
+        this.fileButton = document.getElementById('fileBtn');
+        this.fileSettingContent = document.getElementById('fileContent');
         this.resizeButton = document.getElementsByClassName('resize')[0];
         this.clearButton = document.getElementsByClassName('clear')[0];
         this.exportButton = document.getElementsByClassName('export')[0];
 
-        this.fileImg = document.getElementsByClassName('fileImg')[0];
-        this.fileImg.src = file;
         this.clearImg = document.getElementsByClassName('clearImg')[0];
         this.clearImg.src = clear;
         this.resizeImg = document.getElementsByClassName('resizeImg')[0];
         this.resizeImg.src = resize;
         this.exportImg = document.getElementsByClassName('exportImg')[0];
         this.exportImg.src = export_;
-        this.layerImg = document.getElementsByClassName('layerImg')[0];
-        this.layerImg.src = layer;
-        this.selectImg = document.getElementsByClassName('selectImg')[0];
-        this.selectImg.src = select;
-        this.settingsImg = document.getElementsByClassName('settingsImg')[0];
-        this.settingsImg.src = setting;
-    
+
+        this.toggle = true;
+
         this.init();
     }
 
     init(){
-        this.resizeButton.addEventListener('click', () => this.resizeCanvas(this.eventHandler));
+        this.fileButton.addEventListener('click', () => this.showFileSettings());
+        this.resizeButton.addEventListener('click', () => this.resizeCanvas());
         this.clearButton.addEventListener('click', () => this.clearCanvas(this.canvasRenderer));
         this.exportButton.addEventListener('click', () => this.export());
     }
 
-    resizeCanvas(eventHandler){
-        eventHandler.isPopup = true; //Prevent user interaction with canvas when there is a popup window
+    showFileSettings(){
+        if(this.toggle){
+            this.fileSettingContent.style.display = "block";
+            this.toggle = false;
+        }
+        else{
+            this.fileSettingContent.style.display = "none";
+            this.toggle = true;
+        }
+    }
 
+    resizeCanvas(){
         // Show the resize modal
         document.getElementById('resizeModal').style.display = 'block';
     
@@ -82,8 +76,6 @@ export class SettingsBarEventHandler {
         
                 // Hide the modal
                 document.getElementById('resizeModal').style.display = 'none';
-
-                this.eventHandler.isPopup = false;
                 this.canvasManager.canvas.style.display = 'block';
     
             }
@@ -92,7 +84,6 @@ export class SettingsBarEventHandler {
         //Close the modal if the user clicks the close button
         document.querySelector('.close-button').addEventListener('click', () => {
             document.getElementById('resizeModal').style.display = 'none';
-            this.eventHandler.isPopup = false;
             this.canvasManager.canvas.style.display = 'block';
         });
 
@@ -100,8 +91,6 @@ export class SettingsBarEventHandler {
         window.onclick = (event) => {
             if (event.target == document.getElementById('resizeModal')) {
                 document.getElementById('resizeModal').style.display = 'none';
-                this.eventHandler.isPopup = false;
-                this.canvasManager.canvas.style.display = 'block';
             }
         };
 

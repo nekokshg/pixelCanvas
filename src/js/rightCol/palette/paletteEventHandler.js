@@ -1,5 +1,6 @@
-export class Palette{
-    constructor(){
+export class PaletteEventHandler{
+    constructor(colorManager){
+        this.colorManager = colorManager;
         this.addColorSwatchButton = document.getElementById('addColorSwatch');
         this.paletteContainer = document.querySelector('.palette-container');
 

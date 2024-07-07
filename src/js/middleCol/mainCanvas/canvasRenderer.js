@@ -1,12 +1,17 @@
-/* Renders the drawing canvas */
+/**
+ * This file contains the CanvasRenderer class, which is responsible for rendering
+ * the main canvas in the PixelCanvas application. It handles the drawing operations
+ * and ensures that the main canvas is rendered correctly based on the current state.
+ */
+
 export class CanvasRenderer {
     constructor(canvasManager) {
         this.canvasManager = canvasManager;
         this.canvas = this.canvasManager.canvas;
-        this.width = this.canvasManager.canvas.width;
-        this.height = this.canvasManager.canvas.height;
-        this.ctx = canvasManager.getContext();
-        this.origScale = this.canvasManager.scale;
+        this.width = this.canvasManager.getWidth();
+        this.height = this.canvasManager.getHeight();
+        this.scale = this.canvasManager.getScale();
+        this.ctx = this.canvasManager.getContext();
 
         // Disable anti-aliasing
         this.ctx.imageSmoothingEnabled = false;
@@ -15,11 +20,23 @@ export class CanvasRenderer {
         this.pixels = [];
     }
 
-    drawPixel(x, y, color) {
-        this._drawPixelInternal(x, y, color, true);
+    render() {
+        this.ctx.imageSmoothingEnabled = false;
+        this.ctx.clearRect(0, 0, this.canvasManager.canvas.width, this.canvasManager.canvas.height);
+        
+        // Re-draw all stored pixels
+        this.pixels.forEach(pixel => {
+            this.ctx.fillStyle = pixel.color;
+            this.ctx.fillRect(pixel.x, pixel.y, 1, 1);
+        });
     }
 
-    _drawPixelInternal(x, y, color, pushToPixels) {
+    clear() {
+        this.ctx.clearRect(0, 0, this.canvasManager.canvas.width, this.canvasManager.canvas.height);
+        this.pixels = [];
+    }
+
+    drawPixel(x, y, color, pushToPixels = true){
         const roundedX = Math.round(x); // Round the coordinates to ensure they align with pixel boundaries
         const roundedY = Math.round(y);
 
@@ -42,11 +59,10 @@ export class CanvasRenderer {
         for (let i = 0; i <= steps; i++) {
             const currentX = prevX + xIncrement * i;
             const currentY = prevY + yIncrement * i;
-            this._drawPixelInternal(currentX, currentY, color, true);
+            this.drawPixel(currentX, currentY, color, true);
         }
     }
 
-    // Enhanced drawLinePreview to clear and redraw the line dynamically
     drawLinePreview(startX, startY, endX, endY, color) {
         const dx = endX - startX;
         const dy = endY - startY;
@@ -57,7 +73,7 @@ export class CanvasRenderer {
         for (let i = 0; i <= steps; i++) {
             const currentX = startX + xIncrement * i;
             const currentY = startY + yIncrement * i;
-            this._drawPixelInternal(currentX, currentY, color, false);
+            this.drawPixel(currentX, currentY, color, false);
         }
     }
 
@@ -84,30 +100,7 @@ export class CanvasRenderer {
         }
     }
 
-    clear() {
-        this.ctx.clearRect(0, 0, this.canvasManager.canvas.width, this.canvasManager.canvas.height);
-        this.pixels = [];
-    }
-
-    render() {
-        this.ctx.imageSmoothingEnabled = false;
-        this.ctx.clearRect(0, 0, this.canvasManager.canvas.width, this.canvasManager.canvas.height);
-        
-        // Re-draw all stored pixels
-        this.pixels.forEach(pixel => {
-            this.ctx.fillStyle = pixel.color;
-            this.ctx.fillRect(pixel.x, pixel.y, 1, 1);
-        });
-    }
-    
-    colorsAreEqual(color1, color2, includeAlpha = false) {
-        if (includeAlpha) {
-            return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b && color1.a === color2.a;
-        }
-        return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
-    }
-    
-    getColorAtPixel(x, y) {
+    getColorAtCoord(x, y) {
         const pixel = this.ctx.getImageData(x, y, 1, 1).data;
     
         return {
@@ -117,24 +110,21 @@ export class CanvasRenderer {
             a: pixel[3]
         };
     }
-    
-    setColorAtPixel(x, y, color) {
-        const imageData = this.ctx.createImageData(1, 1);
-        const data = imageData.data;
-        data[0] = color.r;
-        data[1] = color.g;
-        data[2] = color.b;
-        data[3] = color.a;
-        this.ctx.putImageData(imageData, x, y);
+
+    colorsAreEqual(color1, color2, includeAlpha = false) {
+        if (includeAlpha) {
+            return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b && color1.a === color2.a;
+        }
+        return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
     }
-    
+
     floodFill(mouseX, mouseY, targetColor, fillColor) {
         const x = Math.floor(mouseX );
         const y = Math.floor(mouseY);
         const width = this.canvasManager.canvas.width;
         const height = this.canvasManager.canvas.height;
-        const origWidth = this.canvasManager.getOrigWidth();
-        const origHeight = this.canvasManager.getOrigHeight();
+        const origPixelWidth = this.canvasManager.getOrigPixelWidth();
+        const origPixelHeight = this.canvasManager.getOrigPixelHeight();
     
         // Create a temporary canvas at the current scale
         const tempCanvas = document.createElement('canvas');
@@ -147,8 +137,8 @@ export class CanvasRenderer {
     
         // Create a scaled-down canvas at the original scale
         const scaledDownCanvas = document.createElement('canvas');
-        scaledDownCanvas.width = origWidth;
-        scaledDownCanvas.height = origHeight;
+        scaledDownCanvas.width = origPixelWidth;
+        scaledDownCanvas.height = origPixelHeight;
         const scaledDownCtx = scaledDownCanvas.getContext('2d');
     
         // Scale the temporary canvas down to the original scale
@@ -217,9 +207,11 @@ export class CanvasRenderer {
     
         // Update the image data on the scaled-down canvas
         scaledDownCtx.putImageData(imageData, 0, 0);
-    
-        // Transfer the filled area back to the original canvas
+
+        // Transfer the filled area back to the original canvas, ensuring no scaling transformations are applied
         this.canvasManager.ctx.drawImage(scaledDownCanvas, 0, 0);
     }
-    
+
+
+
 }

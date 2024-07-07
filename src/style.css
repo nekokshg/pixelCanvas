@@ -149,7 +149,6 @@ canvas {
 }
 
 .dropdown:hover .dropdown-content {
-    display: block;
     cursor: pointer;
 }
 

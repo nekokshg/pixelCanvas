@@ -1,5 +1,8 @@
-/* Manages the color */
-export class ColorPicker {
+/**
+ * Manages the color for the program
+ */
+
+export class ColorManager {
     constructor (){
         this.currentColor = 'rgba(0,0,0,255)'; // Default color
     }
