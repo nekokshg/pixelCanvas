@@ -2,14 +2,13 @@ import './style.css';
 import { calculateBlocks } from './js/utils/calculateBlocks.js';
 import { BGManager } from './js/middleCol/bgCanvas/bgManager.js';
 import { BGRenderer } from './js/middleCol/bgCanvas/bgRenderer.js';
-import { CanvasManager } from './js/middleCol/mainCanvas/canvasManager.js';
-import { CanvasRenderer } from './js/middleCol/mainCanvas/canvasRenderer.js';
 import { ColorManager } from './js/utils/colorManager.js';
 import { ToolManager } from './js/utils/toolManager.js';
 import { LeftColInitializer } from './js/leftCol/leftColInitializer.js';
 import { RightColInitializer } from './js/rightCol/rightColInitializer.js';
 import { TopRowInitializer } from './js/topRow/topRowInitializer.js';
-import { MiddleColEventHandler } from './js/middleCol/middleColEventHandler.js';
+import { ScaleManager } from './js/utils/scaleManager.js';
+import { MeasurementsManager } from './js/utils/measurementsManager.js';
 
 export class IndexJS {
     constructor() {
@@ -23,11 +22,17 @@ export class IndexJS {
     }
 
     init() {
+        this.setupUtils();
         this.setupBackgroundCanvas();
         this.setupMainCanvas();
-        this.setupUtils();
         this.setupInitializers();
-        this.setupEventHandlers();
+    }
+
+    setupUtils(){
+        this.colorManager = new ColorManager();
+        this.toolManager = new ToolManager();
+        this.scaleManager = new ScaleManager(this.scale);
+        this.measurementsManager = new MeasurementsManager();
     }
 
     setupBackgroundCanvas() {
@@ -40,24 +45,14 @@ export class IndexJS {
         const pixelWidth = this.blocksX * this.blockSize;
         const pixelHeight = this.blocksY * this.blockSize;
 
-        this.canvasManager = new CanvasManager('pixelCanvas', pixelWidth, pixelHeight, this.scale);
-        this.canvasRenderer = new CanvasRenderer(this.canvasManager);
-    }
-
-    setupUtils(){
-        this.colorManager = new ColorManager();
-        this.toolManager = new ToolManager();
+        this.measurementsManager.setPixelWidth(pixelWidth);
+        this.measurementsManager.setPixelHeight(pixelHeight);
     }
 
     setupInitializers(){
-        this.rightColInitializer = new RightColInitializer(this.colorManager);
+        this.rightColInitializer = new RightColInitializer(this.colorManager, this.scaleManager, this.measurementsManager, this.bgManager, this.bgRenderer, this.toolManager);
         this.leftColInitializer = new LeftColInitializer(this.toolManager);
         this.topRowInitializer = new TopRowInitializer(this.canvasManager, this.canvasRenderer, this.bgManager, this.bgRenderer);
-    }
-
-    setupEventHandlers() {
-        this.middleColEventHandler = new MiddleColEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.colorManager, this.toolManager);
-        this.middleColEventHandler.init();
     }
 
     getScale() {

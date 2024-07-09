@@ -2,6 +2,7 @@
 :root {
     /*========== Colors ==========*/
     --white-color: #FFFFFF;
+    --grey-color: #F0F0F0;
 
     /** CSS DARK THEME PRIMARY COLORS */
     --color-primary-100: #f1d217;
@@ -267,6 +268,13 @@ canvas {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
+    height: 150px;
+    overflow: scroll;
+    align-content: flex-start;
+}
+
+#addColorSwatch{
+    height: 20px;
 }
 
 .color-swatch{
@@ -274,6 +282,39 @@ canvas {
     width: 20px;
 }
 
+.layersContainer{
+    display: flex;
+    height: 300px;
+    background-color: var(--color-surface-200);
+    flex-direction: column;
+}
+
+.layerInfo{
+    display: flex;
+    margin: 4px;
+    background-color: var(--color-primary-400);
+    gap: 10px;
+}
+
+.layerInfo:hover{
+    background-color: var(--color-primary-100);
+}
+
+.layerName{
+    margin-left: 5px;
+    color: var(--color-surface-100);
+}
+
+#add-layer{
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.visibilityBtn{
+    margin-left: 4px;
+    width: 19px;
+    height: 19px;
+}
 /*=============== MODAL ===============*/
 .modal {
     display: none; /* Hidden by default */

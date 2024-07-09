@@ -9,7 +9,7 @@
  */
 
 export class MiddleColEventHandler {
-    constructor(canvasManagers, canvasRenderers, colorManager, toolManager){
+    constructor(canvasManagers, canvasRenderers, colorManager, toolManager, scaleManager){
         this.canvasManagers = canvasManagers;
         this.canvasRenderers = canvasRenderers;
 
@@ -33,6 +33,9 @@ export class MiddleColEventHandler {
         //Tool Manager
         this.toolManager = toolManager;
         this.selectedTool = null;
+
+        //Scale Manager
+        this.scaleManager = scaleManager;
 
         this.scale = this.canvasManager.getScale();
         this.originalScale = this.canvasManager.getOrigScale();
@@ -59,6 +62,15 @@ export class MiddleColEventHandler {
         this.canvas.addEventListener('mouseup', (event) => this.onMouseUp(event));
         this.canvas.addEventListener('mouseleave', () => this.onMouseLeave());
         this.canvas.addEventListener('click', (event) => this.onMouseClick(event));
+    }
+
+    deinit() {
+        // Remove event listeners
+        this.canvas.removeEventListener('mousedown', this.onMouseDown);
+        this.canvas.removeEventListener('mousemove', this.onMouseMove);
+        this.canvas.removeEventListener('mouseup', this.onMouseUp);
+        this.canvas.removeEventListener('mouseleave', this.onMouseLeave);
+        this.canvas.removeEventListener('click', this.onMouseClick);
     }
 
     onMouseDown(event) {
@@ -188,6 +200,7 @@ export class MiddleColEventHandler {
 
         // Update the scale property
         this.scale = newScale;
+        this.scaleManager.setScale(newScale)
 
         let x, y;
 

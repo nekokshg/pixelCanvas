@@ -24,8 +24,8 @@
  */
 
 export class CanvasManager {
-    constructor(canvasId, pixelWidth, pixelHeight, scale) {
-        this.canvas = document.getElementById(canvasId);
+    constructor(canvas, pixelWidth, pixelHeight, scale) {
+        this.canvas = canvas;
         this.ctx = this.canvas.getContext('2d');
         this.scale = scale;
         this.pixelWidth = pixelWidth;
@@ -39,10 +39,6 @@ export class CanvasManager {
         this.origPixelHeight = pixelHeight;
 
         this.updateCanvasSize();
-
-        const canvasContainer = document.getElementsByClassName("canvasWrapper")[0];
-        canvasContainer.style.width = `${this.canvas.width}px`;
-        canvasContainer.style.height = `${this.canvas.height}px`;
     }
 
     getOrigPixelWidth(){
