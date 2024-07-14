@@ -4,25 +4,27 @@ export class PaletteEventHandler{
         this.addColorSwatchButton = document.getElementById('addColorSwatch');
         this.paletteContainer = document.querySelector('.palette-container');
 
+        this.addColorSwatch(); //add first color swatch with default color: #000000
+
         // Event listeners
         this.initEventListeners();
     }
 
     initEventListeners() {
-        this.addColorSwatchButton.addEventListener('click', () => this.onMouseClick());
+        this.addColorSwatchButton.addEventListener('click', () => this.addColorSwatch());
+
     }
 
-    //Color Swatch Add Button
-    onMouseClick(){
+    selectColorSwatch(swatch) {
+        swatch.style.border = 'solid yellow';
+    }
+
+    // Color Swatch Add Button
+    addColorSwatch() {
         const newSwatch = document.createElement('div');
         newSwatch.className = 'color-swatch';
-        newSwatch.style.backgroundColor = "black"
-
-        const firstSwatch = this.paletteContainer.querySelector('.color-swatch');
-        if (firstSwatch) {
-            this.paletteContainer.insertBefore(newSwatch, firstSwatch);
-        } else {
-            this.paletteContainer.appendChild(newSwatch);
-        }
+        newSwatch.style.backgroundColor = "black";
+        newSwatch.addEventListener('click', () => this.selectColorSwatch(newSwatch));
+        this.paletteContainer.insertBefore(newSwatch, this.addColorSwatchButton);
     }
 }

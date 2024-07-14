@@ -3,7 +3,7 @@
     /*========== Colors ==========*/
     --white-color: #FFFFFF;
     --grey-color: #F0F0F0;
-
+    --yellow-color:#FFFF00;
     /** CSS DARK THEME PRIMARY COLORS */
     --color-primary-100: #f1d217;
     --color-primary-200: #f5d741;
@@ -51,7 +51,8 @@ body {
     flex-direction: column;
     height: 100vh;
     font-family: var(--body-font);
-    color: var(--white-color)
+    color: var(--white-color);
+    image-rendering: pixelated;
 }
 
 button {
@@ -89,7 +90,7 @@ canvas {
 /*=============== HEADER ===============*/
 #headerContainer {
     display: flex;
-    background-color: var(--color-surface-300);
+    background-color: var(--color-surface-200);
     flex: 0 0 auto;
     width: 100%;
     align-items: center;
@@ -99,8 +100,8 @@ canvas {
     font-size: var(--h2-font-size);
     padding-right: 10px;
     padding-left: 1px;
-    padding-top: 1px;
-    padding-bottom: 1px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .settingsBar {
@@ -110,7 +111,7 @@ canvas {
 
 .dropdown {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
 }
 
 .dropbtn {
@@ -137,6 +138,8 @@ canvas {
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 3;
     font-size: var(--normal-font-size);
+    top: 100%;
+    left: 0;
 }
 
 .dropdown-content div {
@@ -168,7 +171,7 @@ canvas {
 
 /*=============== LEFT COLUMN ===============*/
 .leftCol{
-    background-color: var(--color-surface-300);
+    background-color: var(--color-surface-200);
 }
 
 .toolBarList{
@@ -204,6 +207,7 @@ canvas {
     background-color: var(--color-surface-100);
     flex-grow: 1;
     flex-direction: column;
+    border: solid var(--color-surface-300);
 }
 
 .canvasWrapper {
@@ -239,19 +243,13 @@ canvas {
 
 /*=============== RIGHT COLUMN ===============*/
 .rightCol{
-    background-color: var(--color-surface-300);
+    background-color: var(--color-surface-200);
 }
 
 .colorPickerImg_Container{
     width: 200px;
     padding-left: 8px;
     padding-right: 10px;
-}
-
-.container{
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
 }
 
 .colorPrompt{
@@ -263,30 +261,55 @@ canvas {
     color: var(--second-color);
 }
 
+.colorInfoContainer{
+    padding-bottom: 10px;
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .palette-container{
-    background-color: var(--color-surface-200);
+    background-color: var(--color-surface-400);
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
     height: 150px;
-    overflow: scroll;
+    overflow: auto;
     align-content: flex-start;
+    justify-content: center;
+    border: solid var(--color-surface-500);
 }
 
 #addColorSwatch{
+    display: flex;
+    justify-content: center;
     height: 20px;
+    width: 20px;
+    margin: 3px;
+    cursor: pointer;
 }
 
 .color-swatch{
+    box-sizing: border-box;
     height: 20px;
     width: 20px;
+    margin: 3px;
+}
+
+.color-swatch:hover{
+    border: solid yellow 1px;
+    cursor: pointer;
 }
 
 .layersContainer{
     display: flex;
     height: 300px;
-    background-color: var(--color-surface-200);
+    background-color: var(--color-surface-400);
     flex-direction: column;
+    overflow: scroll;
+    border: solid var(--color-surface-500);
 }
 
 .layerInfo{
@@ -298,16 +321,34 @@ canvas {
 
 .layerInfo:hover{
     background-color: var(--color-primary-100);
+    cursor: pointer;
+}
+
+.layerTools {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    max-width: 400px; /* Adjust this value as needed */
+}
+
+.layerTools button {
+    flex: 1;
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .layerName{
-    margin-left: 5px;
+    margin-left: auto;
     color: var(--color-surface-100);
-}
-
-#add-layer{
-    margin-left: 4px;
-    margin-right: 4px;
+    width: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .visibilityBtn{
@@ -315,6 +356,12 @@ canvas {
     width: 19px;
     height: 19px;
 }
+
+.imageElementContainer{
+    display: flex;
+    gap: 14px;
+}
+
 /*=============== MODAL ===============*/
 .modal {
     display: none; /* Hidden by default */

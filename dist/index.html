@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <title>pixelCanvas</title>
-<script defer src="bundle82f72efeddc53c87b4b7.js"></script></head>
+<script defer src="bundledb9d915e37ebf472d8bc.js"></script></head>
 <body>
 <body>
     <div id="headerContainer">
@@ -17,7 +17,7 @@
                 <button id="fileBtn" class="dropbtn">File
                     <img src="" alt="" class="fileImg">
                 </button>
-                <div class="dropdown-content fileContent">
+                <div id="fileContent" class="dropdown-content">
                     <div class="clear settingButton">
                         Clear
                         <img class="clearImg">
@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-                
+
             </div>
         </div>
     </div>
@@ -66,7 +66,6 @@
                 <img src="" alt="" class="redo">
             </div>
             <div class="canvasWrapper">
-                <canvas id="pixelCanvas"></canvas>
                 <canvas id="backgroundCanvas"></canvas>
             </div>
             <div class="canvasInfo">
@@ -79,17 +78,18 @@
             <div class="colorPickerImg_Container">
                 <img id="colorPickerImg" alt="" style="display: none">
                 <canvas id="colorPickerCanvas"></canvas>
+                <div class="transparencyBar"></div>
                 <div class="container">
                     <div class="colorInfoContainer">
                         <p class="colorPrompt">Color Selected:</p>
                         <div class="hexCode" style="background-color: #000000;">#000000</div>
                     </div>
-                    <button id="add-color">Add Color</button>
                     <div class="palette-container">
-                        <div class="color-swatch" style="background-color: #000000;"></div>
-                        <div class="color-swatch" style="background-color: #000000;"></div>
-                        <div class="color-swatch" style="background-color: #000000;"></div>
                         <button id="addColorSwatch">+</button>
+                    </div>
+                    <div class="layersContainer">
+
+                        <button id="add-layer">+</button>
                     </div>
                 </div>
             </div>

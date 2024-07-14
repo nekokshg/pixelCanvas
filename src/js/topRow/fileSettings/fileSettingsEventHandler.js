@@ -1,3 +1,4 @@
+import file from '../../../assets/file.png'
 import clear from '../../../assets/clear.png';
 import resize from '../../../assets/resize.png';
 import export_ from '../../../assets/export.png';
@@ -10,6 +11,8 @@ export class FileSettingsEventHandler{
         this.bgRenderer = bgRenderer;
 
         this.fileButton = document.getElementById('fileBtn');
+        this.fileImg = document.getElementsByClassName('fileImg')[0];
+        this.fileImg.src = file;
         this.fileSettingContent = document.getElementById('fileContent');
         this.resizeButton = document.getElementsByClassName('resize')[0];
         this.clearButton = document.getElementsByClassName('clear')[0];

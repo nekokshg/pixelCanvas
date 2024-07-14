@@ -24,7 +24,7 @@
  */
 
 export class CanvasManager {
-    constructor(canvas, pixelWidth, pixelHeight, scale) {
+    constructor(canvas, pixelWidth, pixelHeight, scale, layerIndex) {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext('2d');
         this.scale = scale;
@@ -37,6 +37,8 @@ export class CanvasManager {
         this.origScale = scale;
         this.origPixelWidth = pixelWidth;
         this.origPixelHeight = pixelHeight;
+
+        this.layerIndex = layerIndex
 
         this.updateCanvasSize();
     }

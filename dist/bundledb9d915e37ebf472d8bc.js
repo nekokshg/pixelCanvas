@@ -2,22 +2,61 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/js/leftCol/leftColEventHandler.js":
-/*!***********************************************!*\
-  !*** ./src/js/leftCol/leftColEventHandler.js ***!
-  \***********************************************/
+/***/ "./src/js/leftCol/leftColInitializer.js":
+/*!**********************************************!*\
+  !*** ./src/js/leftCol/leftColInitializer.js ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   LeftColEventHandler: () => (/* binding */ LeftColEventHandler)
+/* harmony export */   LeftColInitializer: () => (/* binding */ LeftColInitializer)
 /* harmony export */ });
-/* harmony import */ var _assets_pencil_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../assets/pencil.png */ "./src/assets/pencil.png");
-/* harmony import */ var _assets_eraser_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../assets/eraser.png */ "./src/assets/eraser.png");
-/* harmony import */ var _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../assets/zoom-in.png */ "./src/assets/zoom-in.png");
-/* harmony import */ var _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../assets/zoom-out.png */ "./src/assets/zoom-out.png");
-/* harmony import */ var _assets_fill_bucket_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../assets/fill-bucket.png */ "./src/assets/fill-bucket.png");
-/* harmony import */ var _assets_line_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../assets/line.png */ "./src/assets/line.png");
+/* harmony import */ var _toolbar_toolbarEventHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./toolbar/toolbarEventHandler */ "./src/js/leftCol/toolbar/toolbarEventHandler.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+var LeftColInitializer = /*#__PURE__*/function () {
+  function LeftColInitializer(toolManager) {
+    _classCallCheck(this, LeftColInitializer);
+    this.toolManager = toolManager;
+    this.init();
+  }
+  return _createClass(LeftColInitializer, [{
+    key: "init",
+    value: function init() {
+      this.setUpToolBar();
+    }
+  }, {
+    key: "setUpToolBar",
+    value: function setUpToolBar() {
+      this.toolBarEventHandler = new _toolbar_toolbarEventHandler__WEBPACK_IMPORTED_MODULE_0__.ToolBarEventHandler(this.toolManager);
+    }
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/leftCol/toolbar/toolbarEventHandler.js":
+/*!*******************************************************!*\
+  !*** ./src/js/leftCol/toolbar/toolbarEventHandler.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ToolBarEventHandler: () => (/* binding */ ToolBarEventHandler)
+/* harmony export */ });
+/* harmony import */ var _assets_pencil_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../assets/pencil.png */ "./src/assets/pencil.png");
+/* harmony import */ var _assets_eraser_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../assets/eraser.png */ "./src/assets/eraser.png");
+/* harmony import */ var _assets_zoom_in_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../assets/zoom-in.png */ "./src/assets/zoom-in.png");
+/* harmony import */ var _assets_zoom_out_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../assets/zoom-out.png */ "./src/assets/zoom-out.png");
+/* harmony import */ var _assets_fill_bucket_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../assets/fill-bucket.png */ "./src/assets/fill-bucket.png");
+/* harmony import */ var _assets_line_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../assets/line.png */ "./src/assets/line.png");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -25,9 +64,7 @@ function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), 
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /**
- * Centralizes event listeners for user interactions, such as mouse clicks for elements in the leftCol.
- * 
- * The purpose of the leftCol is only for selecting tools.
+ * Centralizes event listeners for user interactions, such as mouse clicks for elements in the toolbar.
  */
 
 
@@ -35,9 +72,11 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 
 
-var LeftColEventHandler = /*#__PURE__*/function () {
-  function LeftColEventHandler() {
-    _classCallCheck(this, LeftColEventHandler);
+
+var ToolBarEventHandler = /*#__PURE__*/function () {
+  function ToolBarEventHandler(toolBarManager) {
+    _classCallCheck(this, ToolBarEventHandler);
+    this.toolBarManager = toolBarManager;
     this.pencilButton = document.getElementsByClassName('pencil')[0];
     this.pencilButton.src = _assets_pencil_png__WEBPACK_IMPORTED_MODULE_0__;
     this.eraserButton = document.getElementsByClassName('eraser')[0];
@@ -58,7 +97,7 @@ var LeftColEventHandler = /*#__PURE__*/function () {
     this.selectedButton.classList.add('selected');
     this.init();
   }
-  return _createClass(LeftColEventHandler, [{
+  return _createClass(ToolBarEventHandler, [{
     key: "init",
     value: function init() {
       var _this = this;
@@ -98,7 +137,7 @@ var LeftColEventHandler = /*#__PURE__*/function () {
       this.currentTool = newTool;
       this.selectedButton = button;
       this.selectedButton.classList.add('selected');
-      return this.currentTool; // For simplicity, returning toolName as a string
+      this.toolBarManager.setTool(this.currentTool);
     }
   }]);
 }();
@@ -128,18 +167,20 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
  */
 
 var BGManager = /*#__PURE__*/function () {
-  function BGManager(canvasId, width, height, cellSize, scale) {
+  function BGManager(canvasId, blocksX, blocksY, blockSize, scale) {
     _classCallCheck(this, BGManager);
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext('2d');
     this.scale = scale;
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
-    this.cellSize = cellSize;
-    this.origWidth = width;
-    this.origHeight = height;
+    this.blocksX = blocksX;
+    this.blocksY = blocksY;
+    this.blockSize = blockSize;
+    this.width = null;
+    this.height = null;
     this.origScale = scale;
     this.updateCanvasSize();
+    this.origWidth = this.canvas.width;
+    this.origHeight = this.canvas.height;
   }
   return _createClass(BGManager, [{
     key: "getContext",
@@ -149,22 +190,32 @@ var BGManager = /*#__PURE__*/function () {
   }, {
     key: "getWidth",
     value: function getWidth() {
-      return this.width;
+      var width = this.canvas.width;
+      return width;
     }
   }, {
     key: "getHeight",
     value: function getHeight() {
-      return this.height;
+      var height = this.canvas.height;
+      return height;
     }
   }, {
     key: "getScale",
     value: function getScale() {
-      return this.scale;
+      var scale = this.scale;
+      return scale;
     }
   }, {
-    key: "getCellSize",
-    value: function getCellSize() {
-      return this.cellSize;
+    key: "getBlockSize",
+    value: function getBlockSize() {
+      var blockSize = this.blockSize;
+      return blockSize;
+    }
+  }, {
+    key: "getBlocksX",
+    value: function getBlocksX() {
+      var blocksX = this.blocksX;
+      return blocksX;
     }
   }, {
     key: "setWidth",
@@ -175,6 +226,22 @@ var BGManager = /*#__PURE__*/function () {
     key: "setHeight",
     value: function setHeight(newHeight) {
       this.height = newHeight;
+    }
+  }, {
+    key: "getBlocksY",
+    value: function getBlocksY() {
+      var blocksY = this.blocksY;
+      return blocksY;
+    }
+  }, {
+    key: "setBlocksX",
+    value: function setBlocksX(newBlocksX) {
+      this.blocksX = newBlocksX;
+    }
+  }, {
+    key: "setBlocksY",
+    value: function setBlocksY(newBlocksY) {
+      this.blocksX = newBlocksY;
     }
   }, {
     key: "setScale",
@@ -190,18 +257,20 @@ var BGManager = /*#__PURE__*/function () {
     }
   }, {
     key: "resizeCanvas",
-    value: function resizeCanvas(width, height) {
-      //Function to set new width and height and resize the canvas based on that
-      this.setWidth(width);
-      this.setHeight(height);
+    value: function resizeCanvas(newBlocksX, newBlocksY) {
+      //Function to set new blocksX and blocksY amounts and resize the canvas based on that
+      this.setBlocksX(newBlocksX);
+      this.setBlocksY(newBlocksY);
       this.updateCanvasSize();
     }
   }, {
     key: "updateCanvasSize",
     value: function updateCanvasSize() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.canvas.width = this.width * this.cellSize * this.scale;
-      this.canvas.height = this.height * this.cellSize * this.scale;
+      this.canvas.width = this.blocksX * this.blockSize * this.scale;
+      this.canvas.height = this.blocksY * this.blockSize * this.scale;
+      this.setWidth(this.canvas.width);
+      this.setHeight(this.canvas.height);
       this.ctx.scale(this.scale, this.scale);
     }
   }]);
@@ -240,7 +309,7 @@ var BGRenderer = /*#__PURE__*/function () {
     this.height = this.canvasManager.getHeight();
     this.scale = this.canvasManager.getScale();
     this.ctx = this.canvasManager.getContext();
-    this.cellSize = this.canvasManager.getCellSize();
+    this.blockSize = this.canvasManager.getBlockSize();
 
     // Disable anti-aliasing
     this.ctx.imageSmoothingEnabled = false;
@@ -248,17 +317,17 @@ var BGRenderer = /*#__PURE__*/function () {
   return _createClass(BGRenderer, [{
     key: "render",
     value: function render() {
-      var blocksX = this.canvas.width / this.cellSize;
-      var blocksY = this.canvas.height / this.cellSize;
+      var blocksX = this.canvas.width / this.blockSize;
+      var blocksY = this.canvas.height / this.blockSize;
       for (var i = 0; i < Math.ceil(blocksY); i++) {
         for (var j = 0; j < Math.ceil(blocksX); j++) {
           var color = (i + j) % 2 === 0 ? '#FFFFFF' : '#CCCCCC';
           this.ctx.fillStyle = color;
 
           // Calculate the width and height of the current block
-          var width = (j + 1) * this.cellSize > this.ctx.canvas.width ? this.ctx.canvas.width - j * this.cellSize : this.cellSize;
-          var height = (i + 1) * this.cellSize > this.ctx.canvas.height ? this.ctx.canvas.height - i * this.cellSize : this.cellSize;
-          this.ctx.fillRect(j * this.cellSize, i * this.cellSize, width, height);
+          var width = (j + 1) * this.blockSize > this.ctx.canvas.width ? this.ctx.canvas.width - j * this.blockSize : this.blockSize;
+          var height = (i + 1) * this.blockSize > this.ctx.canvas.height ? this.ctx.canvas.height - i * this.blockSize : this.blockSize;
+          this.ctx.fillRect(j * this.blockSize, i * this.blockSize, width, height);
         }
       }
     }
@@ -293,34 +362,52 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
  * This file contains the CanvasManager class, which is responsible for managing
  * the state and interactions of the main canvas in the PixelCanvas application.
  * It handles the setup, updates, and events related to the main canvas.
+ /*
+ * Note: The logical pixel dimensions of the canvas, calculated from the number of blocks and block size,
+ * may not always match the actual pixel dimensions of the canvas element as rendered in the browser.
+ * 
+ * For example, if we want a canvas that is logically 256px by 256px:
+ * - blocksX = 16 (number of blocks horizontally)
+ * - blocksY = 16 (number of blocks vertically)
+ * - blockSize = 16 (size of each block in pixels)
+ * 
+ * Therefore:
+ * - pixelWidth = blocksX * blockSize = 16 * 16 = 256 pixels
+ * - pixelHeight = blocksY * blockSize = 16 * 16 = 256 pixels
+ * 
+ * However, the actual canvas dimensions (canvas.width and canvas.height) as displayed in the browser
+ * may differ from these calculated values due to factors such as:
+ * - Window size and screen resolution
+ * - CSS styles affecting the canvas element (e.g., width, height, scaling)
+ * - Layout properties in the HTML/CSS affecting the canvas element
+ * 
  */
 
 var CanvasManager = /*#__PURE__*/function () {
-  function CanvasManager(canvasId, width, height, scale) {
+  function CanvasManager(canvas, pixelWidth, pixelHeight, scale) {
     _classCallCheck(this, CanvasManager);
-    this.canvas = document.getElementById(canvasId);
+    this.canvas = canvas;
     this.ctx = this.canvas.getContext('2d');
     this.scale = scale;
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
-    this.origWidth = width;
-    this.origHeight = height;
+    this.pixelWidth = pixelWidth;
+    this.pixelHeight = pixelHeight;
+    this.width = null;
+    this.height = null;
     this.origScale = scale;
+    this.origPixelWidth = pixelWidth;
+    this.origPixelHeight = pixelHeight;
     this.updateCanvasSize();
-    var canvasContainer = document.getElementsByClassName("canvasWrapper")[0];
-    canvasContainer.style.width = "".concat(this.canvas.width, "px");
-    canvasContainer.style.height = "".concat(this.canvas.height, "px");
   }
   return _createClass(CanvasManager, [{
-    key: "getOrigWidth",
-    value: function getOrigWidth() {
-      var width = this.origWidth;
+    key: "getOrigPixelWidth",
+    value: function getOrigPixelWidth() {
+      var width = this.origPixelWidth;
       return width;
     }
   }, {
-    key: "getOrigHeight",
-    value: function getOrigHeight() {
-      var height = this.origHeight;
+    key: "getOrigPixelHeight",
+    value: function getOrigPixelHeight() {
+      var height = this.origPixelHeight;
       return height;
     }
   }, {
@@ -360,6 +447,16 @@ var CanvasManager = /*#__PURE__*/function () {
       this.height = newHeight;
     }
   }, {
+    key: "setPixelWidth",
+    value: function setPixelWidth(newPixelWidth) {
+      this.pixelWidth = newPixelWidth;
+    }
+  }, {
+    key: "setPixelHeight",
+    value: function setPixelHeight(newPixelHeight) {
+      this.pixelHeight = newPixelHeight;
+    }
+  }, {
     key: "setScale",
     value: function setScale(newScale) {
       this.scale = newScale;
@@ -373,18 +470,20 @@ var CanvasManager = /*#__PURE__*/function () {
     }
   }, {
     key: "resizeCanvas",
-    value: function resizeCanvas(width, height) {
-      //Function to set new width and height and resize the canvas based on that
-      this.setWidth(width);
-      this.setHeight(height);
+    value: function resizeCanvas(newPixelWidth, newPixelHeight) {
+      //Function to set new pixelWidth and pixelHeight and resize the canvas based on that
+      this.setPixelWidth(newPixelWidth);
+      this.setPixelHeight(newPixelHeight);
       this.updateCanvasSize();
     }
   }, {
     key: "updateCanvasSize",
     value: function updateCanvasSize() {
       // Adjust the canvas size based on the scale
-      this.canvas.width = this.width * this.scale;
-      this.canvas.height = this.height * this.scale;
+      this.canvas.width = this.pixelWidth * this.scale;
+      this.canvas.height = this.pixelHeight * this.scale;
+      this.setWidth(this.canvas.width);
+      this.setHeight(this.canvas.height);
 
       //Update size of canvasWrapper
       var canvasContainer = document.getElementsByClassName("canvasWrapper")[0];
@@ -424,7 +523,6 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
  * and ensures that the main canvas is rendered correctly based on the current state.
  */
 
-/* Renders the drawing canvas */
 var CanvasRenderer = /*#__PURE__*/function () {
   function CanvasRenderer(canvasManager) {
     _classCallCheck(this, CanvasRenderer);
@@ -558,8 +656,8 @@ var CanvasRenderer = /*#__PURE__*/function () {
       var y = Math.floor(mouseY);
       var width = this.canvasManager.canvas.width;
       var height = this.canvasManager.canvas.height;
-      var origWidth = this.canvasManager.getOrigWidth();
-      var origHeight = this.canvasManager.getOrigHeight();
+      var origPixelWidth = this.canvasManager.getOrigPixelWidth();
+      var origPixelHeight = this.canvasManager.getOrigPixelHeight();
 
       // Create a temporary canvas at the current scale
       var tempCanvas = document.createElement('canvas');
@@ -572,8 +670,8 @@ var CanvasRenderer = /*#__PURE__*/function () {
 
       // Create a scaled-down canvas at the original scale
       var scaledDownCanvas = document.createElement('canvas');
-      scaledDownCanvas.width = origWidth;
-      scaledDownCanvas.height = origHeight;
+      scaledDownCanvas.width = origPixelWidth;
+      scaledDownCanvas.height = origPixelHeight;
       var scaledDownCtx = scaledDownCanvas.getContext('2d');
 
       // Scale the temporary canvas down to the original scale
@@ -656,7 +754,7 @@ var CanvasRenderer = /*#__PURE__*/function () {
       // Update the image data on the scaled-down canvas
       scaledDownCtx.putImageData(imageData, 0, 0);
 
-      // Transfer the filled area back to the original canvas
+      // Transfer the filled area back to the original canvas, ensuring no scaling transformations are applied
       this.canvasManager.ctx.drawImage(scaledDownCanvas, 0, 0);
     }
   }]);
@@ -691,7 +789,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
  */
 
 var MiddleColEventHandler = /*#__PURE__*/function () {
-  function MiddleColEventHandler(canvasManagers, canvasRenderers, leftCol, rightCol, topRow, colorManager) {
+  function MiddleColEventHandler(canvasManagers, canvasRenderers, colorManager, toolManager, scaleManager) {
     _classCallCheck(this, MiddleColEventHandler);
     this.canvasManagers = canvasManagers;
     this.canvasRenderers = canvasRenderers;
@@ -713,15 +811,12 @@ var MiddleColEventHandler = /*#__PURE__*/function () {
     //Color Manager
     this.colorManager = colorManager;
 
-    //Left Col (Tool Bar)
-    this.toolbar = leftCol;
+    //Tool Manager
+    this.toolManager = toolManager;
     this.selectedTool = null;
 
-    //Right Col
-    this.rightCol = rightCol;
-
-    //Top Row (Settings Bar)
-    this.settingsBar = topRow;
+    //Scale Manager
+    this.scaleManager = scaleManager;
     this.scale = this.canvasManager.getScale();
     this.originalScale = this.canvasManager.getOrigScale();
     this.isDoing = false;
@@ -760,36 +855,42 @@ var MiddleColEventHandler = /*#__PURE__*/function () {
       });
     }
   }, {
+    key: "deinit",
+    value: function deinit() {
+      // Remove event listeners
+      this.canvas.removeEventListener('mousedown', this.onMouseDown);
+      this.canvas.removeEventListener('mousemove', this.onMouseMove);
+      this.canvas.removeEventListener('mouseup', this.onMouseUp);
+      this.canvas.removeEventListener('mouseleave', this.onMouseLeave);
+      this.canvas.removeEventListener('click', this.onMouseClick);
+    }
+  }, {
     key: "onMouseDown",
     value: function onMouseDown(event) {
-      var isPopup = this.settingsBar.getStatus();
-      if (!isPopup) {
-        // Get the selected tool from the toolbar
-        this.selectedTool = this.toolbar.currentTool; // This will return the selected tool function
-        this.isDoing = true;
-        var _this$getMousePositio = this.getMousePosition(event, this.rounded),
-          x = _this$getMousePositio.x,
-          y = _this$getMousePositio.y;
-        this.lastX = x;
-        this.lastY = y;
+      // Get the selected tool from the toolbar
+      this.selectedTool = this.toolManager.getTool(); // This will return the selected tool
+      this.isDoing = true;
+      var _this$getMousePositio = this.getMousePosition(event, this.rounded),
+        x = _this$getMousePositio.x,
+        y = _this$getMousePositio.y;
+      this.lastX = x;
+      this.lastY = y;
 
-        // Perform drawing operations using the selected tool
-        if (this.selectedTool === 'pencil') {
-          this.drawPixel = true;
-          this.draw(this.lastX, this.lastY, x, y);
-        } else if (this.selectedTool === 'eraser') {
-          this.erasePixel = true;
-          this.erase(this.lastX, this.lastY, x, y);
-        } else if (this.selectedTool === 'line') {
-          this.startLinePreview(x, y);
-        }
+      // Perform drawing operations using the selected tool
+      if (this.selectedTool === 'pencil') {
+        this.drawPixel = true;
+        this.draw(this.lastX, this.lastY, x, y);
+      } else if (this.selectedTool === 'eraser') {
+        this.erasePixel = true;
+        this.erase(this.lastX, this.lastY, x, y);
+      } else if (this.selectedTool === 'line') {
+        this.startLinePreview(x, y);
       }
     }
   }, {
     key: "onMouseMove",
     value: function onMouseMove(event) {
-      var isPopup = this.settingsBar.getStatus();
-      if (!isPopup && this.isDoing) {
+      if (this.isDoing) {
         var _this$getMousePositio2 = this.getMousePosition(event, this.rounded),
           x = _this$getMousePositio2.x,
           y = _this$getMousePositio2.y;
@@ -845,16 +946,10 @@ var MiddleColEventHandler = /*#__PURE__*/function () {
     key: "getMousePosition",
     value: function getMousePosition(event, rounded) {
       var rect = this.canvas.getBoundingClientRect();
-
-      // Mouse coordinates relative to the canvas
       var x_canvas = event.clientX - rect.left;
       var y_canvas = event.clientY - rect.top;
-      var x = x_canvas;
-      var y = y_canvas;
-      if (this.scale != this.originalScale) {
-        x = x / this.scale;
-        y = y / this.scale;
-      }
+      var x = x_canvas / this.scale;
+      var y = y_canvas / this.scale;
       if (rounded == true) {
         x = Math.floor(x);
         y = Math.floor(y);
@@ -871,7 +966,7 @@ var MiddleColEventHandler = /*#__PURE__*/function () {
     value: function draw(prevX, prevY, x, y) {
       var color = this.colorManager.getColor();
       if (this.drawPixel == true) {
-        this.canvasRenderer.drawPixel(x, y, color);
+        this.canvasRenderer.drawPixel(x, y, color, true);
         this.drawPixel = false;
       } else {
         this.canvasRenderer.drawLine(prevX, prevY, x, y, color);
@@ -904,11 +999,13 @@ var MiddleColEventHandler = /*#__PURE__*/function () {
       //Check if scale ratio is a whole number and if not zooming out
       var scaleRatio = newScale / prevScale;
       if (scaleRatio * 10 % 10 != 0 && this.zoomOut_ == false) {
+        alert('Can not zoom further');
         return;
       }
 
       // Update the scale property
       this.scale = newScale;
+      this.scaleManager.setScale(newScale);
       var x, y;
       if (this.zoomOut_ == false) {
         this.zoomFactor = zoomFactor;
@@ -937,7 +1034,7 @@ var MiddleColEventHandler = /*#__PURE__*/function () {
 
       // Resize canvases based on newScale
       this.canvasManagers.forEach(function (manager) {
-        manager.resize(newScale);
+        manager.scaleCanvas(newScale);
       });
 
       // Render all canvas renderers
@@ -1025,8 +1122,8 @@ var MiddleColEventHandler = /*#__PURE__*/function () {
   }, {
     key: "fillArea",
     value: function fillArea(mouseX, mouseY) {
-      var x = mouseX;
-      var y = mouseY;
+      var x = mouseX * this.originalScale;
+      var y = mouseY * this.originalScale;
       var targetColor = this.canvasRenderer.getColorAtCoord(x, y);
       var colorString = this.colorManager.getColor();
       var rgbaValues = colorString.match(/\d+(\.\d+)?/g);
@@ -1068,6 +1165,12 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/**
+ * This class handles the events and interactions for a color picker feature in PixelCanvas application.
+ * It allows users to pick colors from an image loaded onto a canvas, and then display the selected 
+ * color in both hex and RGBA formats.
+ */
+
 
 var ColorPickerEventHandler = /*#__PURE__*/function () {
   function ColorPickerEventHandler(colorManager) {
@@ -1198,17 +1301,19 @@ var ColorPickerEventHandler = /*#__PURE__*/function () {
 
 /***/ }),
 
-/***/ "./src/js/rightCol/rightColEventHandler.js":
-/*!*************************************************!*\
-  !*** ./src/js/rightCol/rightColEventHandler.js ***!
-  \*************************************************/
+/***/ "./src/js/rightCol/layers/layer.js":
+/*!*****************************************!*\
+  !*** ./src/js/rightCol/layers/layer.js ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   RightColEventHandler: () => (/* binding */ RightColEventHandler)
+/* harmony export */   Layer: () => (/* binding */ Layer)
 /* harmony export */ });
-/* harmony import */ var _colorPicker_colorPickerEventHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colorPicker/colorPickerEventHandler */ "./src/js/rightCol/colorPicker/colorPickerEventHandler.js");
+/* harmony import */ var _middleCol_mainCanvas_canvasManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../middleCol/mainCanvas/canvasManager */ "./src/js/middleCol/mainCanvas/canvasManager.js");
+/* harmony import */ var _middleCol_mainCanvas_canvasRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../middleCol/mainCanvas/canvasRenderer */ "./src/js/middleCol/mainCanvas/canvasRenderer.js");
+/* harmony import */ var _middleCol_middleColEventHandler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../middleCol/middleColEventHandler */ "./src/js/middleCol/middleColEventHandler.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -1216,21 +1321,452 @@ function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), 
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
-var RightColEventHandler = /*#__PURE__*/function () {
-  function RightColEventHandler(colorManager) {
-    _classCallCheck(this, RightColEventHandler);
-    this.colorManager = colorManager;
-    this.init();
+
+
+var Layer = /*#__PURE__*/function () {
+  function Layer(pixelWidth, pixelHeight, zIndex, scale, layerIndex, bgManager, bgRenderer, colorManager, toolsManager, scaleManager, layersArr) {
+    _classCallCheck(this, Layer);
+    this.canvas = document.createElement('canvas');
+    this.canvas.style.position = 'absolute';
+    this.canvas.style.zIndex = zIndex;
+    this.canvas.id = "pixelCanvas".concat(layerIndex); // Unique ID for each canvas
+    this.canvas.className = 'pixelCanvas'; // Class name for styling
+
+    var canvasManager = new _middleCol_mainCanvas_canvasManager__WEBPACK_IMPORTED_MODULE_0__.CanvasManager(this.canvas, pixelWidth, pixelHeight, scale);
+    var canvasRenderer = new _middleCol_mainCanvas_canvasRenderer__WEBPACK_IMPORTED_MODULE_1__.CanvasRenderer(canvasManager);
+    var middleColEventHandler = new _middleCol_middleColEventHandler__WEBPACK_IMPORTED_MODULE_2__.MiddleColEventHandler([canvasManager, bgManager], [canvasRenderer, bgRenderer], colorManager, toolsManager, scaleManager);
+    var canvas = this.canvas;
+    layersArr.push({
+      canvas: canvas,
+      canvasManager: canvasManager,
+      canvasRenderer: canvasRenderer,
+      middleColEventHandler: middleColEventHandler
+    });
   }
-  return _createClass(RightColEventHandler, [{
-    key: "init",
-    value: function init() {
-      this.setUpColorPicker();
+  return _createClass(Layer, [{
+    key: "getCanvas",
+    value: function getCanvas() {
+      return this.canvas;
     }
   }, {
-    key: "setUpColorPicker",
-    value: function setUpColorPicker() {
+    key: "getCanvasManager",
+    value: function getCanvasManager() {
+      return this.canvasManager;
+    }
+  }, {
+    key: "getCanvasRenderer",
+    value: function getCanvasRenderer() {
+      return this.canvasRenderer;
+    }
+  }, {
+    key: "getMiddleColEventHandler",
+    value: function getMiddleColEventHandler() {
+      return this.middleColEventHandler;
+    }
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/rightCol/layers/layersEventHandler.js":
+/*!******************************************************!*\
+  !*** ./src/js/rightCol/layers/layersEventHandler.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   LayersEventHandler: () => (/* binding */ LayersEventHandler)
+/* harmony export */ });
+/* harmony import */ var _layer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./layer */ "./src/js/rightCol/layers/layer.js");
+/* harmony import */ var _assets_eye_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../assets/eye.png */ "./src/assets/eye.png");
+/* harmony import */ var _assets_eye_off_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../assets/eye-off.png */ "./src/assets/eye-off.png");
+/* harmony import */ var _assets_merge_down_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../assets/merge-down.png */ "./src/assets/merge-down.png");
+/* harmony import */ var _assets_delete_layer_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../assets/delete-layer.png */ "./src/assets/delete-layer.png");
+/* harmony import */ var _assets_draggable_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../assets/draggable.png */ "./src/assets/draggable.png");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+
+
+
+
+
+var LayersEventHandler = /*#__PURE__*/function () {
+  function LayersEventHandler(scaleManager, measurementsManager, bgManager, bgRenderer, colorManager, toolsManager) {
+    _classCallCheck(this, LayersEventHandler);
+    this.scaleManager = scaleManager;
+    this.measurementsManager = measurementsManager;
+    this.bgManager = bgManager;
+    this.bgRenderer = bgRenderer;
+    this.colorManager = colorManager;
+    this.toolsManager = toolsManager;
+    this.baseLayer = document.getElementById('backgroundCanvas');
+    this.layers = [];
+    this.zIndexCounter = 2;
+    this.layerIndex = 0;
+    this.currentLayerIndex = 0;
+
+    // Reference to the container where all canvases are appended
+    this.canvasContainer = this.baseLayer.parentElement;
+
+    // Reference to the container where all the canvas info are appended
+    this.layersInfoContainer = document.getElementsByClassName('layersContainer')[0];
+    this.toggle = true;
+    this.addLayerBtn = document.getElementById('add-layer');
+    this.addLayer(); //Init default layer0 on program start
+
+    this.init();
+  }
+  return _createClass(LayersEventHandler, [{
+    key: "init",
+    value: function init() {
+      var _this = this;
+      this.addLayerBtn.addEventListener('click', function () {
+        return _this.addLayer();
+      });
+    }
+  }, {
+    key: "getIndex",
+    value: function getIndex() {}
+  }, {
+    key: "toggleVisibility",
+    value: function toggleVisibility(imgElement, layer) {
+      if (this.toggle) {
+        imgElement.src = _assets_eye_off_png__WEBPACK_IMPORTED_MODULE_2__;
+        layer.style.display = 'none';
+        this.toggle = false;
+      } else {
+        imgElement.src = _assets_eye_png__WEBPACK_IMPORTED_MODULE_1__;
+        this.toggle = true;
+        layer.style.display = 'block';
+      }
+    }
+  }, {
+    key: "addLayer",
+    value: function addLayer() {
+      var _this2 = this;
+      //NOTE: reccomended amount of layers is 9 or less, any more can cause performace issues
+
+      //New layer creation
+      var scale = this.scaleManager.getScale();
+      var pixelWidth = this.measurementsManager.getPixelWidth();
+      var pixelHeight = this.measurementsManager.getPixelHeight();
+      var newLayer = new _layer__WEBPACK_IMPORTED_MODULE_0__.Layer(pixelWidth, pixelHeight, this.zIndexCounter, scale, this.layerIndex, this.bgManager, this.bgRenderer, this.colorManager, this.toolsManager, this.scaleManager, this.layers);
+      var layerId = "pixelCanvas".concat(this.layerIndex);
+      var layerIdNum = this.layerIndex;
+      var layerIndex = this.layerIndex;
+      this.canvasContainer.appendChild(newLayer.canvas);
+
+      //Create img element container
+      var imgElementContainer = document.createElement('div');
+      imgElementContainer.className = 'imageElementContainer';
+
+      //Create layerInfo or newly created layer
+      var layerInfo = document.createElement('div');
+      layerInfo.className = 'layerInfo';
+      layerInfo.id = "".concat(layerId, "layer");
+      layerInfo.addEventListener('click', function () {
+        return _this2.selectLayer(layerIndex);
+      });
+
+      // Create img element for visibility
+      var imgElementVisibility = document.createElement('img');
+      imgElementVisibility.src = _assets_eye_png__WEBPACK_IMPORTED_MODULE_1__;
+      imgElementVisibility.className = 'visibilityBtn';
+      imgElementVisibility.addEventListener('click', function () {
+        return _this2.toggleVisibility(imgElementVisibility, newLayer.canvas);
+      });
+
+      // Create p element for layer name
+      var pElement = document.createElement('p');
+      pElement.className = 'layerName';
+      pElement.textContent = "Layer ".concat(layerIdNum); // Set the text content of the p element
+
+      //Create img element for merge-down
+      var imgElementMergeDown = document.createElement('img');
+      imgElementMergeDown.src = _assets_merge_down_png__WEBPACK_IMPORTED_MODULE_3__;
+      imgElementMergeDown.className = 'mergeDownBtn';
+      imgElementMergeDown.addEventListener('click', function () {
+        return _this2.mergeDownLayers();
+      });
+
+      //Create img element for delete layer
+      var imgElementDelete = document.createElement('img');
+      imgElementDelete.src = _assets_delete_layer_png__WEBPACK_IMPORTED_MODULE_4__;
+      imgElementDelete.className = 'deleteLayerBtn';
+      imgElementDelete.addEventListener('click', function () {
+        return _this2.deleteLayer(layerIndex);
+      });
+
+      //Create img element for dragging layer
+      var imgElementDrag = document.createElement('img');
+      imgElementDrag.src = _assets_draggable_png__WEBPACK_IMPORTED_MODULE_5__;
+      imgElementDrag.className = 'dragLayerBtn';
+
+      // Drag-and-drop event listeners
+      imgElementDrag.addEventListener('dragstart', function (event) {
+        return _this2.onDragStart(event, newLayer);
+      });
+      imgElementDrag.addEventListener('dragover', function (event) {
+        return _this2.onDragOver(event);
+      });
+      imgElementDrag.addEventListener('drop', function (event) {
+        return _this2.onDrop(event, layerIndex);
+      });
+
+      // Append to containers
+      layerInfo.appendChild(pElement);
+      layerInfo.appendChild(imgElementContainer);
+      imgElementContainer.appendChild(imgElementVisibility);
+      imgElementContainer.appendChild(imgElementMergeDown);
+      imgElementContainer.appendChild(imgElementDelete);
+      imgElementContainer.appendChild(imgElementDrag);
+
+      //Insert the layer info container before the add layer button
+      this.layersInfoContainer.insertBefore(layerInfo, this.addLayerBtn);
+      this.zIndexCounter += 1; // Increment zIndex for next layer
+      this.layerIndex += 1; // Increment layerIndex for unique ID
+    }
+  }, {
+    key: "selectLayer",
+    value: function selectLayer() {}
+  }, {
+    key: "deleteLayer",
+    value: function deleteLayer(layerIndex) {
+      var _this3 = this;
+      if (layerIndex > 0 && layerIndex < this.layers.length) {
+        alert('delete layer');
+
+        // Remove the layer's canvas element from the DOM
+        var layerToRemove = this.layers[layerIndex];
+
+        // Deinitialize event handlers for the layer to remove
+        if (layerToRemove.middleColEventHandler) {
+          layerToRemove.middleColEventHandler.deinit();
+        }
+        this.canvasContainer.removeChild(layerToRemove.canvas);
+
+        // Remove the layer's info element from the DOM
+        var layerInfoToRemove = document.getElementById("pixelCanvas".concat(layerIndex, "layer"));
+        this.layersInfoContainer.removeChild(layerInfoToRemove);
+
+        //Switch layers to the layer beneath the layerToRemove
+        this.switchLayer(layerIndex + 1);
+
+        // Remove the layer from the layers array
+        this.layers.splice(layerIndex, 1);
+
+        // Adjust IDs and event listeners for layers and layer infos that come after the deleted layer
+        var _loop = function _loop(i) {
+          _this3.layers[i].index -= 1;
+          var layerInfo = document.getElementById("pixelCanvas".concat(i + 1, "layer"));
+          layerInfo.id = "pixelCanvas".concat(i, "layer");
+          layerInfo.querySelector('.layerName').textContent = "Layer ".concat(i);
+          layerInfo.removeEventListener('click', function () {
+            return _this3.selectLayer(i + 1, layerInfo.id);
+          });
+          layerInfo.addEventListener('click', function () {
+            return _this3.selectLayer(i, layerInfo.id);
+          });
+        };
+        for (var i = layerIndex; i < this.layers.length; i++) {
+          _loop(i);
+        }
+
+        // Decrement layerIndex for new layers
+        this.layerIndex -= 1;
+      }
+    }
+  }, {
+    key: "onDragStart",
+    value: function onDragStart(event, layer) {
+      var layerCanvas = layer.canvas;
+      var layerManager = layer.canvasManager; //undef bec init as const so out of scope
+      var layerRenderer = layer.canvasRenderer;
+      var layerMiddleColEventHandler = layer.middleColEventHandler;
+      console.log({
+        layerCanvas: layerCanvas,
+        layerManager: layerManager,
+        layerRenderer: layerRenderer,
+        layerMiddleColEventHandler: layerMiddleColEventHandler
+      });
+      var layerIndex = this.layers.indexOf({
+        layerCanvas: layerCanvas,
+        layerManager: layerManager,
+        layerRenderer: layerRenderer,
+        layerMiddleColEventHandler: layerMiddleColEventHandler
+      });
+      console.log(layerIndex);
+      event.dataTransfer.setData('text/plain', layerIndex);
+    }
+  }, {
+    key: "onDragOver",
+    value: function onDragOver(event) {
+      event.preventDefault();
+    }
+  }, {
+    key: "onDrop",
+    value: function onDrop(event, targetLayerIndex) {
+      event.preventDefault();
+      var draggedLayerIndex = parseInt(event.dataTransfer.getData('text/plain'), 10);
+      if (draggedLayerIndex !== targetLayerIndex) {
+        this.moveLayer(draggedLayerIndex, targetLayerIndex);
+      }
+    }
+  }, {
+    key: "moveLayer",
+    value: function moveLayer(fromIndex, toIndex) {
+      // Update the layers array
+      var _this$layers$splice = this.layers.splice(fromIndex, 1),
+        _this$layers$splice2 = _slicedToArray(_this$layers$splice, 1),
+        movedLayer = _this$layers$splice2[0];
+      this.layers.splice(toIndex, 0, movedLayer);
+
+      // Update the DOM elements
+      var movedLayerInfo = document.getElementById("pixelCanvas".concat(fromIndex, "layer"));
+      var targetLayerInfo = document.getElementById("pixelCanvas".concat(toIndex, "layer"));
+      console.log(fromIndex, toIndex);
+      if (fromIndex < toIndex) {
+        // Dragging down: insert after the target layer
+        this.layersInfoContainer.insertBefore(movedLayerInfo, targetLayerInfo.nextSibling);
+      } else {
+        // Dragging up: insert before the target layer
+        this.layersInfoContainer.insertBefore(movedLayerInfo, targetLayerInfo);
+      }
+      console.log(this.layers);
+
+      // Switch to the new layer
+      //this.switchLayer(toIndex);
+    }
+  }, {
+    key: "mergeDownLayers",
+    value: function mergeDownLayers() {}
+  }, {
+    key: "mergeAllLayers",
+    value: function mergeAllLayers() {}
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/rightCol/palette/paletteEventHandler.js":
+/*!********************************************************!*\
+  !*** ./src/js/rightCol/palette/paletteEventHandler.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PaletteEventHandler: () => (/* binding */ PaletteEventHandler)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var PaletteEventHandler = /*#__PURE__*/function () {
+  function PaletteEventHandler(colorManager) {
+    _classCallCheck(this, PaletteEventHandler);
+    this.colorManager = colorManager;
+    this.addColorSwatchButton = document.getElementById('addColorSwatch');
+    this.paletteContainer = document.querySelector('.palette-container');
+    this.addColorSwatch(); //add first color swatch with default color: #000000
+
+    // Event listeners
+    this.initEventListeners();
+  }
+  return _createClass(PaletteEventHandler, [{
+    key: "initEventListeners",
+    value: function initEventListeners() {
+      var _this = this;
+      this.addColorSwatchButton.addEventListener('click', function () {
+        return _this.addColorSwatch();
+      });
+    }
+  }, {
+    key: "selectColorSwatch",
+    value: function selectColorSwatch(swatch) {
+      swatch.style.border = 'solid yellow';
+    }
+
+    // Color Swatch Add Button
+  }, {
+    key: "addColorSwatch",
+    value: function addColorSwatch() {
+      var _this2 = this;
+      var newSwatch = document.createElement('div');
+      newSwatch.className = 'color-swatch';
+      newSwatch.style.backgroundColor = "black";
+      newSwatch.addEventListener('click', function () {
+        return _this2.selectColorSwatch(newSwatch);
+      });
+      this.paletteContainer.insertBefore(newSwatch, this.addColorSwatchButton);
+    }
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/rightCol/rightColInitializer.js":
+/*!************************************************!*\
+  !*** ./src/js/rightCol/rightColInitializer.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   RightColInitializer: () => (/* binding */ RightColInitializer)
+/* harmony export */ });
+/* harmony import */ var _colorPicker_colorPickerEventHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colorPicker/colorPickerEventHandler */ "./src/js/rightCol/colorPicker/colorPickerEventHandler.js");
+/* harmony import */ var _palette_paletteEventHandler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./palette/paletteEventHandler */ "./src/js/rightCol/palette/paletteEventHandler.js");
+/* harmony import */ var _layers_layersEventHandler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./layers/layersEventHandler */ "./src/js/rightCol/layers/layersEventHandler.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/**
+ * This class handles the initialization of the colorPicker, palette, and layer event handlers
+ */
+
+
+
+
+var RightColInitializer = /*#__PURE__*/function () {
+  function RightColInitializer(colorManager, scaleManager, measurementsManager, bgManager, bgRenderer, toolsManager) {
+    _classCallCheck(this, RightColInitializer);
+    this.colorManager = colorManager;
+    this.scaleManager = scaleManager;
+    this.measurementsManager = measurementsManager;
+    this.bgManager = bgManager;
+    this.bgRenderer = bgRenderer;
+    this.toolsManager = toolsManager;
+    this.init();
+  }
+  return _createClass(RightColInitializer, [{
+    key: "init",
+    value: function init() {
+      this.setUpEventHandlers();
+    }
+  }, {
+    key: "setUpEventHandlers",
+    value: function setUpEventHandlers() {
       this.colorPickerEventHandler = new _colorPicker_colorPickerEventHandler__WEBPACK_IMPORTED_MODULE_0__.ColorPickerEventHandler(this.colorManager);
+      this.paletteEventHandler = new _palette_paletteEventHandler__WEBPACK_IMPORTED_MODULE_1__.PaletteEventHandler(this.colorManager);
+      this.layersEventHandler = new _layers_layersEventHandler__WEBPACK_IMPORTED_MODULE_2__.LayersEventHandler(this.scaleManager, this.measurementsManager, this.bgManager, this.bgRenderer, this.colorManager, this.toolsManager);
     }
   }]);
 }();
@@ -1266,6 +1802,8 @@ var FileSettingsEventHandler = /*#__PURE__*/function () {
     this.canvasRenderer = canvasRenderer;
     this.bgManager = bgManager;
     this.bgRenderer = bgRenderer;
+    this.fileButton = document.getElementById('fileBtn');
+    this.fileSettingContent = document.getElementById('fileContent');
     this.resizeButton = document.getElementsByClassName('resize')[0];
     this.clearButton = document.getElementsByClassName('clear')[0];
     this.exportButton = document.getElementsByClassName('export')[0];
@@ -1275,12 +1813,16 @@ var FileSettingsEventHandler = /*#__PURE__*/function () {
     this.resizeImg.src = _assets_resize_png__WEBPACK_IMPORTED_MODULE_1__;
     this.exportImg = document.getElementsByClassName('exportImg')[0];
     this.exportImg.src = _assets_export_png__WEBPACK_IMPORTED_MODULE_2__;
+    this.toggle = true;
     this.init();
   }
   return _createClass(FileSettingsEventHandler, [{
     key: "init",
     value: function init() {
       var _this = this;
+      this.fileButton.addEventListener('click', function () {
+        return _this.showFileSettings();
+      });
       this.resizeButton.addEventListener('click', function () {
         return _this.resizeCanvas();
       });
@@ -1290,6 +1832,17 @@ var FileSettingsEventHandler = /*#__PURE__*/function () {
       this.exportButton.addEventListener('click', function () {
         return _this.export();
       });
+    }
+  }, {
+    key: "showFileSettings",
+    value: function showFileSettings() {
+      if (this.toggle) {
+        this.fileSettingContent.style.display = "block";
+        this.toggle = false;
+      } else {
+        this.fileSettingContent.style.display = "none";
+        this.toggle = true;
+      }
     }
   }, {
     key: "resizeCanvas",
@@ -1326,7 +1879,6 @@ var FileSettingsEventHandler = /*#__PURE__*/function () {
 
           // Hide the modal
           document.getElementById('resizeModal').style.display = 'none';
-          _this2.eventHandler.isPopup = false;
           _this2.canvasManager.canvas.style.display = 'block';
         }
       });
@@ -1334,7 +1886,6 @@ var FileSettingsEventHandler = /*#__PURE__*/function () {
       //Close the modal if the user clicks the close button
       document.querySelector('.close-button').addEventListener('click', function () {
         document.getElementById('resizeModal').style.display = 'none';
-        _this2.eventHandler.isPopup = false;
         _this2.canvasManager.canvas.style.display = 'block';
       });
 
@@ -1342,8 +1893,6 @@ var FileSettingsEventHandler = /*#__PURE__*/function () {
       window.onclick = function (event) {
         if (event.target == document.getElementById('resizeModal')) {
           document.getElementById('resizeModal').style.display = 'none';
-          _this2.eventHandler.isPopup = false;
-          _this2.canvasManager.canvas.style.display = 'block';
         }
       };
     }
@@ -1382,15 +1931,15 @@ var FileSettingsEventHandler = /*#__PURE__*/function () {
 
 /***/ }),
 
-/***/ "./src/js/topRow/topRowEventHandler.js":
-/*!*********************************************!*\
-  !*** ./src/js/topRow/topRowEventHandler.js ***!
-  \*********************************************/
+/***/ "./src/js/topRow/topRowInitializer.js":
+/*!********************************************!*\
+  !*** ./src/js/topRow/topRowInitializer.js ***!
+  \********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   TopRowEventHandler: () => (/* binding */ TopRowEventHandler)
+/* harmony export */   TopRowInitializer: () => (/* binding */ TopRowInitializer)
 /* harmony export */ });
 /* harmony import */ var _assets_file_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../assets/file.png */ "./src/assets/file.png");
 /* harmony import */ var _assets_layer_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../assets/layer.png */ "./src/assets/layer.png");
@@ -1408,17 +1957,16 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 
 
-var TopRowEventHandler = /*#__PURE__*/function () {
-  function TopRowEventHandler(canvasManager, canvasRenderer, bgManager, bgRenderer) {
-    _classCallCheck(this, TopRowEventHandler);
+var TopRowInitializer = /*#__PURE__*/function () {
+  function TopRowInitializer(canvasManager, canvasRenderer, bgManager, bgRenderer) {
+    _classCallCheck(this, TopRowInitializer);
     this.canvasManager = canvasManager;
     this.canvasRenderer = canvasRenderer;
     this.bgManager = bgManager;
     this.bgRenderer = bgRenderer;
-    this.disableCanvasActions = false;
     this.init();
   }
-  return _createClass(TopRowEventHandler, [{
+  return _createClass(TopRowInitializer, [{
     key: "init",
     value: function init() {
       this.setUpEventHandlers(this.canvasManager, this.canvasRenderer, this.bgManager, this.bgRenderer);
@@ -1427,11 +1975,6 @@ var TopRowEventHandler = /*#__PURE__*/function () {
     key: "setUpEventHandlers",
     value: function setUpEventHandlers() {
       this.fileSettingsEventHandler = new _fileSettings_fileSettingsEventHandler__WEBPACK_IMPORTED_MODULE_4__.FileSettingsEventHandler(this.canvasManager, this.canvasRenderer, this.bgManager, this.bgRenderer);
-    }
-  }, {
-    key: "getStatus",
-    value: function getStatus() {
-      return this.disableCanvas;
     }
   }]);
 }();
@@ -1453,7 +1996,7 @@ __webpack_require__.r(__webpack_exports__);
 //Ex: calculateBlocks(82, 16) => { blocksX: 5.125, blocksY: 1 }
 
 function calculateBlocks(width, height) {
-  var blockSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 16;
+  var blockSize = 16;
   var blocksX = width / blockSize;
   var blocksY = height / blockSize;
   return {
@@ -1504,6 +2047,133 @@ var ColorManager = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./src/js/utils/measurementsManager.js":
+/*!*********************************************!*\
+  !*** ./src/js/utils/measurementsManager.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MeasurementsManager: () => (/* binding */ MeasurementsManager)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var MeasurementsManager = /*#__PURE__*/function () {
+  function MeasurementsManager() {
+    _classCallCheck(this, MeasurementsManager);
+    this.pixelWidth = null;
+    this.pixelHeight = null;
+  }
+  return _createClass(MeasurementsManager, [{
+    key: "getPixelWidth",
+    value: function getPixelWidth() {
+      var pixelWidth = this.pixelWidth;
+      return pixelWidth;
+    }
+  }, {
+    key: "getPixelHeight",
+    value: function getPixelHeight() {
+      var pixelHeight = this.pixelHeight;
+      return pixelHeight;
+    }
+  }, {
+    key: "setPixelWidth",
+    value: function setPixelWidth(pixelWidth) {
+      this.pixelWidth = pixelWidth;
+    }
+  }, {
+    key: "setPixelHeight",
+    value: function setPixelHeight(pixelHeight) {
+      this.pixelHeight = pixelHeight;
+    }
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/utils/scaleManager.js":
+/*!**************************************!*\
+  !*** ./src/js/utils/scaleManager.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ScaleManager: () => (/* binding */ ScaleManager)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var ScaleManager = /*#__PURE__*/function () {
+  function ScaleManager(scale) {
+    _classCallCheck(this, ScaleManager);
+    this.currScale = scale;
+    this.origScale = scale;
+  }
+  return _createClass(ScaleManager, [{
+    key: "setScale",
+    value: function setScale(newScale) {
+      this.currScale = newScale;
+    }
+  }, {
+    key: "getScale",
+    value: function getScale() {
+      var scale = this.currScale;
+      return scale;
+    }
+  }]);
+}();
+
+/***/ }),
+
+/***/ "./src/js/utils/toolManager.js":
+/*!*************************************!*\
+  !*** ./src/js/utils/toolManager.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ToolManager: () => (/* binding */ ToolManager)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/**
+ * Manages the tool for the program
+ */
+
+var ToolManager = /*#__PURE__*/function () {
+  function ToolManager() {
+    _classCallCheck(this, ToolManager);
+    this.currentTool = 'pencil'; // Default tool
+  }
+  return _createClass(ToolManager, [{
+    key: "setTool",
+    value: function setTool(tool) {
+      this.currentTool = tool;
+    }
+  }, {
+    key: "getTool",
+    value: function getTool() {
+      return this.currentTool;
+    }
+  }]);
+}();
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./src/style.css":
 /*!*************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./src/style.css ***!
@@ -1527,6 +2197,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/*=============== VARIABLES CSS ======
 :root {
     /*========== Colors ==========*/
     --white-color: #FFFFFF;
+    --grey-color: #F0F0F0;
 
     /** CSS DARK THEME PRIMARY COLORS */
     --color-primary-100: #f1d217;
@@ -1792,11 +2463,62 @@ canvas {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
+    height: 150px;
+    overflow: scroll;
+    align-content: flex-start;
+}
+
+#addColorSwatch{
+    height: 20px;
 }
 
 .color-swatch{
     height: 20px;
     width: 20px;
+}
+
+.layersContainer{
+    display: flex;
+    height: 300px;
+    background-color: var(--color-surface-200);
+    flex-direction: column;
+    overflow: scroll;
+}
+
+.layerInfo{
+    display: flex;
+    margin: 4px;
+    background-color: var(--color-primary-400);
+    gap: 10px;
+}
+
+.layerInfo:hover{
+    background-color: var(--color-primary-100);
+}
+
+.layerName{
+    margin-left: auto;
+    color: var(--color-surface-100);
+    width: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#add-layer{
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.visibilityBtn{
+    margin-left: 4px;
+    width: 19px;
+    height: 19px;
+}
+
+.imageElementContainer{
+    display: flex;
+    gap: 14px;
 }
 
 /*=============== MODAL ===============*/
@@ -1852,7 +2574,7 @@ canvas {
 .widthResize{
     padding-right: 6px;
 }
-`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"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","sourcesContent":["/*=============== VARIABLES CSS ===============*/\n:root {\n    /*========== Colors ==========*/\n    --white-color: #FFFFFF;\n\n    /** CSS DARK THEME PRIMARY COLORS */\n    --color-primary-100: #f1d217;\n    --color-primary-200: #f5d741;\n    --color-primary-300: #f8dc5e;\n    --color-primary-400: #fae177;\n    --color-primary-500: #fde58e;\n    --color-primary-600: #feeaa5;\n    /** CSS DARK THEME SURFACE COLORS */\n    --color-surface-100: #121212;\n    --color-surface-200: #282828;\n    --color-surface-300: #3f3f3f;\n    --color-surface-400: #575757;\n    --color-surface-500: #717171;\n    --color-surface-600: #8b8b8b;\n    /** CSS DARK THEME MIXED SURFACE COLORS */\n    --color-surface-mixed-100: #796a22;\n    --color-surface-mixed-200: #88793a;\n    --color-surface-mixed-300: #978951;\n    --color-surface-mixed-400: #a69969;\n    --color-surface-mixed-500: #b5a981;\n    --color-surface-mixed-600: #c4ba99;\n  \n    /*========== Font and typography ==========*/\n    --body-font: \"Pixelify Sans\", sans-serif;\n    --biggest-font-size: 2.5rem;\n    --h1-font-size: 2rem;\n    --h2-font-size: 1.25rem;\n    --h3-font-size: 1.125rem;\n    --normal-font-size: 1rem;\n    --small-font-size: .813rem;\n    --smaller-font-size: .75rem;\n  \n    /*========== Font weight ==========*/\n    --font-regular: 400;\n    --font-medium: 500;\n    --font-semi-bold: 600;\n    --font-bold: 700;\n}\n\n/*=============== BASE ===============*/\nbody {\n    margin: 0;\n    padding: 0;\n    display: flex;\n    flex-direction: column;\n    height: 100vh;\n    font-family: var(--body-font);\n    color: var(--white-color)\n}\n\nbutton {\n    font-family: var(--body-font);\n}\n\nul, p{\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n    padding-inline-start: 0px;\n}\n\nli {\n    list-style-type: none;\n}\n\nh1 {\n    font-weight: lighter;\n    font-size: var(--h1-font-size);\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n}\n\nh2 {\n    font-weight: lighter;\n    font-size: var(--h2-font-size);\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n}\n\ncanvas {\n    overflow: scroll;\n}\n\n/*=============== HEADER ===============*/\n#headerContainer {\n    display: flex;\n    background-color: var(--color-surface-300);\n    flex: 0 0 auto;\n    width: 100%;\n    align-items: center;\n}\n\n.title {\n    font-size: var(--h2-font-size);\n    padding-right: 10px;\n    padding-left: 1px;\n    padding-top: 1px;\n    padding-bottom: 1px;\n}\n\n.settingsBar {\n    display: flex;\n    gap: 10px; /* Adds space between buttons */\n}\n\n.dropdown {\n    position: relative;\n    display: inline-block;\n}\n\n.dropbtn {\n    background-color: var(--color-primary-400);\n    color: var(--color-surface-100);\n    font-size: var(--normal-font-size);\n    border: none;\n    display: flex;\n    align-items: center;\n    gap: 2px;\n}\n\n.settingButton {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n}\n\n.dropdown-content {\n    display: none;\n    position: absolute;\n    background-color: #f1f1f1;\n    min-width: 160px;\n    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n    z-index: 3;\n    font-size: var(--normal-font-size);\n}\n\n.dropdown-content div {\n    color: black;\n    padding: 4px;\n    text-decoration: none;\n}\n\n.dropdown-content div:hover {\n    background-color: #ddd;\n}\n\n.dropdown:hover .dropdown-content {\n    cursor: pointer;\n}\n\n.dropdown:hover .dropbtn {\n    background-color: var(--color-primary-100);\n    cursor: pointer;\n}\n\n\n\n/*=============== MAIN ===============*/\n.mainContainer{\n    display: flex;\n    flex: 1; /* Allow the container to grow and fill the available space */\n}\n\n/*=============== LEFT COLUMN ===============*/\n.leftCol{\n    background-color: var(--color-surface-300);\n}\n\n.toolBarList{\n    width: 34px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n}\n\n.toolItem{\n    background-color: var(--color-surface-mixed-200);\n}\n\n.toolButton{\n    background-color: var(--color-primary-400);\n    border: 1px solid var(--color-primary-400);\n}\n\n.toolButton:hover{\n    background-color: var(--color-primary-100);\n    border: 1px solid var(--color-primary-100);\n    cursor: pointer;\n}\n\n.toolButton.selected {\n    border: none;\n    background-color:var(--color-primary-100);\n}\n\n/*=============== CENTER COLUMN ===============*/\n.centerCol {\n    display: flex;\n    background-color: var(--color-surface-100);\n    flex-grow: 1;\n    flex-direction: column;\n}\n\n.canvasWrapper {\n    position: relative;\n    width: 640px;\n    max-width: 1040px;\n    height: 650px;\n    max-height: 650px;\n    overflow: auto;\n    margin: auto;\n}\n\n#backgroundCanvas,\n#pixelCanvas {\n    position: absolute;\n    image-rendering: pixelated;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n}\n\n.canvasInfo {\n    align-self: flex-end;\n    margin-right: 20px;\n    margin-bottom: 20px;\n}\n\n\n/*=============== RIGHT COLUMN ===============*/\n.rightCol{\n    background-color: var(--color-surface-300);\n}\n\n.colorPickerImg_Container{\n    width: 200px;\n    padding-left: 8px;\n    padding-right: 10px;\n}\n\n.container{\n    display: flex;\n    flex-direction: column;\n    gap: 5px;\n}\n\n.colorPrompt{\n    margin-block-start: 2px;\n    margin-block-end: 2px;\n}\n\n.hexCode{\n    color: var(--second-color);\n}\n\n.palette-container{\n    background-color: var(--color-surface-200);\n    display: flex;\n    flex-wrap: wrap;\n    gap: 5px;\n}\n\n.color-swatch{\n    height: 20px;\n    width: 20px;\n}\n\n/*=============== MODAL ===============*/\n.modal {\n    display: none; /* Hidden by default */\n    position: fixed; /* Stay in place */\n    z-index: 4; /* Sit on top */\n    left: 0;\n    top: 0;\n    width: 100%; /* Full width */\n    height: 100%; /* Full height */\n    overflow: auto; /* Enable scroll if needed */\n    background-color: rgb(0,0,0); /* Fallback color */\n    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */\n    padding-top: 60px;\n}\n\n.modal-content {\n    color: #121212;\n    background-color: #fefefe;\n    margin: 5% auto; /* 15% from the top and centered */\n    padding: 20px;\n    border: 1px solid #888;\n    width: 80%; /* Could be more or less, depending on screen size */\n}\n\n.close-button {\n    color: #aaa;\n    float: right;\n    font-size: 28px;\n    font-weight: bold;\n}\n\n.close-button:hover,\n.close-button:focus {\n    color: black;\n    text-decoration: none;\n    cursor: pointer;\n}\n\n.dimensions {\n    padding-bottom: 10px;\n}\n\n.resizeWidthContainer{\n    padding-bottom: 5px;\n}\n\n.resizeHeightContainer{\n    padding-bottom: 12px;\n}\n\n.widthResize{\n    padding-right: 6px;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"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","sourcesContent":["/*=============== VARIABLES CSS ===============*/\n:root {\n    /*========== Colors ==========*/\n    --white-color: #FFFFFF;\n    --grey-color: #F0F0F0;\n\n    /** CSS DARK THEME PRIMARY COLORS */\n    --color-primary-100: #f1d217;\n    --color-primary-200: #f5d741;\n    --color-primary-300: #f8dc5e;\n    --color-primary-400: #fae177;\n    --color-primary-500: #fde58e;\n    --color-primary-600: #feeaa5;\n    /** CSS DARK THEME SURFACE COLORS */\n    --color-surface-100: #121212;\n    --color-surface-200: #282828;\n    --color-surface-300: #3f3f3f;\n    --color-surface-400: #575757;\n    --color-surface-500: #717171;\n    --color-surface-600: #8b8b8b;\n    /** CSS DARK THEME MIXED SURFACE COLORS */\n    --color-surface-mixed-100: #796a22;\n    --color-surface-mixed-200: #88793a;\n    --color-surface-mixed-300: #978951;\n    --color-surface-mixed-400: #a69969;\n    --color-surface-mixed-500: #b5a981;\n    --color-surface-mixed-600: #c4ba99;\n  \n    /*========== Font and typography ==========*/\n    --body-font: \"Pixelify Sans\", sans-serif;\n    --biggest-font-size: 2.5rem;\n    --h1-font-size: 2rem;\n    --h2-font-size: 1.25rem;\n    --h3-font-size: 1.125rem;\n    --normal-font-size: 1rem;\n    --small-font-size: .813rem;\n    --smaller-font-size: .75rem;\n  \n    /*========== Font weight ==========*/\n    --font-regular: 400;\n    --font-medium: 500;\n    --font-semi-bold: 600;\n    --font-bold: 700;\n}\n\n/*=============== BASE ===============*/\nbody {\n    margin: 0;\n    padding: 0;\n    display: flex;\n    flex-direction: column;\n    height: 100vh;\n    font-family: var(--body-font);\n    color: var(--white-color)\n}\n\nbutton {\n    font-family: var(--body-font);\n}\n\nul, p{\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n    padding-inline-start: 0px;\n}\n\nli {\n    list-style-type: none;\n}\n\nh1 {\n    font-weight: lighter;\n    font-size: var(--h1-font-size);\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n}\n\nh2 {\n    font-weight: lighter;\n    font-size: var(--h2-font-size);\n    margin-block-start: 0px;\n    margin-block-end: 0px;\n}\n\ncanvas {\n    overflow: scroll;\n}\n\n/*=============== HEADER ===============*/\n#headerContainer {\n    display: flex;\n    background-color: var(--color-surface-300);\n    flex: 0 0 auto;\n    width: 100%;\n    align-items: center;\n}\n\n.title {\n    font-size: var(--h2-font-size);\n    padding-right: 10px;\n    padding-left: 1px;\n    padding-top: 1px;\n    padding-bottom: 1px;\n}\n\n.settingsBar {\n    display: flex;\n    gap: 10px; /* Adds space between buttons */\n}\n\n.dropdown {\n    position: relative;\n    display: inline-block;\n}\n\n.dropbtn {\n    background-color: var(--color-primary-400);\n    color: var(--color-surface-100);\n    font-size: var(--normal-font-size);\n    border: none;\n    display: flex;\n    align-items: center;\n    gap: 2px;\n}\n\n.settingButton {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n}\n\n.dropdown-content {\n    display: none;\n    position: absolute;\n    background-color: #f1f1f1;\n    min-width: 160px;\n    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);\n    z-index: 3;\n    font-size: var(--normal-font-size);\n}\n\n.dropdown-content div {\n    color: black;\n    padding: 4px;\n    text-decoration: none;\n}\n\n.dropdown-content div:hover {\n    background-color: #ddd;\n}\n\n.dropdown:hover .dropdown-content {\n    cursor: pointer;\n}\n\n.dropdown:hover .dropbtn {\n    background-color: var(--color-primary-100);\n    cursor: pointer;\n}\n\n\n\n/*=============== MAIN ===============*/\n.mainContainer{\n    display: flex;\n    flex: 1; /* Allow the container to grow and fill the available space */\n}\n\n/*=============== LEFT COLUMN ===============*/\n.leftCol{\n    background-color: var(--color-surface-300);\n}\n\n.toolBarList{\n    width: 34px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n}\n\n.toolItem{\n    background-color: var(--color-surface-mixed-200);\n}\n\n.toolButton{\n    background-color: var(--color-primary-400);\n    border: 1px solid var(--color-primary-400);\n}\n\n.toolButton:hover{\n    background-color: var(--color-primary-100);\n    border: 1px solid var(--color-primary-100);\n    cursor: pointer;\n}\n\n.toolButton.selected {\n    border: none;\n    background-color:var(--color-primary-100);\n}\n\n/*=============== CENTER COLUMN ===============*/\n.centerCol {\n    display: flex;\n    background-color: var(--color-surface-100);\n    flex-grow: 1;\n    flex-direction: column;\n}\n\n.canvasWrapper {\n    position: relative;\n    width: 640px;\n    max-width: 1040px;\n    height: 650px;\n    max-height: 650px;\n    overflow: auto;\n    margin: auto;\n}\n\n#backgroundCanvas,\n#pixelCanvas {\n    position: absolute;\n    image-rendering: pixelated;\n}\n\n#backgroundCanvas {\n    z-index: 1;\n}\n\n#pixelCanvas {\n    z-index: 2;\n}\n\n.canvasInfo {\n    align-self: flex-end;\n    margin-right: 20px;\n    margin-bottom: 20px;\n}\n\n\n/*=============== RIGHT COLUMN ===============*/\n.rightCol{\n    background-color: var(--color-surface-300);\n}\n\n.colorPickerImg_Container{\n    width: 200px;\n    padding-left: 8px;\n    padding-right: 10px;\n}\n\n.container{\n    display: flex;\n    flex-direction: column;\n    gap: 5px;\n}\n\n.colorPrompt{\n    margin-block-start: 2px;\n    margin-block-end: 2px;\n}\n\n.hexCode{\n    color: var(--second-color);\n}\n\n.palette-container{\n    background-color: var(--color-surface-200);\n    display: flex;\n    flex-wrap: wrap;\n    gap: 5px;\n    height: 150px;\n    overflow: scroll;\n    align-content: flex-start;\n}\n\n#addColorSwatch{\n    height: 20px;\n}\n\n.color-swatch{\n    height: 20px;\n    width: 20px;\n}\n\n.layersContainer{\n    display: flex;\n    height: 300px;\n    background-color: var(--color-surface-200);\n    flex-direction: column;\n    overflow: scroll;\n}\n\n.layerInfo{\n    display: flex;\n    margin: 4px;\n    background-color: var(--color-primary-400);\n    gap: 10px;\n}\n\n.layerInfo:hover{\n    background-color: var(--color-primary-100);\n}\n\n.layerName{\n    margin-left: auto;\n    color: var(--color-surface-100);\n    width: 60px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#add-layer{\n    margin-left: 4px;\n    margin-right: 4px;\n}\n\n.visibilityBtn{\n    margin-left: 4px;\n    width: 19px;\n    height: 19px;\n}\n\n.imageElementContainer{\n    display: flex;\n    gap: 14px;\n}\n\n/*=============== MODAL ===============*/\n.modal {\n    display: none; /* Hidden by default */\n    position: fixed; /* Stay in place */\n    z-index: 4; /* Sit on top */\n    left: 0;\n    top: 0;\n    width: 100%; /* Full width */\n    height: 100%; /* Full height */\n    overflow: auto; /* Enable scroll if needed */\n    background-color: rgb(0,0,0); /* Fallback color */\n    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */\n    padding-top: 60px;\n}\n\n.modal-content {\n    color: #121212;\n    background-color: #fefefe;\n    margin: 5% auto; /* 15% from the top and centered */\n    padding: 20px;\n    border: 1px solid #888;\n    width: 80%; /* Could be more or less, depending on screen size */\n}\n\n.close-button {\n    color: #aaa;\n    float: right;\n    font-size: 28px;\n    font-weight: bold;\n}\n\n.close-button:hover,\n.close-button:focus {\n    color: black;\n    text-decoration: none;\n    cursor: pointer;\n}\n\n.dimensions {\n    padding-bottom: 10px;\n}\n\n.resizeWidthContainer{\n    padding-bottom: 5px;\n}\n\n.resizeHeightContainer{\n    padding-bottom: 12px;\n}\n\n.widthResize{\n    padding-right: 6px;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2317,6 +3039,26 @@ module.exports = __webpack_require__.p + "assets/colorPicker.jpeg";
 
 /***/ }),
 
+/***/ "./src/assets/delete-layer.png":
+/*!*************************************!*\
+  !*** ./src/assets/delete-layer.png ***!
+  \*************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/delete-layer.png";
+
+/***/ }),
+
+/***/ "./src/assets/draggable.png":
+/*!**********************************!*\
+  !*** ./src/assets/draggable.png ***!
+  \**********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/draggable.png";
+
+/***/ }),
+
 /***/ "./src/assets/eraser.png":
 /*!*******************************!*\
   !*** ./src/assets/eraser.png ***!
@@ -2334,6 +3076,26 @@ module.exports = __webpack_require__.p + "assets/eraser.png";
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = __webpack_require__.p + "assets/export.png";
+
+/***/ }),
+
+/***/ "./src/assets/eye-off.png":
+/*!********************************!*\
+  !*** ./src/assets/eye-off.png ***!
+  \********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/eye-off.png";
+
+/***/ }),
+
+/***/ "./src/assets/eye.png":
+/*!****************************!*\
+  !*** ./src/assets/eye.png ***!
+  \****************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/eye.png";
 
 /***/ }),
 
@@ -2374,6 +3136,16 @@ module.exports = __webpack_require__.p + "assets/layer.png";
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = __webpack_require__.p + "assets/line.png";
+
+/***/ }),
+
+/***/ "./src/assets/merge-down.png":
+/*!***********************************!*\
+  !*** ./src/assets/merge-down.png ***!
+  \***********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "assets/merge-down.png";
 
 /***/ }),
 
@@ -2559,13 +3331,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _js_utils_calculateBlocks_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/utils/calculateBlocks.js */ "./src/js/utils/calculateBlocks.js");
 /* harmony import */ var _js_middleCol_bgCanvas_bgManager_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/middleCol/bgCanvas/bgManager.js */ "./src/js/middleCol/bgCanvas/bgManager.js");
 /* harmony import */ var _js_middleCol_bgCanvas_bgRenderer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/middleCol/bgCanvas/bgRenderer.js */ "./src/js/middleCol/bgCanvas/bgRenderer.js");
-/* harmony import */ var _js_middleCol_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/middleCol/mainCanvas/canvasManager.js */ "./src/js/middleCol/mainCanvas/canvasManager.js");
-/* harmony import */ var _js_middleCol_mainCanvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/middleCol/mainCanvas/canvasRenderer.js */ "./src/js/middleCol/mainCanvas/canvasRenderer.js");
-/* harmony import */ var _js_leftCol_leftColEventHandler_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/leftCol/leftColEventHandler.js */ "./src/js/leftCol/leftColEventHandler.js");
-/* harmony import */ var _js_rightCol_rightColEventHandler_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./js/rightCol/rightColEventHandler.js */ "./src/js/rightCol/rightColEventHandler.js");
-/* harmony import */ var _js_topRow_topRowEventHandler_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./js/topRow/topRowEventHandler.js */ "./src/js/topRow/topRowEventHandler.js");
-/* harmony import */ var _js_utils_colorManager_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./js/utils/colorManager.js */ "./src/js/utils/colorManager.js");
-/* harmony import */ var _js_middleCol_middleColEventHandler_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./js/middleCol/middleColEventHandler.js */ "./src/js/middleCol/middleColEventHandler.js");
+/* harmony import */ var _js_utils_colorManager_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/utils/colorManager.js */ "./src/js/utils/colorManager.js");
+/* harmony import */ var _js_utils_toolManager_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/utils/toolManager.js */ "./src/js/utils/toolManager.js");
+/* harmony import */ var _js_leftCol_leftColInitializer_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/leftCol/leftColInitializer.js */ "./src/js/leftCol/leftColInitializer.js");
+/* harmony import */ var _js_rightCol_rightColInitializer_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./js/rightCol/rightColInitializer.js */ "./src/js/rightCol/rightColInitializer.js");
+/* harmony import */ var _js_topRow_topRowInitializer_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./js/topRow/topRowInitializer.js */ "./src/js/topRow/topRowInitializer.js");
+/* harmony import */ var _js_utils_scaleManager_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./js/utils/scaleManager.js */ "./src/js/utils/scaleManager.js");
+/* harmony import */ var _js_utils_measurementsManager_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./js/utils/measurementsManager.js */ "./src/js/utils/measurementsManager.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
@@ -2598,10 +3370,18 @@ var IndexJS = /*#__PURE__*/function () {
   return _createClass(IndexJS, [{
     key: "init",
     value: function init() {
+      this.setupUtils();
       this.setupBackgroundCanvas();
       this.setupMainCanvas();
-      this.setupColorManager();
-      this.setupEventHandlers();
+      this.setupInitializers();
+    }
+  }, {
+    key: "setupUtils",
+    value: function setupUtils() {
+      this.colorManager = new _js_utils_colorManager_js__WEBPACK_IMPORTED_MODULE_4__.ColorManager();
+      this.toolManager = new _js_utils_toolManager_js__WEBPACK_IMPORTED_MODULE_5__.ToolManager();
+      this.scaleManager = new _js_utils_scaleManager_js__WEBPACK_IMPORTED_MODULE_9__.ScaleManager(this.scale);
+      this.measurementsManager = new _js_utils_measurementsManager_js__WEBPACK_IMPORTED_MODULE_10__.MeasurementsManager();
     }
   }, {
     key: "setupBackgroundCanvas",
@@ -2615,22 +3395,15 @@ var IndexJS = /*#__PURE__*/function () {
     value: function setupMainCanvas() {
       var pixelWidth = this.blocksX * this.blockSize;
       var pixelHeight = this.blocksY * this.blockSize;
-      this.canvasManager = new _js_middleCol_mainCanvas_canvasManager_js__WEBPACK_IMPORTED_MODULE_4__.CanvasManager('pixelCanvas', pixelWidth, pixelHeight, this.scale);
-      this.canvasRenderer = new _js_middleCol_mainCanvas_canvasRenderer_js__WEBPACK_IMPORTED_MODULE_5__.CanvasRenderer(this.canvasManager);
+      this.measurementsManager.setPixelWidth(pixelWidth);
+      this.measurementsManager.setPixelHeight(pixelHeight);
     }
   }, {
-    key: "setupColorManager",
-    value: function setupColorManager() {
-      this.colorManager = new _js_utils_colorManager_js__WEBPACK_IMPORTED_MODULE_9__.ColorManager();
-    }
-  }, {
-    key: "setupEventHandlers",
-    value: function setupEventHandlers() {
-      this.leftColEventHandler = new _js_leftCol_leftColEventHandler_js__WEBPACK_IMPORTED_MODULE_6__.LeftColEventHandler();
-      this.rightColEventHandler = new _js_rightCol_rightColEventHandler_js__WEBPACK_IMPORTED_MODULE_7__.RightColEventHandler(this.colorManager);
-      this.topRowEventHandler = new _js_topRow_topRowEventHandler_js__WEBPACK_IMPORTED_MODULE_8__.TopRowEventHandler(this.canvasManager, this.canvasRenderer, this.bgManager, this.bgRenderer);
-      this.middleColEventHandler = new _js_middleCol_middleColEventHandler_js__WEBPACK_IMPORTED_MODULE_10__.MiddleColEventHandler([this.canvasManager, this.bgManager], [this.canvasRenderer, this.bgRenderer], this.leftColEventHandler, this.rightColEventHandler, this.topRowEventHandler, this.colorManager);
-      this.init();
+    key: "setupInitializers",
+    value: function setupInitializers() {
+      this.rightColInitializer = new _js_rightCol_rightColInitializer_js__WEBPACK_IMPORTED_MODULE_7__.RightColInitializer(this.colorManager, this.scaleManager, this.measurementsManager, this.bgManager, this.bgRenderer, this.toolManager);
+      this.leftColInitializer = new _js_leftCol_leftColInitializer_js__WEBPACK_IMPORTED_MODULE_6__.LeftColInitializer(this.toolManager);
+      this.topRowInitializer = new _js_topRow_topRowInitializer_js__WEBPACK_IMPORTED_MODULE_8__.TopRowInitializer(this.canvasManager, this.canvasRenderer, this.bgManager, this.bgRenderer);
     }
   }, {
     key: "getScale",
@@ -2655,4 +3428,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle82f72efeddc53c87b4b7.js.map
+//# sourceMappingURL=bundledb9d915e37ebf472d8bc.js.map

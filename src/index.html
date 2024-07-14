@@ -11,26 +11,26 @@
 <body>
 <body>
     <div id="headerContainer">
-        <h1 class="title">PixelCanvas</h1>
+        PixelCanvas
         <div class="settingsBar">
             <div class="dropdown">
                 <button id="fileBtn" class="dropbtn">File
                     <img src="" alt="" class="fileImg">
+                    <div id="fileContent" class="dropdown-content">
+                        <div class="clear settingButton">
+                            Clear
+                            <img class="clearImg">
+                        </div>
+                        <div class="resize settingButton">
+                            Resize
+                            <img src="" alt="" class="resizeImg">
+                        </div>
+                        <div class="export settingButton">
+                            Export/Download
+                            <img src="" alt="" class="exportImg">
+                        </div>
+                    </div>
                 </button>
-                <div id="fileContent" class="dropdown-content">
-                    <div class="clear settingButton">
-                        Clear
-                        <img class="clearImg">
-                    </div>
-                    <div class="resize settingButton">
-                        Resize
-                        <img src="" alt="" class="resizeImg">
-                    </div>
-                    <div class="export settingButton">
-                        Export/Download
-                        <img src="" alt="" class="exportImg">
-                    </div>
-                </div>
 
 
             </div>
@@ -78,23 +78,23 @@
             <div class="colorPickerImg_Container">
                 <img id="colorPickerImg" alt="" style="display: none">
                 <canvas id="colorPickerCanvas"></canvas>
+                <div class="transparencyBar"></div>
+                <div class="colorInfoContainer">
+                    <p class="colorPrompt">Color Selected:</p>
+                    <div class="hexCode" style="background-color: #000000;">#000000</div>
+                </div>
                 <div class="container">
-                    <div class="colorInfoContainer">
-                        <p class="colorPrompt">Color Selected:</p>
-                        <div class="hexCode" style="background-color: #000000;">#000000</div>
-                    </div>
-                    <button id="add-color">Add Color</button>
                     <div class="palette-container">
-                        <div class="color-swatch" style="background-color: #000000;"></div>
-                        <div class="color-swatch" style="background-color: #000000;"></div>
-                        <div class="color-swatch" style="background-color: #000000;"></div>
                         <button id="addColorSwatch">+</button>
                     </div>
-                    <div class="layersContainer">
-
-                        <button id="add-layer">+</button>
+                    <div class="layerTools">
+                        <button id="visibility"><img class="visible" src="" alt=""></button>
+                        <button id="add-layer">&#x2B;</button>
+                        <button id="delete-layer">&#8722;</button>
+                        <button id="mergeUp-layer">&#8593;</button>
+                        <button id="mergeDown-layer">&#x2193;</button>
                     </div>
-                </div>
+                    <div class="layersContainer"></div>
             </div>
         </div>
     </div>

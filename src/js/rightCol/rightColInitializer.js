@@ -4,7 +4,7 @@
 
 import { ColorPickerEventHandler } from "./colorPicker/colorPickerEventHandler";
 import { PaletteEventHandler } from "./palette/paletteEventHandler";
-import { LayersEventHandler } from "./layers/layersEventHandler";
+import { LayersManager } from "./layers/layersManager"
 
 export class RightColInitializer{
     constructor(colorManager, scaleManager, measurementsManager, bgManager, bgRenderer, toolsManager){
@@ -24,7 +24,7 @@ export class RightColInitializer{
     setUpEventHandlers(){
         this.colorPickerEventHandler = new ColorPickerEventHandler(this.colorManager);
         this.paletteEventHandler = new PaletteEventHandler(this.colorManager);
-        this.layersEventHandler = new LayersEventHandler(this.scaleManager, this.measurementsManager, this.bgManager, this.bgRenderer, this.colorManager, this.toolsManager);
+        this.layersManager = new LayersManager(this.scaleManager, this.measurementsManager, this.bgManager, this.bgRenderer, this.colorManager, this.toolsManager);
         
     }
 
