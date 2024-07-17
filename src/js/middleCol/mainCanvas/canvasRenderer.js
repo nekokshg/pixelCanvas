@@ -212,6 +212,31 @@ export class CanvasRenderer {
         this.canvasManager.ctx.drawImage(scaledDownCanvas, 0, 0);
     }
 
+    drawOver(otherCanvas){
+        //draws otherCanvas over this canvas
+        const width = this.canvasManager.canvas.width;
+        const height = this.canvasManager.canvas.height;
+        const origPixelWidth = this.canvasManager.getOrigPixelWidth();
+        const origPixelHeight = this.canvasManager.getOrigPixelHeight();
+
+        // Create a scaled-down canvas at the original scale
+        const scaledDownCanvas = document.createElement('canvas');
+        scaledDownCanvas.width = origPixelWidth;
+        scaledDownCanvas.height = origPixelHeight;
+        const scaledDownCtx = scaledDownCanvas.getContext('2d');
+    
+        // Scale the temporary canvas down to the original scale
+        scaledDownCtx.drawImage(otherCanvas, 0, 0, width, height, 0, 0, scaledDownCanvas.width, scaledDownCanvas.height);
+
+        // Transfer the filled area back to the original canvas, ensuring no scaling transformations are applied
+        this.canvasManager.ctx.drawImage(scaledDownCanvas, 0, 0);
+    }
+
+    drawUnder(otherCanvas){
+
+
+    }
+
 
 
 }

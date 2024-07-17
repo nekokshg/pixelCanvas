@@ -27,7 +27,12 @@ export class LayerInfo {
         this.layerInfo.appendChild(this.imgElementContainer);
         this.layerInfo.appendChild(this.layerName);
 
-        layersInfoContainer.append(this.layerInfo);
+        // Insert the new layer info before the first child of the container
+        if (layersInfoContainer.firstChild) {
+            layersInfoContainer.insertBefore(this.layerInfo, layersInfoContainer.firstChild);
+        } else {
+            layersInfoContainer.appendChild(this.layerInfo);
+        }
 
         this.layer = layer;
         this.canvas = this.layer.canvas;

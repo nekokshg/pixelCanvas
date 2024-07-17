@@ -32,8 +32,7 @@ export class LayersManager{
         // Layer Tools
         this.addLayerBtn = document.getElementById('add-layer');
         this.deleteLayerBtn = document.getElementById('delete-layer');
-        this.mergeUpLayerBtn = document.getElementById('mergeUp-layer');
-        //this.mergeDownLayerBtn = document.getElementById('mergeDown-layer');
+        this.mergeDownLayerBtn = document.getElementById('mergeDown-layer');
         const editLayerNameImg = document.getElementsByClassName('editLayerNameImg')[0]
         editLayerNameImg.src = editLayer;
 
@@ -54,8 +53,7 @@ export class LayersManager{
 
         this.addLayerBtn.addEventListener('click', () => this.addLayer());
         this.deleteLayerBtn.addEventListener('click', () => this.deleteLayer());
-        this.mergeUpLayerBtn.addEventListener('click', () => this.mergeUp());
-        //this.mergeDownLayerBtn.addEventListener('click', () => this.mergeDown());
+        this.mergeDownLayerBtn.addEventListener('click', () => this.mergeDown());
 
         // Listen for the custom drop event
         this.layersInfoContainer.addEventListener('layer-drop', this.onLayerDrop.bind(this));
@@ -141,8 +139,42 @@ export class LayersManager{
         }
     }
 
-    mergeUp(){
+    mergeDown() {
+        const currentLayerIndex = this.currentLayerIndex;
+        const targetLayerIndex = currentLayerIndex - 1;
 
+        if (targetLayerIndex < 0) {
+            console.warn('No layer below to merge with.');
+            return;
+        }
+
+        const currentLayer = this.layers[currentLayerIndex].layer;
+        const currentLayerInfo = this.layers[currentLayerIndex].layerInfo;
+        const targetLayer = this.layers[targetLayerIndex].layer;
+
+        this.setActiveLayer(currentLayer, currentLayerInfo);
+
+        //Draw current layer over target layer
+        targetLayer.canvasRenderer.drawOver(currentLayer.canvas)
+
+        //Transfer merged canvas to current layer
+        currentLayer.canvas.getContext('2d').clearRect(0, 0, currentLayer.canvas.width, currentLayer.canvas.height);
+        currentLayer.canvasRenderer.drawOver(targetLayer.canvas)
+
+        // Delete the target layer
+        this.layers.splice(targetLayerIndex, 1);
+        this.layersInfoContainer.removeChild(document.getElementById(targetLayer.canvas.id + 'layer'));
+        this.canvasContainer.removeChild(targetLayer.canvas);
+
+        // Update indices for remaining layers
+        this.layers.forEach((layer, index) => {
+            layer.layerIndex = index;
+            layer.layer.setZIndex(index + 2);
+        });
+
+        this.zIndexCounter -= 1;
+        this.layerIndex -= 1;
+        this.currentLayerIndex -= 1; 
     }
 
     onLayerDrop(event) {
