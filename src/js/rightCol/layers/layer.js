@@ -7,16 +7,17 @@ import { CanvasManager } from "../../middleCol/mainCanvas/canvasManager";
 import { CanvasRenderer} from "../../middleCol/mainCanvas/canvasRenderer";
 
 export class Layer {
-    constructor(pixelWidth, pixelHeight, zIndexCounter, scale, layerIndex, 
+    constructor(pixelWidth, pixelHeight, zIndex, scale, layerIndex, 
         bgManager, bgRenderer, colorManager, toolsManager, scaleManager ){
         
         //Canvas
         this.canvas = document.createElement('canvas');
         this.canvas.style.position = 'absolute';
-        this.canvas.style.zIndex = zIndexCounter;
+        this.zIndex = zIndex;
+        this.canvas.style.zIndex = this.zIndex;
         this.canvas.id = `pixelCanvas${layerIndex}`; // Unique ID for each canvas
         this.canvas.className = 'pixelCanvas'; // Class name for styling
-        this.canvasManager = new CanvasManager(this.canvas, pixelWidth, pixelHeight, scale);
+        this.canvasManager = new CanvasManager(this.canvas, pixelWidth, pixelHeight, scale, layerIndex);
         this.canvasRenderer = new CanvasRenderer(this.canvasManager);
         this.canvas = this.canvasManager.canvas;
 
@@ -55,6 +56,11 @@ export class Layer {
         this.zoomPoints = [];
         this.zoomFactor = 1;
         this.rounded = true;
+    }
+
+    setZIndex(newZIndex){
+        this.zIndex = newZIndex;
+        this.canvas.style.zIndex = this.zIndex;
     }
 
     onMouseDown(event){

@@ -97,6 +97,10 @@ export class CanvasManager {
         this.scale = newScale;
     }
 
+    setLayerIndex(newIndex){
+        this.layerIndex = newIndex;
+    }
+
     scaleCanvas(scale){
         //Function to set new scale and resize the canvas based on that
         this.setScale(scale);

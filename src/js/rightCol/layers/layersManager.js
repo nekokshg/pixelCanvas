@@ -3,10 +3,9 @@
  * 
  */
 
-import eye from '../../../assets/eye.png';
-import eyeOff from '../../../assets/eye-off.png';
 import {Layer} from './layer'
 import { LayerInfo } from './layerInfo';
+import editLayer from '../../../assets/text.png'
 
 export class LayersManager{
     constructor(scaleManager, measurementsManager, bgManager, bgRenderer, colorManager, toolsManager) {
@@ -21,8 +20,8 @@ export class LayersManager{
         this.zIndexCounter = 2;
         this.layerIndex = 0;
         this.currentLayerIndex = 0;
-        this.toggle = true;
         this.activeLayer = null;
+        this.activeLayerInfo = null;
 
         // Reference to the container where all canvases(layers) are appended
         this.canvasContainer = this.baseLayer.parentElement;
@@ -31,19 +30,19 @@ export class LayersManager{
         this.layersInfoContainer = document.getElementsByClassName('layersContainer')[0];
 
         // Layer Tools
-        this.visibilityImg = document.getElementsByClassName('visible')[0];
-        this.visibilityImg.src = eye;
-        this.visibilityBtn = document.getElementById('visibility');
         this.addLayerBtn = document.getElementById('add-layer');
         this.deleteLayerBtn = document.getElementById('delete-layer');
-        //this.mergeUpLayerBtn = document.getElementById('mergeUp-layer');
+        this.mergeUpLayerBtn = document.getElementById('mergeUp-layer');
         //this.mergeDownLayerBtn = document.getElementById('mergeDown-layer');
+        const editLayerNameImg = document.getElementsByClassName('editLayerNameImg')[0]
+        editLayerNameImg.src = editLayer;
+
+        // Init default layer0 on program start
+        this.addLayer();
 
         //Initialize event listeners
         this.init();
 
-        // Init default layer0 on program start
-        this.addLayer();
     }
 
     init() {
@@ -53,11 +52,21 @@ export class LayersManager{
         this.canvasContainer.addEventListener('mouseleave', this.onMouseLeave.bind(this));
         this.canvasContainer.addEventListener('click', this.onMouseClick.bind(this));
 
-        this.visibilityBtn.addEventListener('click', () => this.toggleVisibility());
         this.addLayerBtn.addEventListener('click', () => this.addLayer());
-        this.deleteLayerBtn.addEventListener('click', () => this.deleteLayer(this.currentLayerIndex));
-        //this.mergeUpLayerBtn.addEventListener('click', () => this.mergeUp());
+        this.deleteLayerBtn.addEventListener('click', () => this.deleteLayer());
+        this.mergeUpLayerBtn.addEventListener('click', () => this.mergeUp());
         //this.mergeDownLayerBtn.addEventListener('click', () => this.mergeDown());
+
+        // Listen for the custom drop event
+        this.layersInfoContainer.addEventListener('layer-drop', this.onLayerDrop.bind(this));
+    }
+
+    setActiveLayer(layer, layerInfo) {
+        document.getElementById(this.activeLayerInfo.getLayerInfoId()).style.border = 'none'
+        this.activeLayer = layer;
+        this.activeLayerInfo = layerInfo;
+        this.currentLayerIndex = layer.canvasManager.layerIndex;
+        document.getElementById(this.activeLayerInfo.getLayerInfoId()).style.border = 'solid black'
     }
 
     addLayer(){
@@ -74,38 +83,93 @@ export class LayersManager{
             this.bgManager, this.bgRenderer, this.colorManager, this.toolsManager, this.scaleManager
         );
 
-        //Push the newly created layer to the layers array
-        this.layers.push(newLayer)
-
         //Append to canvas container in middle column
         this.canvasContainer.appendChild(newLayer.canvas);
 
         //Create a new layerInfo for the newly created layer in the right column & attach an event listener to it
-        const newLayerInfo = new LayerInfo(layerInfoId, layerIdNum, layerIndex);
-        document.getElementById(newLayerInfo.getLayerInfoId()).addEventListener('click', () => this.setActiveLayer(newLayer));
+        const newLayerInfo = new LayerInfo(layerInfoId, layerIdNum, layerIndex, newLayer);
+
+        //Push the newly created layer and layer info to the layers array
+        this.layers.push({
+            layer: newLayer,
+            layerInfo: newLayerInfo,
+        })
+
+        document.getElementById(newLayerInfo.getLayerInfoId()).addEventListener('click', () => this.setActiveLayer(newLayer, newLayerInfo));
 
         // Set the first added layer as active by default
         if (!this.activeLayer) {
             this.activeLayer = newLayer;
+            this.activeLayerInfo = newLayerInfo;
         }
+
+        this.setActiveLayer(newLayer, newLayerInfo)
 
         this.zIndexCounter += 1;
         this.layerIndex += 1;
     }
 
-    setActiveLayer(layer) {
-        this.activeLayer = layer;
-    }
+    deleteLayer(){
+        if (this.currentLayerIndex != 0){
 
-    toggleVisibility(){
-        if(this.toggle){
-            this.activeLayer.canvas.style.display = 'none';
-            this.toggle = false;
-        } else {
-            this.activeLayer.canvas.style.display = 'block';
-            this.toggle = true;
+            const currentLayerIndex = this.currentLayerIndex;
+            const layerToDelete = this.layers[currentLayerIndex].layer;
+    
+            // Remove the layer from the DOM
+            this.canvasContainer.removeChild(layerToDelete.canvas);
+    
+            // Remove the corresponding layer info from the DOM
+            const layerInfoId = `${layerToDelete.canvas.id}layer`;
+            const layerInfoElement = document.getElementById(layerInfoId);
+            this.layersInfoContainer.removeChild(layerInfoElement);
+    
+            // Remove the layer from the layers array
+            this.layers.splice(currentLayerIndex, 1);
+    
+            // Update indices for remaining layers
+            this.layers.forEach((layer, index) => {
+                layer.canvasManager.layerIndex = index;
+                layer.setZIndex(index + 2)
+            });
+
+            // Set the new active layer
+            this.currentLayerIndex = Math.max(currentLayerIndex - 1, 0);
+            this.setActiveLayer(this.layers[this.currentLayerIndex].layer, this.layers[this.currentLayerIndex].layerInfo);
+
+            // Adjust the zIndexCounter
+            this.zIndexCounter -= 1;
         }
     }
+
+    mergeUp(){
+
+    }
+
+    onLayerDrop(event) {
+        const { draggedId, targetId } = event.detail;
+    
+        // Find the dragged layer and target layer by ID
+        const draggedLayerIndex = this.layers.findIndex(layer => layer.layerInfo.getLayerInfoId() === draggedId);
+        const targetLayerIndex = this.layers.findIndex(layer => layer.layerInfo.getLayerInfoId() === targetId);
+    
+        // Ensure both layers exist in the layers array
+        if (draggedLayerIndex === -1 || targetLayerIndex === -1) {
+            console.error('Dragged or target layer not found in layers array');
+            return;
+        }
+    
+        // Swap the layers in the layers array
+        const draggedLayer = this.layers[draggedLayerIndex];
+        this.layers[draggedLayerIndex] = this.layers[targetLayerIndex];
+        this.layers[targetLayerIndex] = draggedLayer;
+    
+        // Update indices and zIndex for all layers
+        this.layers.forEach((layer, index) => {
+            layer.layerInfo.setLayerIndex(index);
+            layer.layer.canvasManager.setLayerIndex(index);
+            layer.layer.setZIndex(index + 2);
+        });
+    }    
 
     onMouseDown(event) {
         if (this.activeLayer) {

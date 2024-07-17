@@ -11,28 +11,52 @@
 <body>
 <body>
     <div id="headerContainer">
-        PixelCanvas
+        <h3 class="title">PixelCanvas
+            <img src="" alt="" class="titleImg">
+        </h3>
         <div class="settingsBar">
-            <div class="dropdown">
-                <button id="fileBtn" class="dropbtn">File
-                    <img src="" alt="" class="fileImg">
-                    <div id="fileContent" class="dropdown-content">
-                        <div class="clear settingButton">
-                            Clear
-                            <img class="clearImg">
+            <div class="settings">
+                <div class="dropdown">
+                    <button id="fileBtn" class="dropbtn">
+                        File
+                        <img src="" alt="" class="fileImg">
+                        <div id="fileContent" class="dropdown-content">
+                            <div class="clear settingButton">
+                                Clear
+                                <img class="clearImg">
+                            </div>
+                            <div class="resize settingButton">
+                                Resize
+                                <img src="" alt="" class="resizeImg">
+                            </div>
+                            <div class="export settingButton">
+                                Export/Download
+                                <img src="" alt="" class="exportImg">
+                            </div>
                         </div>
-                        <div class="resize settingButton">
-                            Resize
-                            <img src="" alt="" class="resizeImg">
-                        </div>
-                        <div class="export settingButton">
-                            Export/Download
-                            <img src="" alt="" class="exportImg">
-                        </div>
-                    </div>
+                    </button>
+                    <button id="layerBtn" class="dropbtn">Layers</button>
+                    <button id="paletteBtn" class="dropbtn">Palette</button>
+                    <button id="selectBtn" class="dropbtn">Select</button>
+                    <button id="settingsBtn" class="dropbtn">Settings</button>
+                </div>
+            </div>
+            <div class="miscTools">
+                <button id="undoBtn">
+                    <img class="undo" src="" alt="">
                 </button>
-
-
+                <button id="redoBtn">
+                    <img src="" alt="" class="redo">
+                </button>
+                <button id="flipHorizontalBtn">
+                    <img src="" alt="" class="flipHorizontal">
+                </button>
+                <button id="flipVerticalBtn">
+                    <img src="" alt="" class="flipVertical">
+                </button>
+                <button id="downloadBtn">
+                    <img src="" alt="" class="download">
+                </button>
             </div>
         </div>
     </div>
@@ -84,15 +108,19 @@
                     <div class="hexCode" style="background-color: #000000;">#000000</div>
                 </div>
                 <div class="container">
-                    <div class="palette-container">
-                        <button id="addColorSwatch">+</button>
+                    <div class="outerContainer">
+                        <div class="palette-container">
+                            <button id="addColorSwatch">+</button>
+                        </div>
                     </div>
                     <div class="layerTools">
-                        <button id="visibility"><img class="visible" src="" alt=""></button>
                         <button id="add-layer">&#x2B;</button>
                         <button id="delete-layer">&#8722;</button>
                         <button id="mergeUp-layer">&#8593;</button>
                         <button id="mergeDown-layer">&#x2193;</button>
+                        <button id="editLayerName">
+                            <img src="" alt="" class="editLayerNameImg">
+                        </button>
                     </div>
                     <div class="layersContainer"></div>
             </div>

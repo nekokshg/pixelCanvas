@@ -53,6 +53,9 @@ body {
     font-family: var(--body-font);
     color: var(--white-color);
     image-rendering: pixelated;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
 button {
@@ -83,6 +86,11 @@ h2 {
     margin-block-end: 0px;
 }
 
+h3 {
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
+
 canvas {
     overflow: scroll;
 }
@@ -98,15 +106,19 @@ canvas {
 
 .title {
     font-size: var(--h2-font-size);
-    padding-right: 10px;
-    padding-left: 1px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    font-weight: lighter;
+    margin: 10px;
+    display: flex;
+    gap: 5px;
 }
 
 .settingsBar {
     display: flex;
-    gap: 10px; /* Adds space between buttons */
+}
+
+.settings{
+    display: flex;
+    padding-right: 70px;
 }
 
 .dropdown {
@@ -115,13 +127,12 @@ canvas {
 }
 
 .dropbtn {
-    background-color: var(--color-primary-400);
-    color: var(--color-surface-100);
-    font-size: var(--normal-font-size);
-    border: none;
     display: flex;
     align-items: center;
     gap: 2px;
+    border: none;
+    background-color: var(--color-surface-200);
+    color: var(--white-color);
 }
 
 .settingButton {
@@ -161,6 +172,10 @@ canvas {
     cursor: pointer;
 }
 
+.miscTools {
+    display: flex;
+    gap: 10px;
+}
 
 
 /*=============== MAIN ===============*/
@@ -268,34 +283,34 @@ canvas {
 .container{
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 
-.palette-container{
+.palette-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 20px);
+    gap: 6px;
     background-color: var(--color-surface-400);
-    display: flex;
-    flex-wrap: wrap;
+    padding: 3px;
     height: 150px;
     overflow: auto;
     align-content: flex-start;
-    justify-content: center;
     border: solid var(--color-surface-500);
+    justify-content: center; /* Ensure items start from the left */
 }
 
-#addColorSwatch{
+#addColorSwatch {
     display: flex;
     justify-content: center;
     height: 20px;
     width: 20px;
-    margin: 3px;
     cursor: pointer;
 }
 
-.color-swatch{
-    box-sizing: border-box;
+.color-swatch {
     height: 20px;
     width: 20px;
-    margin: 3px;
+    background-color: #000; /* Example default background color */
 }
 
 .color-swatch:hover{
@@ -305,7 +320,7 @@ canvas {
 
 .layersContainer{
     display: flex;
-    height: 300px;
+    height: 200px;
     background-color: var(--color-surface-400);
     flex-direction: column;
     overflow: scroll;
@@ -321,7 +336,6 @@ canvas {
 
 .layerInfo:hover{
     background-color: var(--color-primary-100);
-    cursor: pointer;
 }
 
 .layerTools {
@@ -329,11 +343,11 @@ canvas {
     justify-content: space-evenly;
     width: 100%;
     max-width: 400px; /* Adjust this value as needed */
+    gap: 1px;
 }
 
 .layerTools button {
     flex: 1;
-    margin: 5px;
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -343,7 +357,6 @@ canvas {
 }
 
 .layerName{
-    margin-left: auto;
     color: var(--color-surface-100);
     width: 60px;
     white-space: nowrap;
@@ -352,14 +365,43 @@ canvas {
 }
 
 .visibilityBtn{
-    margin-left: 4px;
+    display: flex;
     width: 19px;
     height: 19px;
+    padding-left: 4px;
 }
 
-.imageElementContainer{
+.imgElementContainer{
     display: flex;
     gap: 14px;
+}
+
+.hidden {
+    display: none;
+}
+
+.transparent {
+    opacity: 0.0005;
+}
+
+.layerInfo {
+    position: relative;
+}
+
+.layerInfo.drag-over::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -4px; /* Adjust this value to place the line where you want */
+    height: 4px; /* Adjust this value for line thickness */
+    background-color: white; /* Adjust color as needed */
+    z-index: 1; /* Ensure it's above other content */
+    
+}
+
+.layerInfo.drag-over.below::before {
+    top: calc(100% + 2px); /* Adjust this value based on your design */
 }
 
 /*=============== MODAL ===============*/
