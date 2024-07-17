@@ -231,12 +231,4 @@ export class CanvasRenderer {
         // Transfer the filled area back to the original canvas, ensuring no scaling transformations are applied
         this.canvasManager.ctx.drawImage(scaledDownCanvas, 0, 0);
     }
-
-    drawUnder(otherCanvas){
-
-
-    }
-
-
-
 }

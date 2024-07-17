@@ -35,6 +35,7 @@ export class LayersManager{
         this.mergeDownLayerBtn = document.getElementById('mergeDown-layer');
         const editLayerNameImg = document.getElementsByClassName('editLayerNameImg')[0]
         editLayerNameImg.src = editLayer;
+        this.editLayerBtn = document.getElementById('editLayerName')
         this.duplicateLayerBtn = document.getElementById('duplicate-layer');
 
         // Init default layer0 on program start
@@ -56,6 +57,7 @@ export class LayersManager{
         this.deleteLayerBtn.addEventListener('click', () => this.deleteLayer());
         this.mergeDownLayerBtn.addEventListener('click', () => this.mergeDown());
         this.duplicateLayerBtn.addEventListener('click', () => this.duplicateLayer());
+        this.editLayerBtn.addEventListener('click', () => this.editLayer())
 
         // Listen for the custom drop event
         this.layersInfoContainer.addEventListener('layer-drop', this.onLayerDrop.bind(this));
@@ -110,31 +112,30 @@ export class LayersManager{
     }
 
     deleteLayer(){
-        if (this.currentLayerIndex != 0){
-
+        if(this.layers.length != 1){
             const currentLayerIndex = this.currentLayerIndex;
             const layerToDelete = this.layers[currentLayerIndex].layer;
-    
-            // Remove the layer from the DOM
-            this.canvasContainer.removeChild(layerToDelete.canvas);
-    
-            // Remove the corresponding layer info from the DOM
-            const layerInfoId = `${layerToDelete.canvas.id}layer`;
-            const layerInfoElement = document.getElementById(layerInfoId);
-            this.layersInfoContainer.removeChild(layerInfoElement);
+            const layerInfoToDelete = this.layers[currentLayerIndex].layerInfo;
     
             // Remove the layer from the layers array
             this.layers.splice(currentLayerIndex, 1);
     
             // Update indices for remaining layers
             this.layers.forEach((layer, index) => {
-                layer.canvasManager.layerIndex = index;
-                layer.setZIndex(index + 2)
+                layer.layer.canvasManager.layerIndex = index;
+                layer.layer.setZIndex(index + 2)
             });
 
             // Set the new active layer
             this.currentLayerIndex = Math.max(currentLayerIndex - 1, 0);
             this.setActiveLayer(this.layers[this.currentLayerIndex].layer, this.layers[this.currentLayerIndex].layerInfo);
+
+            // Remove the layer from the DOM
+            this.canvasContainer.removeChild(layerToDelete.canvas);
+
+            // Remove the corresponding layer info from the DOM
+            const layerInfoElement = document.getElementById(layerInfoToDelete.getLayerInfoId());
+            this.layersInfoContainer.removeChild(layerInfoElement);
 
             // Adjust the zIndexCounter
             this.zIndexCounter -= 1;
@@ -153,6 +154,7 @@ export class LayersManager{
         const currentLayer = this.layers[currentLayerIndex].layer;
         const currentLayerInfo = this.layers[currentLayerIndex].layerInfo;
         const targetLayer = this.layers[targetLayerIndex].layer;
+        const targetLayerInfo = this.layers[targetLayerIndex].info;
 
         this.setActiveLayer(currentLayer, currentLayerInfo);
 
@@ -165,7 +167,7 @@ export class LayersManager{
 
         // Delete the target layer
         this.layers.splice(targetLayerIndex, 1);
-        this.layersInfoContainer.removeChild(document.getElementById(targetLayer.canvas.id + 'layer'));
+        this.layersInfoContainer.removeChild(document.getElementById(targetLayerInfo.getLayerInfoId()));
         this.canvasContainer.removeChild(targetLayer.canvas);
 
         // Update indices for remaining layers
@@ -186,6 +188,21 @@ export class LayersManager{
 
         //Copy over target layer to current layer
         currentLayer.canvasRenderer.drawOver(targetLayer.canvas)
+    }
+
+    editLayer() {
+        const currentLayer = this.layers[this.currentLayerIndex].layer;
+        const currentLayerInfo = this.layers[this.currentLayerIndex].layerInfo;
+    
+        // Ask user for new layer name
+        const newLayerName = prompt('Enter new layer name:');
+    
+        if (newLayerName) {
+            // Update canvas id and layerInfo id and text content
+            currentLayer.setCanvasId(newLayerName);
+            currentLayerInfo.setLayerId(newLayerName);
+            currentLayerInfo.setLayerName(newLayerName);
+        }
     }
 
     onLayerDrop(event) {

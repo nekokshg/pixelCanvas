@@ -10,6 +10,7 @@ export class LayerInfo {
         this.layerInfo = document.createElement('div');
         this.layerInfo.className = 'layerInfo';
         this.layerInfo.id = layerInfoId;
+        console.log(this.layerInfo.id)
         this.layerInfo.draggable = true;
 
         this.layerName = document.createElement('p');
@@ -58,6 +59,14 @@ export class LayerInfo {
 
     getLayerIndex() {
         return this.layerIndex;
+    }
+
+    setLayerId(newLayerId){
+        this.layerInfo.id = newLayerId;
+    }
+
+    setLayerName(newLayerName){
+        this.layerName.textContent = `${newLayerName}`;
     }
 
     setLayerIndex(newIndex) {

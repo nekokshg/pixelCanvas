@@ -63,6 +63,10 @@ export class Layer {
         this.canvas.style.zIndex = this.zIndex;
     }
 
+    setCanvasId(newCanvasId){
+        this.canvas.id = newCanvasId;
+    }
+
     onMouseDown(event){
         this.selectedTool = this.toolManager.getTool();
         this.isDoing = true;
