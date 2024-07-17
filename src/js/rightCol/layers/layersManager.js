@@ -35,6 +35,7 @@ export class LayersManager{
         this.mergeDownLayerBtn = document.getElementById('mergeDown-layer');
         const editLayerNameImg = document.getElementsByClassName('editLayerNameImg')[0]
         editLayerNameImg.src = editLayer;
+        this.duplicateLayerBtn = document.getElementById('duplicate-layer');
 
         // Init default layer0 on program start
         this.addLayer();
@@ -54,6 +55,7 @@ export class LayersManager{
         this.addLayerBtn.addEventListener('click', () => this.addLayer());
         this.deleteLayerBtn.addEventListener('click', () => this.deleteLayer());
         this.mergeDownLayerBtn.addEventListener('click', () => this.mergeDown());
+        this.duplicateLayerBtn.addEventListener('click', () => this.duplicateLayer());
 
         // Listen for the custom drop event
         this.layersInfoContainer.addEventListener('layer-drop', this.onLayerDrop.bind(this));
@@ -175,6 +177,15 @@ export class LayersManager{
         this.zIndexCounter -= 1;
         this.layerIndex -= 1;
         this.currentLayerIndex -= 1; 
+    }
+
+    duplicateLayer(){
+        this.addLayer();
+        const currentLayer = this.layers[this.currentLayerIndex].layer;
+        const targetLayer = this.layers[this.currentLayerIndex - 1].layer;
+
+        //Copy over target layer to current layer
+        currentLayer.canvasRenderer.drawOver(targetLayer.canvas)
     }
 
     onLayerDrop(event) {
